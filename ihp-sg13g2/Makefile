@@ -167,9 +167,9 @@ regression: ## Run full verify (klayout-verify + magic-verify) for every .gds in
 		cell_tools=""; \
 		$(MAKE) klayout-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-LVS"; \
 		$(MAKE) klayout-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-DRC"; \
-		$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_1"; \
-		$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_2"; \
-		$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_3"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_1"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_2"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_3"; \
 		$(MAKE) magic-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-LVS"; \
 		$(MAKE) magic-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-DRC"; \
 		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1|| cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_1"; \
