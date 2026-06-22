@@ -139,10 +139,12 @@ klayout-pex: ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make
 	--cell $(CELL) \
 	--schematic $(XSCHEM_SCH_DIR)/$(CELL).sch \
 	--gds $(LAY_DIR)/$(CELL).gds \
+	--magic \
+	--magic_mode $$KPEX_MODE \
 	--out_dir $(NET_PEX_DIR) \
-	--out_spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice \
-	--2.5D \
-	--mode $$KPEX_MODE
+	--out_spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
+#	--2.5D
+#	--mode $$KPEX_MODE
 	sed -i 's/$(CELL)/$(CELL)_pex/g' $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
 	rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL)
 	rm -f $(CELL).nodes $(CELL).sim
