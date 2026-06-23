@@ -15,13 +15,14 @@ C {iopin.sym} 380 -300 3 0 {name=p1 lab=D}
 C {iopin.sym} 380 -200 1 0 {name=p2 lab=S}
 C {iopin.sym} 320 -250 2 0 {name=p3 lab=G}
 C {iopin.sym} 480 -160 1 0 {name=p4 lab=B}
-C {sg13g2_pr/sg13_lv_rf_nmos.sym} 360 -250 0 0 {name=M1
+C {sg13g2_pr/sg13_hv_rf_nmos.sym} 360 -250 0 0 {name=M1
 l=0.72u
 w=1.0u
 ng=1
-m=1
-rfmode=1
-model=sg13_lv_nmos
+ m=1
+ rfmode=1
+  mm_ok=1
+ model=sg13_hv_nmos
 lvs_model=rfnmoshv
 spiceprefix=X
 }
