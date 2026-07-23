@@ -1,0 +1,47 @@
+
+Circuit 1 cell sg13_hv_pmos and Circuit 2 cell sg13_hv_pmos are black boxes.
+Warning: Equate pins:  cell sg13_hv_pmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_hv_pmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_hv_pmos                    |Circuit 2: sg13_hv_pmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_hv_pmos and sg13_hv_pmos are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_hv_pmos_ring_dev           |Circuit 2: sg13_hv_pmos_ring_dev           
+-------------------------------------------|-------------------------------------------
+sg13_hv_pmos (1)                           |sg13_hv_pmos (1)                           
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 4                          |Number of nets: 4                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely with property errors.
+sg13_hv_pmos:0 vs. sg13_hv_pmos:M2:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_pmos:0 vs. sg13_hv_pmos:M2:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_hv_pmos_ring_dev           |Circuit 2: sg13_hv_pmos_ring_dev           
+-------------------------------------------|-------------------------------------------
+G                                          |G                                          
+D                                          |D                                          
+S                                          |S                                          
+B                                          |B                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_hv_pmos_ring_dev and sg13_hv_pmos_ring_dev are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_hv_pmos_ring_dev

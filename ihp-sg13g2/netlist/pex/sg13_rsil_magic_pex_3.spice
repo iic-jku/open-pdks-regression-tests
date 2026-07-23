@@ -1,0 +1,10 @@
+* PEX produced on Thu Jul 23 04:53:25 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=3 and s=1 (extresist threshold=10000 mOhm, minres=1000 mOhm, mindelay=1 ps)
+* NGSPICE file created from sg13_rsil_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_rsil_pex R1 R0
+X0 R1 R0 w_36_36# rsil l=0.5u w=0.5u
+C0 R1 R0 0.02408f
+C1 R0 w_36_36# 0.14039f
+C2 R1 w_36_36# 0.14039f
+.ends
+

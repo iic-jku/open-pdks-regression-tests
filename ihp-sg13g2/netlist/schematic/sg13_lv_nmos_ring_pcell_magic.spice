@@ -1,0 +1,5 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_lv_nmos_ring_pcell.sch
+.subckt sg13_lv_nmos_ring_pcell D S G B
+*.PININFO D:B S:B G:B B:B
+XM1 D G S B sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1 mm_ok=1
+.ends

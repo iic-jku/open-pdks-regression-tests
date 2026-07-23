@@ -1,0 +1,41 @@
+
+Circuit 1 cell cap_cmim and Circuit 2 cell cap_cmim are black boxes.
+Warning: Equate pins:  cell cap_cmim is a placeholder, treated as a black box.
+Warning: Equate pins:  cell cap_cmim is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: cap_cmim                        |Circuit 2: cap_cmim                        
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes cap_cmim and cap_cmim are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_cmim                       |Circuit 2: sg13_cmim                       
+-------------------------------------------|-------------------------------------------
+cap_cmim (1)                               |cap_cmim (1)                               
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 2                          |Number of nets: 2                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with property errors.
+cap_cmim:0 vs. cap_cmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+cap_cmim:0 vs. cap_cmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_cmim                       |Circuit 2: sg13_cmim                       
+-------------------------------------------|-------------------------------------------
+C0                                         |C0                                         
+C1                                         |C1                                         
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_cmim and sg13_cmim are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_cmim

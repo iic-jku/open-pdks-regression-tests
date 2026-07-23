@@ -1,0 +1,48 @@
+* PEX produced on Thu Jul 23 04:39:20 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=2 and s=1
+* NGSPICE file created from sg13_combined_cmim_ontop_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_combined_cmim_ontop_pex G VDD VSS
+X0 a_554_348# G VSS VSS sg13_lv_nmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X1 a_136_2612# a_554_348# cap_rfcmim l=7u w=7u
+X2 dw_2768_2744# G VSS VSS sg13_hv_nmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X3 VSS dw_2768_2744# VSS schottky_nbl1 l=1.2u w=2.655u
+X4 a_136_2612# a_554_348# cap_cmim l=20u w=20u
+X5 VSS a_2910_379# dantenna l=0.78u w=0.78u
+X6 a_832_2612# dw_2768_2744# VSS rsil l=0.5u w=0.5u
+X7 a_136_2612# a_414_2612# VSS rhigh l=0.96u w=0.5u
+X8 VSS VSS a_2910_379# VSS sg13_hv_nmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.45u
+X9 a_2910_379# VDD VDD VDD sg13_hv_pmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.45u
+X10 a_414_2612# a_832_2612# VSS rppd l=0.5u w=0.5u
+X11 VSS VSS a_2910_379# VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.45u
+X12 a_2910_379# VDD dpantenna l=0.78u w=0.78u
+X13 VDD G a_554_348# VDD sg13_lv_pmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X14 a_2910_379# VDD VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.45u
+X15 VDD G dw_2768_2744# VDD sg13_hv_pmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+C0 dw_2768_2744# a_832_2612# 0.0277f
+C1 a_554_348# G 1.62443f
+C2 a_554_348# VDD 1.56381f
+C3 a_554_348# a_136_2612# 2.20745f
+C4 a_222_2612# a_414_2612# 0.01184f
+C5 dw_2768_2744# G 1.15252f
+C6 dw_2768_2744# VDD 0.35721f
+C7 dw_2768_2744# a_136_2612# 0.01068f
+C8 dw_2768_2744# a_554_348# 0.62961f
+C9 a_832_2612# a_414_2612# 0.02132f
+C10 a_136_2612# a_222_2612# 0.01657f
+C11 VDD a_2910_379# 0.80967f
+C12 a_554_348# a_2910_379# 0.20112f
+C13 a_136_2612# a_414_2612# 0.01766f
+C14 a_554_348# a_414_2612# 0.0231f
+C15 a_554_348# a_832_2612# 0.02434f
+C16 dw_2768_2744# a_1134_2612# 0.01152f
+C17 VDD G 4.03849f
+C18 G a_136_2612# 0.01235f
+C19 VDD a_136_2612# 0.02439f
+C20 a_554_348# VSS 18.42609f
+C21 a_2910_379# VSS 1.21656f
+C22 a_832_2612# VSS 0.31011f
+C23 a_414_2612# VSS 0.34892f
+C24 a_136_2612# VSS 0.06414f
+C25 dw_2768_2744# VSS 4.59056f
+.ends
+

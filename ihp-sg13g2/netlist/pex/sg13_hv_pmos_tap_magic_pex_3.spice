@@ -1,0 +1,14 @@
+* PEX produced on Thu Jul 23 04:45:34 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=3 and s=1 (extresist threshold=10000 mOhm, minres=1000 mOhm, mindelay=1 ps)
+* NGSPICE file created from sg13_hv_pmos_tap_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_hv_pmos_tap_pex D S G B
+X0 S G D B sg13_hv_pmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.4u
+C0 S D 0.02067f
+C1 B G 0.11103f
+C2 S B 0.01473f
+C3 D B 0.01473f
+C4 S w_0_n264# 0.05279f
+C5 D w_0_n264# 0.05279f
+C6 B w_0_n264# 0.049f
+.ends
+

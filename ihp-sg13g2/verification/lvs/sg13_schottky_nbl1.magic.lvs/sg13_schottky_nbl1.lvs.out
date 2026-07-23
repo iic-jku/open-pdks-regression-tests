@@ -1,0 +1,47 @@
+
+Circuit 1 cell schottky_nbl1 and Circuit 2 cell schottky_nbl1 are black boxes.
+Warning: Equate pins:  cell schottky_nbl1 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell schottky_nbl1 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: schottky_nbl1                   |Circuit 2: schottky_nbl1                   
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes schottky_nbl1 and schottky_nbl1 are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_schottky_nbl1              |Circuit 2: sg13_schottky_nbl1              
+-------------------------------------------|-------------------------------------------
+schottky_nbl1 (1)                          |schottky_nbl1 (1)                          
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with property errors.
+schottky_nbl1:0 vs. schottky_nbl1:D1:
+Property w in circuit1 has no matching property in circuit2
+schottky_nbl1:0 vs. schottky_nbl1:D1:
+Property l in circuit1 has no matching property in circuit2
+schottky_nbl1:0 vs. schottky_nbl1:D1:
+Property Ny in circuit2 has no matching property in circuit1
+schottky_nbl1:0 vs. schottky_nbl1:D1:
+Property Nx in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_schottky_nbl1              |Circuit 2: sg13_schottky_nbl1              
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+C                                          |C                                          
+B                                          |B                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_schottky_nbl1 and sg13_schottky_nbl1 are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_schottky_nbl1

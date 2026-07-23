@@ -1,0 +1,7 @@
+* PEX produced on Thu Jul 23 04:41:58 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=1 and s=1
+* NGSPICE file created from sg13_dantenna_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_dantenna_pex B C
+X0 B C dantenna l=0.78u w=0.78u
+.ends
+

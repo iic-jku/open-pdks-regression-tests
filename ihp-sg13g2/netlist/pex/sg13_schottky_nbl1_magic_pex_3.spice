@@ -1,0 +1,9 @@
+* PEX produced on Thu Jul 23 04:54:04 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=3 and s=1 (extresist threshold=10000 mOhm, minres=1000 mOhm, mindelay=1 ps)
+* NGSPICE file created from sg13_schottky_nbl1_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_schottky_nbl1_pex B C A
+X0 A C B schottky_nbl1 l=1.2u w=2.655u
+C0 C A 0.41747f
+C1 C B 1.13752f
+.ends
+

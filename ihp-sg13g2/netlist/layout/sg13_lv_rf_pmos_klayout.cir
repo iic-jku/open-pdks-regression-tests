@@ -1,0 +1,6 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:50
+
+.SUBCKT sg13_lv_rf_pmos B D G S
+M$1 S G D B sg13_lv_pmos L=0.72u W=1u AS=0.345p AD=0.345p PS=2.69u PD=2.69u
++ rfmode=1
+.ENDS sg13_lv_rf_pmos

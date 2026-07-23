@@ -1,0 +1,8 @@
+* PEX produced on Thu Jul 23 04:41:59 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=3 and s=1 (extresist threshold=10000 mOhm, minres=1000 mOhm, mindelay=1 ps)
+* NGSPICE file created from sg13_dantenna_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_dantenna_pex B C
+X0 B.t0 C dantenna l=0.78u w=0.78u
+C0 B.t0 0 0.12938f
+.ends
+

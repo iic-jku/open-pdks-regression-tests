@@ -1,0 +1,5 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:51
+
+.SUBCKT sg13_rf_cmim C0 C1 CX
+C$1 C0 C1 CX rfcmim w=10u l=10u A=100p P=40u m=1 wfeed=5u
+.ENDS sg13_rf_cmim

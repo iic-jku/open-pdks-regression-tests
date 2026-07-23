@@ -1,0 +1,5 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_hv_pmos_ring_dev.sch
+.subckt sg13_hv_pmos_ring_dev D S G B
+*.PININFO D:B S:B G:B B:B
+MM2 D G S B sg13_hv_pmos w=0.3u l=0.4u ng=1
+.ends

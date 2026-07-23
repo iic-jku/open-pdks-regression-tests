@@ -1,0 +1,5 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_rf_cmim.sch
+.subckt sg13_rf_cmim C0 C1 CX
+*.PININFO C0:B C1:B CX:B
+XC1 C0 C1 CX cap_rfcmim w=10.0e-6 l=10.0e-6 wfeed=5.0e-6 m=1 mm_ok=1
+.ends

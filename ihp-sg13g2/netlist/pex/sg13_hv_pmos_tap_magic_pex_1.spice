@@ -1,0 +1,10 @@
+* PEX produced on Thu Jul 23 04:45:34 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=1 and s=1
+* NGSPICE file created from sg13_hv_pmos_tap_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_hv_pmos_tap_pex D S G B
+X0 S G D B sg13_hv_pmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.4u
+C0 S sub 0.13866f
+C1 D sub 0.13866f
+C2 B sub 0.09759f
+.ends
+

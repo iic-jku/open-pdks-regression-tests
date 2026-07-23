@@ -1,0 +1,28 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:40
+
+.SUBCKT sg13_combined G VDD VSS
+C$1 \$23 \$8 VSS rfcmim w=10u l=10u A=100p P=40u m=1 wfeed=5u
+C$2 \$23 \$8 cap_cmim w=20u l=20u A=400p P=80u m=1
+D$3 VSS \$24 VSS schottky_nbl1 m=1
+D$4 \$12 VDD dpantenna A=0.6084p P=3.12u m=1
+D$5 VSS \$12 dantenna A=0.6084p P=3.12u m=1
+R$6 \$29 \$28 VSS rppd w=0.5u l=0.5u ps=0u b=0 m=1
+M$7 VDD VDD \$12 VDD sg13_hv_pmos L=0.45u W=0.3u AS=0.102p AD=0.102p PS=1.28u
++ PD=1.28u rfmode=0
+R$8 \$23 \$29 VSS rhigh w=0.5u l=0.96u ps=0u b=0 m=1
+M$9 VSS G \$24 VSS sg13_hv_nmos L=0.72u W=1u AS=0.345p AD=0.345p PS=2.69u
++ PD=2.69u rfmode=1
+M$10 VDD G \$24 VDD sg13_hv_pmos L=0.72u W=1u AS=0.345p AD=0.345p PS=2.69u
++ PD=2.69u rfmode=1
+M$11 VDD VDD \$12 VDD sg13_lv_pmos L=0.45u W=0.15u AS=0.1005p AD=0.1005p
++ PS=1.34u PD=1.34u rfmode=0
+M$12 \$12 VSS VSS VSS sg13_hv_nmos L=0.45u W=0.3u AS=0.102p AD=0.102p PS=1.28u
++ PD=1.28u rfmode=0
+M$13 \$12 VSS VSS VSS sg13_lv_nmos L=0.45u W=0.15u AS=0.1005p AD=0.1005p
++ PS=1.34u PD=1.34u rfmode=0
+R$14 \$28 \$24 VSS rsil w=0.5u l=0.5u ps=0u b=0 m=1
+M$15 \$8 G VDD VDD sg13_lv_pmos L=0.72u W=1u AS=0.345p AD=0.345p PS=2.69u
++ PD=2.69u rfmode=1
+M$16 VSS G \$8 VSS sg13_lv_nmos L=0.72u W=1u AS=0.345p AD=0.345p PS=2.69u
++ PD=2.69u rfmode=1
+.ENDS sg13_combined

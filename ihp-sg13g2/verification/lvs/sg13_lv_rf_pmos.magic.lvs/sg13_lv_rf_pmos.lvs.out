@@ -1,0 +1,47 @@
+
+Circuit 1 cell sg13_lv_pmos and Circuit 2 cell sg13_lv_pmos are black boxes.
+Warning: Equate pins:  cell sg13_lv_pmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_lv_pmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_lv_pmos                    |Circuit 2: sg13_lv_pmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_lv_pmos and sg13_lv_pmos are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_lv_rf_pmos                 |Circuit 2: sg13_lv_rf_pmos                 
+-------------------------------------------|-------------------------------------------
+sg13_lv_pmos (1)                           |sg13_lv_pmos (1)                           
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 4                          |Number of nets: 4                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely with property errors.
+sg13_lv_pmos:0 vs. sg13_lv_pmos:M1:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_pmos:0 vs. sg13_lv_pmos:M1:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_lv_rf_pmos                 |Circuit 2: sg13_lv_rf_pmos                 
+-------------------------------------------|-------------------------------------------
+G                                          |G                                          
+S                                          |S                                          
+D                                          |D                                          
+B                                          |B                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_lv_rf_pmos and sg13_lv_rf_pmos are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_lv_rf_pmos

@@ -1,0 +1,5 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_rhigh.sch
+.subckt sg13_rhigh R0 R1
+*.PININFO R0:B R1:B
+RR1 R0 R1 3.1583k $SUB=sub! $[rhigh] w=0.5e-6 l=0.96e-6 b=0
+.ends

@@ -1,0 +1,44 @@
+
+Circuit 1 cell rppd and Circuit 2 cell rppd are black boxes.
+Warning: Equate pins:  cell rppd is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rppd is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rppd                            |Circuit 2: rppd                            
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rppd and rppd are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_rppd                       |Circuit 2: sg13_rppd                       
+-------------------------------------------|-------------------------------------------
+rppd (1)                                   |rppd (1)                                   
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely with property errors.
+rppd:0 vs. rppd:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+rppd:0 vs. rppd:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_rppd                       |Circuit 2: sg13_rppd                       
+-------------------------------------------|-------------------------------------------
+R1                                         |R1                                         
+R0                                         |R0                                         
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_rppd and sg13_rppd are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_rppd

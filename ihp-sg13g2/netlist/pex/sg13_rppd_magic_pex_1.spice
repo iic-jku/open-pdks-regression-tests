@@ -1,0 +1,9 @@
+* PEX produced on Thu Jul 23 04:52:51 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=1 and s=1
+* NGSPICE file created from sg13_rppd_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_rppd_pex R0 R1
+X0 R0 R1 sub rppd l=0.5u w=0.5u
+C0 R1 sub 0.17757f
+C1 R0 sub 0.17757f
+.ends
+

@@ -1,0 +1,19 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_combined_wo_rfcmim.sch
+.subckt sg13_combined_wo_rfcmim VDD VSS G
+*.PININFO VDD:B VSS:B G:B
+CC1 net4 net1 cap_cmim w=20.0e-6 l=20.0e-6
+MM1 net1 G VSS VSS rfnmos w=1.0u l=0.72u ng=1
+MM2 net1 G VDD VDD rfpmos w=1.0u l=0.72u ng=1
+DD1 VSS net2 dantenna l=0.78u w=0.78u
+DD2 net2 VDD dpantenna l=0.78u w=0.78u
+DD3 VSS net3 VSS schottky_nbl1
+MM3 net2 VSS VSS VSS sg13_lv_nmos w=0.15u l=0.45u ng=1
+MM4 net2 VDD VDD VDD sg13_lv_pmos w=0.15u l=0.45u ng=1
+MM5 net2 VDD VDD VDD sg13_hv_pmos w=0.3u l=0.45u ng=1
+MM6 net2 VSS VSS VSS sg13_hv_nmos w=0.3u l=0.45u ng=1
+MM7 net3 G VSS VSS rfnmoshv w=1.0u l=0.72u ng=1
+MM8 net3 G VDD VDD rfpmoshv w=1.0u l=0.72u ng=1
+RR1 net6 net3 24.863 $SUB=VSS $[rsil] w=0.5e-6 l=0.5e-6
+RR2 net5 net6 396.92 $SUB=VSS $[rppd] w=0.5e-6 l=0.5e-6 b=0
+RR3 net4 net5 3.1583k $SUB=VSS $[rhigh] w=0.5e-6 l=0.96e-6 b=0
+.ends

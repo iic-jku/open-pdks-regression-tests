@@ -1,0 +1,20 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_combined_cmim_ontop.sch
+.subckt sg13_combined_cmim_ontop VDD VSS G
+*.PININFO VDD:B VSS:B G:B
+XC1 net4 net1 cap_cmim w=20.0e-6 l=20.0e-6 m=1 mm_ok=1
+XM1 net1 G VSS VSS sg13_lv_nmos w=1.0u l=0.72u ng=1 m=1 rfmode=1 mm_ok=1
+XM2 net1 G VDD VDD sg13_lv_pmos w=1.0u l=0.72u ng=1 m=1 rfmode=1 mm_ok=1
+XD1 VSS net2 dantenna l=0.78u w=0.78u
+XD2 net2 VDD dpantenna l=0.78u w=0.78u
+XD3 VSS net3 VSS schottky_nbl1 Nx=1 Ny=1
+XM3 net2 VSS VSS VSS sg13_lv_nmos w=0.15u l=0.45u ng=1 m=1 mm_ok=1
+XM4 net2 VDD VDD VDD sg13_lv_pmos w=0.15u l=0.45u ng=1 m=1 mm_ok=1
+XM5 net2 VDD VDD VDD sg13_hv_pmos w=0.3u l=0.45u ng=1 m=1 mm_ok=1
+XM6 net2 VSS VSS VSS sg13_hv_nmos w=0.3u l=0.45u ng=1 m=1 mm_ok=1
+XM7 net3 G VSS VSS sg13_hv_nmos w=1.0u l=0.72u ng=1 m=1 rfmode=1 mm_ok=1
+XM8 net3 G VDD VDD sg13_hv_pmos w=1.0u l=0.72u ng=1 m=1 rfmode=1 mm_ok=1
+XR1 net6 net3 VSS rsil w=0.5e-6 l=0.5e-6 m=1 mm_ok=1
+XR2 net5 net6 VSS rppd w=0.5e-6 l=0.5e-6 m=1 b=0 mm_ok=1
+XR3 net4 net5 VSS rhigh w=0.5e-6 l=0.96e-6 m=1 b=0 mm_ok=1
+XC2 net4 net1 VSS cap_rfcmim w=7.0e-6 l=7.0e-6 wfeed=3.0e-6 m=1 mm_ok=1
+.ends

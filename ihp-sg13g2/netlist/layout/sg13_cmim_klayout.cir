@@ -1,0 +1,5 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:38
+
+.SUBCKT sg13_cmim C0 C1
+C$1 C0 C1 cap_cmim w=7u l=7u A=49p P=28u m=1
+.ENDS sg13_cmim

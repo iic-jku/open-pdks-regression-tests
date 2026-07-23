@@ -1,0 +1,5 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:52
+
+.SUBCKT sg13_rsil R0 R1
+R$1 R1 R0 \$1 rsil w=0.5u l=0.5u ps=0u b=0 m=1
+.ENDS sg13_rsil

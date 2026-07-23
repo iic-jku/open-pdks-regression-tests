@@ -1,0 +1,44 @@
+
+Circuit 1 cell rhigh and Circuit 2 cell rhigh are black boxes.
+Warning: Equate pins:  cell rhigh is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rhigh is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rhigh                           |Circuit 2: rhigh                           
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rhigh and rhigh are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_rhigh                      |Circuit 2: sg13_rhigh                      
+-------------------------------------------|-------------------------------------------
+rhigh (1)                                  |rhigh (1)                                  
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely with property errors.
+rhigh:0 vs. rhigh:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+rhigh:0 vs. rhigh:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_rhigh                      |Circuit 2: sg13_rhigh                      
+-------------------------------------------|-------------------------------------------
+R1                                         |R1                                         
+R0                                         |R0                                         
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_rhigh and sg13_rhigh are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_rhigh

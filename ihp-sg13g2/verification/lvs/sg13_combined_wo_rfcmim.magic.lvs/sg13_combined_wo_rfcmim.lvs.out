@@ -1,0 +1,246 @@
+
+Circuit 1 cell sg13_lv_nmos and Circuit 2 cell sg13_lv_nmos are black boxes.
+Warning: Equate pins:  cell sg13_lv_nmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_lv_nmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_lv_nmos                    |Circuit 2: sg13_lv_nmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_lv_nmos and sg13_lv_nmos are equivalent.
+
+Circuit 1 cell sg13_hv_nmos and Circuit 2 cell sg13_hv_nmos are black boxes.
+Warning: Equate pins:  cell sg13_hv_nmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_hv_nmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_hv_nmos                    |Circuit 2: sg13_hv_nmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_hv_nmos and sg13_hv_nmos are equivalent.
+
+Circuit 1 cell schottky_nbl1 and Circuit 2 cell schottky_nbl1 are black boxes.
+Warning: Equate pins:  cell schottky_nbl1 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell schottky_nbl1 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: schottky_nbl1                   |Circuit 2: schottky_nbl1                   
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes schottky_nbl1 and schottky_nbl1 are equivalent.
+
+Circuit 1 cell dantenna and Circuit 2 cell dantenna are black boxes.
+Warning: Equate pins:  cell dantenna is a placeholder, treated as a black box.
+Warning: Equate pins:  cell dantenna is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: dantenna                        |Circuit 2: dantenna                        
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes dantenna and dantenna are equivalent.
+
+Circuit 1 cell rsil and Circuit 2 cell rsil are black boxes.
+Warning: Equate pins:  cell rsil is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rsil is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rsil                            |Circuit 2: rsil                            
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rsil and rsil are equivalent.
+
+Circuit 1 cell rhigh and Circuit 2 cell rhigh are black boxes.
+Warning: Equate pins:  cell rhigh is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rhigh is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rhigh                           |Circuit 2: rhigh                           
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rhigh and rhigh are equivalent.
+
+Circuit 1 cell cap_cmim and Circuit 2 cell cap_cmim are black boxes.
+Warning: Equate pins:  cell cap_cmim is a placeholder, treated as a black box.
+Warning: Equate pins:  cell cap_cmim is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: cap_cmim                        |Circuit 2: cap_cmim                        
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes cap_cmim and cap_cmim are equivalent.
+
+Circuit 1 cell sg13_hv_pmos and Circuit 2 cell sg13_hv_pmos are black boxes.
+Warning: Equate pins:  cell sg13_hv_pmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_hv_pmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_hv_pmos                    |Circuit 2: sg13_hv_pmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_hv_pmos and sg13_hv_pmos are equivalent.
+
+Circuit 1 cell rppd and Circuit 2 cell rppd are black boxes.
+Warning: Equate pins:  cell rppd is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rppd is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rppd                            |Circuit 2: rppd                            
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rppd and rppd are equivalent.
+
+Circuit 1 cell dpantenna and Circuit 2 cell dpantenna are black boxes.
+Warning: Equate pins:  cell dpantenna is a placeholder, treated as a black box.
+Warning: Equate pins:  cell dpantenna is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: dpantenna                       |Circuit 2: dpantenna                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes dpantenna and dpantenna are equivalent.
+
+Circuit 1 cell sg13_lv_pmos and Circuit 2 cell sg13_lv_pmos are black boxes.
+Warning: Equate pins:  cell sg13_lv_pmos is a placeholder, treated as a black box.
+Warning: Equate pins:  cell sg13_lv_pmos is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: sg13_lv_pmos                    |Circuit 2: sg13_lv_pmos                    
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_lv_pmos and sg13_lv_pmos are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_combined_wo_rfcmim         |Circuit 2: sg13_combined_wo_rfcmim         
+-------------------------------------------|-------------------------------------------
+sg13_lv_nmos (2)                           |sg13_lv_nmos (2)                           
+sg13_hv_nmos (2)                           |sg13_hv_nmos (2)                           
+schottky_nbl1 (1)                          |schottky_nbl1 (1)                          
+dantenna (1)                               |dantenna (1)                               
+rsil (1)                                   |rsil (1)                                   
+rhigh (1)                                  |rhigh (1)                                  
+cap_cmim (1)                               |cap_cmim (1)                               
+sg13_hv_pmos (2)                           |sg13_hv_pmos (2)                           
+rppd (1)                                   |rppd (1)                                   
+dpantenna (1)                              |dpantenna (1)                              
+sg13_lv_pmos (2)                           |sg13_lv_pmos (2)                           
+Number of devices: 15                      |Number of devices: 15                      
+Number of nets: 9                          |Number of nets: 9                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with property errors.
+sg13_lv_pmos:12 vs. sg13_lv_pmos:M2:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_pmos:12 vs. sg13_lv_pmos:M2:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_pmos:13 vs. sg13_lv_pmos:M4:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_pmos:13 vs. sg13_lv_pmos:M4:
+Property mm_ok in circuit2 has no matching property in circuit1
+rppd:9 vs. rppd:R2:
+Property mm_ok in circuit2 has no matching property in circuit1
+rppd:9 vs. rppd:R2:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_pmos:8 vs. sg13_hv_pmos:M5:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_pmos:8 vs. sg13_hv_pmos:M5:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_pmos:14 vs. sg13_hv_pmos:M8:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_pmos:14 vs. sg13_hv_pmos:M8:
+Property mm_ok in circuit2 has no matching property in circuit1
+cap_cmim:6 vs. cap_cmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+cap_cmim:6 vs. cap_cmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+rhigh:5 vs. rhigh:R3:
+Property mm_ok in circuit2 has no matching property in circuit1
+rhigh:5 vs. rhigh:R3:
+Property mm_ok in circuit2 has no matching property in circuit1
+rsil:4 vs. rsil:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+rsil:4 vs. rsil:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+schottky_nbl1:2 vs. schottky_nbl1:D3:
+Property w in circuit1 has no matching property in circuit2
+schottky_nbl1:2 vs. schottky_nbl1:D3:
+Property l in circuit1 has no matching property in circuit2
+schottky_nbl1:2 vs. schottky_nbl1:D3:
+Property Ny in circuit2 has no matching property in circuit1
+schottky_nbl1:2 vs. schottky_nbl1:D3:
+Property Nx in circuit2 has no matching property in circuit1
+sg13_hv_nmos:7 vs. sg13_hv_nmos:M6:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_nmos:7 vs. sg13_hv_nmos:M6:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_nmos:1 vs. sg13_hv_nmos:M7:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_hv_nmos:1 vs. sg13_hv_nmos:M7:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_nmos:0 vs. sg13_lv_nmos:M1:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_nmos:0 vs. sg13_lv_nmos:M1:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_nmos:10 vs. sg13_lv_nmos:M3:
+Property mm_ok in circuit2 has no matching property in circuit1
+sg13_lv_nmos:10 vs. sg13_lv_nmos:M3:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_combined_wo_rfcmim         |Circuit 2: sg13_combined_wo_rfcmim         
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+G                                          |G                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_combined_wo_rfcmim and sg13_combined_wo_rfcmim are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_combined_wo_rfcmim

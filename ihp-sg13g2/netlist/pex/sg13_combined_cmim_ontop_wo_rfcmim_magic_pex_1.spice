@@ -1,0 +1,27 @@
+* PEX produced on Thu Jul 23 04:40:00 PM CEST 2026 using /foss/tools/sak/sak-pex.sh with m=1 and s=1
+* NGSPICE file created from sg13_combined_cmim_ontop_wo_rfcmim_pex.ext - technology: ihp-sg13g2
+
+.subckt sg13_combined_cmim_ontop_wo_rfcmim_pex G VDD VSS
+X0 a_554_348# G VSS VSS sg13_lv_nmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X1 dw_2768_2744# G VSS VSS sg13_hv_nmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X2 VSS dw_2768_2744# VSS schottky_nbl1 l=1.2u w=2.655u
+X3 a_136_2612# a_554_348# cap_cmim l=20u w=20u
+X4 VSS a_2910_379# dantenna l=0.78u w=0.78u
+X5 a_832_2612# dw_2768_2744# VSS rsil l=0.5u w=0.5u
+X6 a_136_2612# a_414_2612# VSS rhigh l=0.96u w=0.5u
+X7 VSS VSS a_2910_379# VSS sg13_hv_nmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.45u
+X8 a_2910_379# VDD VDD VDD sg13_hv_pmos ad=0.102p pd=1.28u as=0.102p ps=1.28u w=0.3u l=0.45u
+X9 a_414_2612# a_832_2612# VSS rppd l=0.5u w=0.5u
+X10 VSS VSS a_2910_379# VSS sg13_lv_nmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.45u
+X11 a_2910_379# VDD dpantenna l=0.78u w=0.78u
+X12 VDD G a_554_348# VDD sg13_lv_pmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+X13 a_2910_379# VDD VDD VDD sg13_lv_pmos ad=0.1005p pd=1.34u as=0.1005p ps=1.34u w=0.15u l=0.45u
+X14 VDD G dw_2768_2744# VDD sg13_hv_pmos ad=0.345p pd=2.69u as=0.345p ps=2.69u w=1u l=0.72u
+C0 a_554_348# VSS 15.24627f
+C1 a_2910_379# VSS 2.13713f
+C2 a_832_2612# VSS 0.3895f
+C3 a_414_2612# VSS 0.43066f
+C4 a_136_2612# VSS 0.06374f
+C5 dw_2768_2744# VSS 5.67862f
+.ends
+

@@ -1,0 +1,50 @@
+
+Circuit 1 cell cap_rfcmim and Circuit 2 cell cap_rfcmim are black boxes.
+Warning: Equate pins:  cell cap_rfcmim is a placeholder, treated as a black box.
+Warning: Equate pins:  cell cap_rfcmim is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: cap_rfcmim                      |Circuit 2: cap_rfcmim                      
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+(no matching pin)                          |3                                          
+(no matching pin)                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes cap_rfcmim and cap_rfcmim are equivalent.
+
+Cell sg13_rf_cmim (0) disconnected node: CX
+Subcircuit summary:
+Circuit 1: sg13_rf_cmim                    |Circuit 2: sg13_rf_cmim                    
+-------------------------------------------|-------------------------------------------
+cap_rfcmim (1)                             |cap_rfcmim (1)                             
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with port and property errors.
+  Parallelized instances disagree on pin connections.
+    Circuit1 instance cap_rfcmim:0 pin dummy_3 connections are no connects (1)
+    Circuit2 instance cap_rfcmim:C1 pin CX connections are tied together (0)
+cap_rfcmim:0 vs. cap_rfcmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+cap_rfcmim:0 vs. cap_rfcmim:C1:
+Property mm_ok in circuit2 has no matching property in circuit1
+cap_rfcmim:0 vs. cap_rfcmim:C1:
+Property wfeed in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_rf_cmim                    |Circuit 2: sg13_rf_cmim                    
+-------------------------------------------|-------------------------------------------
+C0                                         |C0                                         
+C1                                         |C1                                         
+(no pin, node is dummy_3)                  |CX                                         
+CX                                         |(no matching pin)                          
+---------------------------------------------------------------------------------------
+Cell pin lists for sg13_rf_cmim and sg13_rf_cmim altered to match.
+Device classes sg13_rf_cmim and sg13_rf_cmim are equivalent.
+
+Final result: Top level cell failed pin matching.
+
+The following cells had property errors:
+ sg13_rf_cmim

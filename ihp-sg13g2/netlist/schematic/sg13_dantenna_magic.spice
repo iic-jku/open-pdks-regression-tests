@@ -1,0 +1,5 @@
+** sch_path: /foss/designs/open-pdks-regression-tests/ihp-sg13g2/schematic/xschem/sg13_dantenna.sch
+.subckt sg13_dantenna C B
+*.PININFO C:B B:B
+XD1 B C dantenna l=0.78u w=0.78u
+.ends

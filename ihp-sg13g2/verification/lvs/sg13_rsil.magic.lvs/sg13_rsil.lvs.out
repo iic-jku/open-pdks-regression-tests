@@ -1,0 +1,44 @@
+
+Circuit 1 cell rsil and Circuit 2 cell rsil are black boxes.
+Warning: Equate pins:  cell rsil is a placeholder, treated as a black box.
+Warning: Equate pins:  cell rsil is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: rsil                            |Circuit 2: rsil                            
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes rsil and rsil are equivalent.
+
+Subcircuit summary:
+Circuit 1: sg13_rsil                       |Circuit 2: sg13_rsil                       
+-------------------------------------------|-------------------------------------------
+rsil (1)                                   |rsil (1)                                   
+Number of devices: 1                       |Number of devices: 1                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely with property errors.
+rsil:0 vs. rsil:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+rsil:0 vs. rsil:R1:
+Property mm_ok in circuit2 has no matching property in circuit1
+
+Subcircuit pins:
+Circuit 1: sg13_rsil                       |Circuit 2: sg13_rsil                       
+-------------------------------------------|-------------------------------------------
+R0                                         |R0                                         
+R1                                         |R1                                         
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes sg13_rsil and sg13_rsil are equivalent.
+
+Final result: Circuits match uniquely.
+Property errors were found.
+
+The following cells had property errors:
+ sg13_rsil

@@ -1,0 +1,5 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 23/07/2026 16:42
+
+.SUBCKT sg13_dpantenna A B
+D$1 A B dpantenna A=0.6084p P=3.12u m=1
+.ENDS sg13_dpantenna
