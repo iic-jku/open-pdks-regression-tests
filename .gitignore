@@ -2,9 +2,6 @@ runs/
 backups/
 sim_build/
 simulations/
-*/netlist/
-*/verification/
-*/layout/backups/
 __pycache__/
 *.vcd
 *.raw
