@@ -1,4 +1,4 @@
-# Open-PDK LVS / DRC / PEX Regression Tests for the ihp-sg13g2 Open-PDK
+# LVS / DRC / PEX Regression Tests for the ihp-sg13g2 Open-PDK
 
 > This Makefile-driven repository runs standalone LVS, DRC, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen.
 
