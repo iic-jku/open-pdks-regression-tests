@@ -1,4 +1,4 @@
-# Makefile for the IIC Open-PDK regression tests.
+# Makefile for the IICQC IHP Open-PDK LVS / DRC / PEX Regression Tests.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
 # Johannes Kepler University, Department for Integrated Circuits
@@ -16,7 +16,7 @@ CELL ?= sg13_lv_nmos_tap
 
 # PEX mode (1 = C-decoupled, 2 = C-coupled, 3 = full-RC)
 # Override with: make <target> EXT_MODE=<1|2|3>
-EXT_MODE ?= 3
+EXT_MODE ?= 1
 
 # full-RC extresist threshold in mOhm (sak-pex.sh -t, only used in EXT_MODE=3; default: 10000 = 10 Ohm)
 # Override with: make <target> THRESHOLD=<mOhm>
@@ -41,9 +41,10 @@ EV_PRECISION ?= 5
 # Folder structure
 XSCHEM_SCH_DIR  := schematic/xschem
 LAY_DIR         := layout
+SCRIPTS_DIR     := scripts
 NET_SCH_DIR     := netlist/schematic
 NET_LAY_DIR     := netlist/layout
-NET_PEX_DIR		:= netlist/pex
+NET_PEX_DIR     := netlist/pex
 LVS_RPT_DIR     := verification/lvs
 DRC_RPT_DIR     := verification/drc
 
@@ -56,13 +57,13 @@ help: ## Show this help message
 	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>]'
 	@echo ''
 	@echo 'Available targets:'
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
 	@echo ''
 	@echo 'CELL defaults to $(CELL). Override to verify subcells.'
-	@echo 'EXT_MODE defaults to 3 (full-RC). 1=C-decoupled, 2=C-coupled.'
+	@echo 'EXT_MODE defaults to 1 (C-decoupled). 2=C-coupled, 3=full-RC.'
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
-	@echo 'EV_PRECISION defaults to 5 significant digits for xschem ev function.'
+	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 .PHONY: help
 # ================================================================================================
 
@@ -161,26 +162,31 @@ magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make 
 	sak-pex.sh -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
+	@if [ -f $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym ]; then \
+		echo "Reordering pins in $(CELL)_magic_pex_$(EXT_MODE).spice to match $(CELL)_pex.sym..."; \
+		python3 $(SCRIPTS_DIR)/reorder_spice_pins.py $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice; \
+	else \
+		echo "No symbol $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym found, skipping pin reorder."; \
+	fi
 .PHONY: magic-pex
 # ================================================================================================
 
-regression: ## Run full verify (klayout-verify + magic-verify) for every .gds in $(LAY_DIR)/
-	rm -rf netlist
-	rm -rf verification
+# Regression Target
+regression: ## Run LVS, DRC and PEX regression for every .gds in $(LAY_DIR)/
 	@failed=""; \
 	for cell in $(LAYOUT_CELLS); do \
 		echo "[REGRESSION] Running verify for: $$cell"; \
 		cell_tools=""; \
 		$(MAKE) klayout-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-LVS"; \
 		$(MAKE) klayout-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-DRC"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_1"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_2"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3|| cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_3"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_1"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_2"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_3"; \
 		$(MAKE) magic-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-LVS"; \
 		$(MAKE) magic-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-DRC"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1|| cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_1"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2|| cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_2"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3|| cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_3"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_1"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_2"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_3"; \
 		if [ -n "$$cell_tools" ]; then \
 			echo "[REGRESSION] FAILED: $$cell ($$cell_tools)"; \
 			failed="$$failed $$cell($$cell_tools)"; \
