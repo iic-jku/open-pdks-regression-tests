@@ -181,46 +181,46 @@ The `regression` target auto-discovers every cell from the `.gds` files in `layo
 
 **Low-voltage MOS transistors**
 
-- `sg13_lv_nmos_tap`
-- `sg13_lv_pmos_tap`
-- `sg13_lv_nmos_ring_dev`
-- `sg13_lv_nmos_ring_pcell`
-- `sg13_lv_pmos_ring_dev`
-- `sg13_lv_pmos_ring_pcell`
-- `sg13_lv_rf_nmos`
-- `sg13_lv_rf_pmos`
+- `sg13_lv_nmos_tap` (PASS)
+- `sg13_lv_pmos_tap` (PASS)
+- `sg13_lv_nmos_ring_dev` (PASS)
+- `sg13_lv_nmos_ring_pcell` (PASS)
+- `sg13_lv_pmos_ring_dev` (PASS)
+- `sg13_lv_pmos_ring_pcell` (PASS)
+- `sg13_lv_rf_nmos` (PASS)
+- `sg13_lv_rf_pmos` (PASS)
 
 **High-voltage MOS transistors**
 
-- `sg13_hv_nmos_tap`
-- `sg13_hv_pmos_tap`
-- `sg13_hv_nmos_ring_dev`
-- `sg13_hv_nmos_ring_pcell`
-- `sg13_hv_pmos_ring_dev`
-- `sg13_hv_pmos_ring_pcell`
-- `sg13_hv_rf_nmos`
-- `sg13_hv_rf_pmos`
+- `sg13_hv_nmos_tap` (PASS)
+- `sg13_hv_pmos_tap` (PASS)
+- `sg13_hv_nmos_ring_dev` (PASS)
+- `sg13_hv_nmos_ring_pcell` (PASS)
+- `sg13_hv_pmos_ring_dev` (PASS)
+- `sg13_hv_pmos_ring_pcell` (PASS)
+- `sg13_hv_rf_nmos` (PASS)
+- `sg13_hv_rf_pmos` (PASS)
 
 **Capacitors**
 
-- `sg13_cmim`
-- `sg13_rf_cmim`
+- `sg13_cmim` (PASS)
+- `sg13_rf_cmim` (FAILED: Magic+Netgen LVS)
 
 **Resistors**
 
-- `sg13_rhigh`
-- `sg13_rppd`
-- `sg13_rsil`
+- `sg13_rhigh` (PASS)
+- `sg13_rppd` (PASS)
+- `sg13_rsil` (PASS)
 
 **Diodes & antennas**
 
-- `sg13_dantenna`
-- `sg13_dpantenna`
-- `sg13_schottky_nbl1`
+- `sg13_dantenna` (PASS)
+- `sg13_dpantenna` (PASS)
+- `sg13_schottky_nbl1` (PASS)
 
 **Combined test cells**
 
-- `sg13_combined`
-- `sg13_combined_wo_rfcmim`
-- `sg13_combined_cmim_ontop`
-- `sg13_combined_cmim_ontop_wo_rfcmim`
+- `sg13_combined` (FAILED: Magic+Netgen LVS)
+- `sg13_combined_wo_rfcmim` (PASS)
+- `sg13_combined_cmim_ontop` (FAILED: Magic+Netgen LVS)
+- `sg13_combined_cmim_ontop_wo_rfcmim` (PASS)
