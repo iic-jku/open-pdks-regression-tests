@@ -1,6 +1,6 @@
 # LVS / DRC / PEX Regression Tests for the ihp-sg13g2 Open-PDK
 
-> This Makefile-driven repository runs standalone LVS, DRC, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen.
+This Makefile-driven repository runs standalone LVS, DRC, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen. This regression test is always executed before a new release for the IIC-OSIC-TOOLS is released. The test script can be found [here](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_lvs_drc_pex_sg13g2.sh).
 
 ## Show Available Targets
 
