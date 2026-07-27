@@ -56,7 +56,7 @@ LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 #                <cell>:<step>     tolerate only that step; list one entry per tolerated step
 # Step names:    klayout-lvs klayout-drc klayout-pex1..3 magic-lvs magic-drc magic-pex1..3
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
-KNOWN_FAILS ?= sg13_combined:magic-lvs sg13_rf_cmim sg13_combined_cmim_ontop
+KNOWN_FAILS ?= sg13_combined:magic-lvs sg13_rf_cmim:magic-lvs sg13_combined_cmim_ontop:magic-lvs
 
 
 # Help Target
