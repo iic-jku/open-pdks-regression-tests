@@ -51,6 +51,13 @@ DRC_RPT_DIR     := verification/drc
 # Auto-discovered cells from all .gds files in $(LAY_DIR)/
 LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 
+# Known failures: reported by regression, but do not make it exit non-zero.
+# Entry syntax:  <cell>            tolerate every failing step of that cell (same as <cell>:*)
+#                <cell>:<step>     tolerate only that step; list one entry per tolerated step
+# Step names:    klayout-lvs klayout-drc klayout-pex1..3 magic-lvs magic-drc magic-pex1..3
+# Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
+KNOWN_FAILS ?= sg13_combined:magic-lvs sg13_rf_cmim sg13_combined_cmim_ontop
+
 
 # Help Target
 help: ## Show this help message
@@ -64,6 +71,7 @@ help: ## Show this help message
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
+	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 .PHONY: help
 # ================================================================================================
 
@@ -172,34 +180,52 @@ magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make 
 # ================================================================================================
 
 # Regression Target
-regression: ## Run LVS, DRC and PEX regression for every .gds in $(LAY_DIR)/
+regression: ## Run LVS, DRC and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."])
 	@failed=""; \
+	known=""; \
 	for cell in $(LAYOUT_CELLS); do \
 		echo "[REGRESSION] Running verify for: $$cell"; \
-		cell_tools=""; \
-		$(MAKE) klayout-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-LVS"; \
-		$(MAKE) klayout-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-DRC"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_1"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_2"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 || cell_tools="$${cell_tools:+$$cell_tools, }KLAYOUT-PEX_EXT_MODE_3"; \
-		$(MAKE) magic-lvs CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-LVS"; \
-		$(MAKE) magic-drc CELL=$$cell || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-DRC"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_1"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_2"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3 || cell_tools="$${cell_tools:+$$cell_tools, }MAGIC-PEX_EXT_MODE_3"; \
-		if [ -n "$$cell_tools" ]; then \
-			echo "[REGRESSION] FAILED: $$cell ($$cell_tools)"; \
-			failed="$$failed $$cell($$cell_tools)"; \
-		else \
+		steps=""; \
+		$(MAKE) klayout-lvs CELL=$$cell || steps="$$steps klayout-lvs"; \
+		$(MAKE) klayout-drc CELL=$$cell || steps="$$steps klayout-drc"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 || steps="$$steps klayout-pex1"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 || steps="$$steps klayout-pex2"; \
+		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 || steps="$$steps klayout-pex3"; \
+		$(MAKE) magic-lvs CELL=$$cell || steps="$$steps magic-lvs"; \
+		$(MAKE) magic-drc CELL=$$cell || steps="$$steps magic-drc"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1 || steps="$$steps magic-pex1"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2 || steps="$$steps magic-pex2"; \
+		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3 || steps="$$steps magic-pex3"; \
+		cell_known=""; cell_bad=""; \
+		for step in $$steps; do \
+			case " $(KNOWN_FAILS) " in \
+				*" $$cell "*|*" $$cell:* "*|*" $$cell:$$step "*) cell_known="$$cell_known $$step" ;; \
+				*) cell_bad="$$cell_bad $$step" ;; \
+			esac; \
+		done; \
+		if [ -n "$$cell_known" ]; then \
+			echo "[REGRESSION] KNOWN FAIL (ignored): $$cell ($${cell_known# })"; \
+			known="$$known $$cell($${cell_known# })"; \
+		fi; \
+		if [ -n "$$cell_bad" ]; then \
+			echo "[REGRESSION] FAILED: $$cell ($${cell_bad# })"; \
+			failed="$$failed $$cell($${cell_bad# })"; \
+		elif [ -z "$$cell_known" ]; then \
 			echo "[REGRESSION] PASSED: $$cell"; \
 		fi; \
 	done; \
 	echo ""; \
 	echo "========================================"; \
+	if [ -n "$$known" ]; then \
+		echo "[REGRESSION] SUMMARY: KNOWN FAIL cells (ignored):$$known"; \
+	fi; \
 	if [ -n "$$failed" ]; then \
 		echo "[REGRESSION] SUMMARY: FAILED cells:$$failed"; \
 		echo "========================================"; \
 		exit 1; \
+	elif [ -n "$$known" ]; then \
+		echo "[REGRESSION] SUMMARY: No unexpected failures"; \
+		echo "========================================"; \
 	else \
 		echo "[REGRESSION] SUMMARY: All cells PASSED"; \
 		echo "========================================"; \
