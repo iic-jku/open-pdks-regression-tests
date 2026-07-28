@@ -1,6 +1,6 @@
-# LVS / DRC / PEX Regression Tests for the ihp-sg13g2 Open-PDK
+# DRC / LVS / PEX Regression Tests for the ihp-sg13g2 Open-PDK
 
-This Makefile-driven repository runs standalone LVS, DRC, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen. This regression test is always executed before a new release for the IIC-OSIC-TOOLS is released. The test script can be found [here](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_lvs_drc_pex_sg13g2.sh).
+This Makefile-driven repository runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen. This regression test is always executed before a new release for the IIC-OSIC-TOOLS is released. The test script can be found [here](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_lvs_drc_pex_sg13g2.sh).
 
 ## Show Available Targets
 
@@ -9,6 +9,41 @@ The default Make target is `help`, so running `make` prints usage and all availa
 ```sh
 make
 make help
+```
+
+## Design Rule Check (DRC)
+
+Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh` and write their reports into per-cell run folders: `verification/drc/<CELL>.magic.drc/` (Magic) and `verification/drc/<CELL>.klayout.drc/` (KLayout, `.lyrdb`). The run folders are wiped at the start of each run, so they always reflect the latest run only.
+
+The `DRC_LEVEL` parameter selects the KLayout DRC level (`sak-drc.sh -l`). It is ignored by `magic-drc`, since Magic has no selectable rule decks and always runs the full rule set compiled into the PDK's Magic tech file:
+
+- `precheck` = core FEOL + BEOL manufacturing rules only (fast iteration)
+- `macro` = block-in-isolation sign-off: `precheck` plus off-grid, zero-area, and pin/label checks (default)
+- `regular` = full-chip sign-off: all checks, including density and antenna
+
+| Check | `precheck` | `macro` _(default)_ | `regular` |
+| --- | :---: | :---: | :---: |
+| FEOL + BEOL core rules | ✓ | ✓ | ✓ |
+| Off-grid / angle | – | ✓ | ✓ |
+| Zero-area / geometry | – | ✓ | ✓ |
+| Pin / label | – | ✓ | ✓ |
+| Recommended / extra rules | – | – | ✓ |
+| Density (chip-level fill) | – | – | ✓ |
+| Antenna | – | – | ✓ |
+
+**KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
+
+```sh
+make klayout-drc
+make klayout-drc CELL=sg13_lv_nmos_tap
+make klayout-drc CELL=sg13_lv_nmos_tap DRC_LEVEL=regular
+```
+
+**Magic DRC** runs a Magic DRC with all subcells flattened (`sak-drc.sh -f "*"`):
+
+```sh
+make magic-drc
+make magic-drc CELL=sg13_lv_nmos_tap
 ```
 
 ## Export Schematic Netlist for LVS
@@ -51,41 +86,6 @@ make klayout-lvs CELL=sg13_lv_nmos_tap
 ```sh
 make magic-lvs
 make magic-lvs CELL=sg13_lv_nmos_tap
-```
-
-## Design Rule Check (DRC)
-
-Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh` and write their reports into per-cell run folders: `verification/drc/<CELL>.magic.drc/` (Magic) and `verification/drc/<CELL>.klayout.drc/` (KLayout, `.lyrdb`). The run folders are wiped at the start of each run, so they always reflect the latest run only.
-
-The `DRC_LEVEL` parameter selects the KLayout DRC level (`sak-drc.sh -l`). It is ignored by `magic-drc`, since Magic has no selectable rule decks and always runs the full rule set compiled into the PDK's Magic tech file:
-
-- `precheck` = core FEOL + BEOL manufacturing rules only (fast iteration)
-- `macro` = block-in-isolation sign-off: `precheck` plus off-grid, zero-area, and pin/label checks (default)
-- `regular` = full-chip sign-off: all checks, including density and antenna
-
-| Check | `precheck` | `macro` _(default)_ | `regular` |
-| --- | :---: | :---: | :---: |
-| FEOL + BEOL core rules | ✓ | ✓ | ✓ |
-| Off-grid / angle | – | ✓ | ✓ |
-| Zero-area / geometry | – | ✓ | ✓ |
-| Pin / label | – | ✓ | ✓ |
-| Recommended / extra rules | – | – | ✓ |
-| Density (chip-level fill) | – | – | ✓ |
-| Antenna | – | – | ✓ |
-
-**KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
-
-```sh
-make klayout-drc
-make klayout-drc CELL=sg13_lv_nmos_tap
-make klayout-drc CELL=sg13_lv_nmos_tap DRC_LEVEL=regular
-```
-
-**Magic DRC** runs a Magic DRC with all subcells flattened (`sak-drc.sh -f "*"`):
-
-```sh
-make magic-drc
-make magic-drc CELL=sg13_lv_nmos_tap
 ```
 
 ## Parasitic Extraction (PEX)
@@ -136,7 +136,7 @@ make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDEL
 
 ## Regression
 
-The `regression` target is this repository's end-to-end smoke test for the [IIC-OSIC-TOOLS](https://github.com/iic-jku/iic-osic-tools) environment. It runs the full LVS / DRC / PEX toolchain over **every** cell in `layout/`, so a single command exercises both the KLayout and the Magic + Netgen flows across all supported devices.
+The `regression` target is this repository's end-to-end smoke test for the [IIC-OSIC-TOOLS](https://github.com/iic-jku/iic-osic-tools) environment. It runs the full DRC / LVS / PEX toolchain over **every** cell in `layout/`, so a single command exercises both the KLayout and the Magic + Netgen flows across all supported devices.
 
 ```sh
 make regression
@@ -144,10 +144,10 @@ make regression
 
 The target auto-discovers every cell from the `.gds` files in `layout/`, then, for each cell, runs the individual verification targets and records which ones fail:
 
-- `klayout-lvs`
 - `klayout-drc`
-- `magic-lvs`
+- `klayout-lvs`
 - `magic-drc`
+- `magic-lvs`
 - `magic-pex EXT_MODE=1` (C-decoupled)
 - `magic-pex EXT_MODE=2` (C-coupled)
 - `magic-pex EXT_MODE=3` (full-RC)
@@ -169,10 +169,10 @@ The following tools and flows are checked:
 
 | Tool / flow | Where it is exercised |
 | --- | --- |
-| KLayout LVS (`sak-lvs.sh -k` → `run_lvs.py`) | `klayout-lvs` |
 | KLayout DRC (`sak-drc.sh -k`) | `klayout-drc` |
-| Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
+| KLayout LVS (`sak-lvs.sh -k` → `run_lvs.py`) | `klayout-lvs` |
 | Magic DRC (`sak-drc.sh -m`) | `magic-drc` |
+| Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
 | Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC) | `magic-pex EXT_MODE=1/2/3` |
 
 ## Supported Cells / Files

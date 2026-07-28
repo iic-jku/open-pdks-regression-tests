@@ -1,4 +1,4 @@
-# Open-PDKs Regression Tests for LVS / DRC / PEX
+# Open-PDKs Regression Tests for DRC / LVS / PEX
 
 (c) 2026 Julian Schwarz and Simon Dorrer
 
@@ -9,4 +9,4 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
 
 ## Description
 
-Files for LVS / DRC / PEX regression tests for the Open-PDKs sky130A, gf180mcuD, and ihp-sg13g2.
+Files for DRC / LVS / PEX regression tests for the Open-PDKs sky130A, gf180mcuD, and ihp-sg13g2.

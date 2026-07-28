@@ -1,4 +1,4 @@
-# Makefile for the IICQC IHP Open-PDK LVS / DRC / PEX Regression Tests.
+# Makefile for the IICQC IHP Open-PDK DRC / LVS / PEX Regression Tests.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
 # Johannes Kepler University, Department for Integrated Circuits
@@ -54,7 +54,7 @@ LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 # Known failures: reported by regression, but do not make it exit non-zero.
 # Entry syntax:  <cell>            tolerate every failing step of that cell (same as <cell>:*)
 #                <cell>:<step>     tolerate only that step; list one entry per tolerated step
-# Step names:    klayout-lvs klayout-drc klayout-pex1..3 magic-lvs magic-drc magic-pex1..3
+# Step names:    klayout-drc klayout-lvs klayout-pex1..3 magic-drc magic-lvs magic-pex1..3
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
 KNOWN_FAILS ?= sg13_combined:magic-lvs \
 			sg13_rf_cmim:magic-lvs \
@@ -78,6 +78,18 @@ help: ## Show this help message
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 .PHONY: help
+# ================================================================================================
+
+# DRC Targets
+klayout-drc: ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])
+	mkdir -p $(DRC_RPT_DIR)
+	sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
+.PHONY: klayout-drc
+
+magic-drc: ## Run Magic DRC of the CELL cell (usage: make magic-drc [CELL=<cellname>])
+	mkdir -p $(DRC_RPT_DIR)
+	sak-drc.sh -d -m -f "*" -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
+.PHONY: magic-drc
 # ================================================================================================
 
 # LVS Targets
@@ -124,18 +136,6 @@ magic-lvs: ## Run Magic + Netgen LVS of the CELL cell (usage: make magic-lvs [CE
 	sak-lvs.sh -d -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_magic.spice -l $(LAY_DIR)/$(CELL).gds -c $(CELL)
 	mv $(LVS_RPT_DIR)/$(CELL).magic.lvs/$(CELL).ext.spc $(NET_LAY_DIR)/$(CELL)_magic.ext.spc
 .PHONY: magic-lvs
-# ================================================================================================
-
-# DRC Targets
-klayout-drc: ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])
-	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
-.PHONY: klayout-drc
-
-magic-drc: ## Run Magic DRC of the CELL cell (usage: make magic-drc [CELL=<cellname>])
-	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -m -f "*" -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
-.PHONY: magic-drc
 # ================================================================================================
 
 # PEX Targets
@@ -185,19 +185,19 @@ magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make 
 # ================================================================================================
 
 # Regression Target
-regression: ## Run LVS, DRC and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."])
+regression: ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."])
 	@failed=""; \
 	known=""; \
 	for cell in $(LAYOUT_CELLS); do \
 		echo "[REGRESSION] Running verify for: $$cell"; \
 		steps=""; \
-		$(MAKE) klayout-lvs CELL=$$cell || steps="$$steps klayout-lvs"; \
 		$(MAKE) klayout-drc CELL=$$cell || steps="$$steps klayout-drc"; \
+		$(MAKE) klayout-lvs CELL=$$cell || steps="$$steps klayout-lvs"; \
 		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 || steps="$$steps klayout-pex1"; \
 		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 || steps="$$steps klayout-pex2"; \
 		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 || steps="$$steps klayout-pex3"; \
-		$(MAKE) magic-lvs CELL=$$cell || steps="$$steps magic-lvs"; \
 		$(MAKE) magic-drc CELL=$$cell || steps="$$steps magic-drc"; \
+		$(MAKE) magic-lvs CELL=$$cell || steps="$$steps magic-lvs"; \
 		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1 || steps="$$steps magic-pex1"; \
 		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2 || steps="$$steps magic-pex2"; \
 		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3 || steps="$$steps magic-pex3"; \
