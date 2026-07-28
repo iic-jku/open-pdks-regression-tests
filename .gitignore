@@ -3,6 +3,8 @@ lvs_run_*
 drc_*.tcl
 ext_*.tcl
 pex_*.tcl
+*/netlist
+*/verification
 *.vcd
 *.raw
 *.log
