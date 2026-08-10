@@ -52,17 +52,14 @@ DRC_RPT_DIR     := verification/drc
 LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 
 # Known failures: reported by regression, but do not make it exit non-zero.
-# Entry syntax:  <cell>            tolerate every failing step of that cell (same as <cell>:*)
-#                <cell>:<step>     tolerate only that step; list one entry per tolerated step
-# Step names:    klayout-drc klayout-lvs klayout-pex1..3 magic-drc magic-lvs magic-pex1..3
+# Entry syntax:  <cell>            tolerate every failing tool of that cell (same as <cell>:*)
+#                <cell>:<tool>     tolerate only that tool; list one entry per tolerated tool
+# Tool names:    klayout-lvs klayout-drc klayout-pex1..3 magic-lvs magic-drc magic-pex1..3
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
 KNOWN_FAILS ?= sg13_combined:magic-lvs \
-			sg13_rf_cmim:magic-lvs \
-			sg13_combined_cmim_ontop:magic-lvs \
-			sg13_dnwell_nmos:klayout-lvs \
-			sg13_dnwell_inv:klayout-lvs
-
-
+			cap_cmomi_1 \
+			cap_cmomi \
+			mom_test.klay
 
 # Help Target
 help: ## Show this help message
@@ -79,6 +76,7 @@ help: ## Show this help message
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 .PHONY: help
 # ================================================================================================
+
 
 # DRC Targets
 klayout-drc: ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])

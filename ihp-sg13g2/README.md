@@ -178,6 +178,7 @@ The following tools and flows are checked:
 ## Supported Cells / Files
 
 The `regression` target auto-discovers every cell from the `.gds` files in `layout/`. Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass any of these names via `CELL=<cellname>` to run a single target on one cell.
+A regression over a selected list of cells is also possible with `LAYOUT_CELLS="Cell1 Cell2 ... CellN"`, eg. by calling `make regression LAYOUT_CELLS="Cell1 Cell2 ... CellN"`
 
 **Low-voltage MOS transistors**
 
