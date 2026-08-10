@@ -21,8 +21,8 @@ N 720 -220 720 -200 {lab=S}
 C {devices/title.sym} 160 -30 0 0 {name=l5 author="Julian Schwarz 2026"}
 C {sg13g2_pr/isolbox.sym} 420 -300 0 0 {name=D1
 model=isolbox
-l=10.0u
-w=10.0u
+l=8.0u
+w=8.0u
 spiceprefix=X
 }
 C {iopin.sym} 420 -200 1 0 {name=p2 lab=VSS}

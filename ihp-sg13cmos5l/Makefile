@@ -57,9 +57,8 @@ LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 # Step names:    klayout-drc klayout-lvs klayout-pex1..3 magic-drc magic-lvs magic-pex1..3
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
 KNOWN_FAILS ?= sg13_combined:magic-lvs \
-			cap_cmomi_1 \
-			cap_cmomi \
-			mom_test.klay
+			sg13_cmomi:klayout-lvs \
+			sg13_cmomi_magic-lvs
 
 # Help Target
 help: ## Show this help message

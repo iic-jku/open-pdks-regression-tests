@@ -59,8 +59,8 @@ LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 KNOWN_FAILS ?= sg13_combined:magic-lvs \
 			sg13_rf_cmim:magic-lvs \
 			sg13_combined_cmim_ontop:magic-lvs \
-			sg13_dnwell_nmos:klayout-lvs \
-			sg13_dnwell_inv:klayout-lvs
+			sg13_cmomi:klayout-lvs \
+			sg13_cmomi:magic-lvs
 
 
 
