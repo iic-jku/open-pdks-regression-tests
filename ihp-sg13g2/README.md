@@ -206,6 +206,7 @@ A regression over a selected list of cells is also possible with `LAYOUT_CELLS="
 
 - `sg13_cmim` (PASS)
 - `sg13_rf_cmim` (FAILED: Magic+Netgen LVS)
+- `sg13_cmomi` (FAILED: Magic+Netgen LVS)
 
 **Resistors**
 

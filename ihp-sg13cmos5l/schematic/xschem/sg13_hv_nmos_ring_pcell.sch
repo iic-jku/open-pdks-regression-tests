@@ -24,7 +24,7 @@ m=1
 model=sg13_hv_nmos
 spiceprefix=X
 }
-C {sg13g2_pr/ptap1_ring.sym} 480 -210 2 1 {name=R1
+C {sg13cmos5l_pr/ptap1_ring.sym} 480 -210 2 1 {name=R1
 model=ptap1
 spiceprefix=X
 w=3.67e-6

@@ -205,14 +205,14 @@ b=0
 m=1
 value="expr_eng(  ( 1.6e-4 / @w + 1360.0 * ( (@b + 1)* @l + ( 1.081*( @w - 0.04e-6 ) + 0.18e-6 )*@b ) / ( @w - 0.04e-6 ) ) / @m  )"
 }
-C {sg13g2_pr/ptap1_ring.sym} 1030 50 2 0 {name=R4
+C {sg13cmos5l_pr/ptap1_ring.sym} 1030 50 2 0 {name=R4
 model=ptap1
 spiceprefix=X
 w=3e-6
 l=4e-6
 rw=0.3e-6
 lvs_ignore=short}
-C {sg13g2_pr/ntap1_ring.sym} 1030 -270 0 1 {name=R5
+C {sg13cmos5l_pr/ntap1_ring.sym} 1030 -270 0 1 {name=R5
 model=ntap1
 spiceprefix=X
 w=4.5e-6

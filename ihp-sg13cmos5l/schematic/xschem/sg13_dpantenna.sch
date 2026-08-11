@@ -17,7 +17,7 @@ l=0.78u
 w=0.78u
 spiceprefix=X
 }
-C {sg13g2_pr/ntap1_ring.sym} 400 -310 0 0 {name=R1
+C {sg13cmos5l_pr/ntap1_ring.sym} 400 -310 0 0 {name=R1
 model=ntap1
 spiceprefix=X
 w=3.14e-6

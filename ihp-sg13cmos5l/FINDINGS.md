@@ -1,4 +1,4 @@
 # Findings and work-arounds for the ihp-sg13cmos5l pdk
-guard ring does not work, to fix: add 'guard_ring_code', line to the __init__.py file in the pycell folder of the pdk
 DigiSub is not in this pdk :´( -> tests can only complete with disable tap extraction enabled
 No NBULAY so be careful when copy pasting g2 layouts (layer invisible but exists, drc flags it as well as lvs)
+cap_cmomi pins have to lie outside of the bus connection: ports are derived as metal_pin AND Recog.mom and the extractor wants exactly 2, but the marker covers the busses too, so a pin placed on a bus adds to the two the PCell already draws. At 4 the device is dropped ("expected exactly 2 port regions under the Recog.mom marker, found 4") and the netlist comes out empty. Fix: metal stub out past the marker, pin and label on the stub (moving just the label does nothing, the pin polygon is what counts). Extractor lives in the g2 deck (custom_mom_extractor.lvs), so this bites both PDKs.

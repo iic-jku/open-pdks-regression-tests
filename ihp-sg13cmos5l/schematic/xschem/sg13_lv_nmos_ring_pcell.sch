@@ -24,7 +24,7 @@ C {iopin.sym} 380 -300 3 0 {name=p1 lab=D}
 C {iopin.sym} 380 -200 1 0 {name=p2 lab=S}
 C {iopin.sym} 320 -250 2 0 {name=p3 lab=G}
 C {iopin.sym} 480 -160 1 0 {name=p4 lab=B}
-C {sg13g2_pr/ptap1_ring.sym} 480 -210 2 1 {name=R1
+C {sg13cmos5l_pr/ptap1_ring.sym} 480 -210 2 1 {name=R2
 model=ptap1
 spiceprefix=X
 w=2.87e-6
