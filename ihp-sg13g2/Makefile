@@ -51,10 +51,21 @@ DRC_RPT_DIR     := verification/drc
 # Auto-discovered cells from all .gds files in $(LAY_DIR)/
 LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 
+# Steps executed by regression for every cell, in this order.
+# Each name must have a matching branch in the case statement of the regression target.
+# Override with: make regression REGRESSION_STEPS="<step> <step> ..."
+# Currently disabled: klayout-pex1 klayout-pex2 klayout-pex3
+REGRESSION_STEPS ?= klayout-drc klayout-lvs \
+			magic-drc magic-lvs \
+			magic-pex1 magic-pex2 magic-pex3
+
 # Known failures: reported by regression, but do not make it exit non-zero.
 # Entry syntax:  <cell>            tolerate every failing step of that cell (same as <cell>:*)
 #                <cell>:<step>     tolerate only that step; list one entry per tolerated step
-# Step names:    klayout-drc klayout-lvs klayout-pex1..3 magic-drc magic-lvs magic-pex1..3
+# Step names:    see REGRESSION_STEPS above
+# A step listed here that PASSES is an unexpected pass (XPASS) and fails the
+# regression: the entry has to be removed from KNOWN_FAILS. For a whole-cell
+# entry (<cell> / <cell>:*) this is the case once every step of that cell passes.
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
 KNOWN_FAILS ?= sg13_combined:magic-lvs \
 			sg13_rf_cmim:magic-lvs \
@@ -75,7 +86,9 @@ help: ## Show this help message
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
+	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
+	@echo 'A KNOWN_FAILS step that passes is reported as UNEXPECTED PASS and fails the regression.'
 .PHONY: help
 # ================================================================================================
 
@@ -185,36 +198,72 @@ magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make 
 
 # Regression Target
 regression: ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."])
-	@failed=""; \
+	@set -f; \
+	for kf in $(KNOWN_FAILS); do \
+		kf_cell="$${kf%%:*}"; kf_step="$${kf#*:}"; \
+		[ "$$kf_step" = "$$kf" ] && kf_step="*"; \
+		case " $(LAYOUT_CELLS) " in \
+			*" $$kf_cell "*) ;; \
+			*) echo "[REGRESSION] WARNING: stale KNOWN_FAILS entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
+		esac; \
+		[ "$$kf_step" = "*" ] && continue; \
+		case " $(REGRESSION_STEPS) " in \
+			*" $$kf_step "*) ;; \
+			*) echo "[REGRESSION] WARNING: stale KNOWN_FAILS entry '$$kf': step '$$kf_step' is not in REGRESSION_STEPS" ;; \
+		esac; \
+	done
+	@set -f; \
+	failed=""; \
 	known=""; \
+	xpassed=""; \
 	for cell in $(LAYOUT_CELLS); do \
 		echo "[REGRESSION] Running verify for: $$cell"; \
-		steps=""; \
-		$(MAKE) klayout-drc CELL=$$cell || steps="$$steps klayout-drc"; \
-		$(MAKE) klayout-lvs CELL=$$cell || steps="$$steps klayout-lvs"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 || steps="$$steps klayout-pex1"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 || steps="$$steps klayout-pex2"; \
-		#$(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 || steps="$$steps klayout-pex3"; \
-		$(MAKE) magic-drc CELL=$$cell || steps="$$steps magic-drc"; \
-		$(MAKE) magic-lvs CELL=$$cell || steps="$$steps magic-lvs"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=1 || steps="$$steps magic-pex1"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=2 || steps="$$steps magic-pex2"; \
-		$(MAKE) magic-pex CELL=$$cell EXT_MODE=3 || steps="$$steps magic-pex3"; \
-		cell_known=""; cell_bad=""; \
-		for step in $$steps; do \
+		bad_steps=""; ok_steps=""; \
+		for step in $(REGRESSION_STEPS); do \
+			case $$step in \
+				klayout-drc)  $(MAKE) klayout-drc CELL=$$cell ;; \
+				klayout-lvs)  $(MAKE) klayout-lvs CELL=$$cell ;; \
+				klayout-pex1) $(MAKE) klayout-pex CELL=$$cell EXT_MODE=1 ;; \
+				klayout-pex2) $(MAKE) klayout-pex CELL=$$cell EXT_MODE=2 ;; \
+				klayout-pex3) $(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 ;; \
+				magic-drc)    $(MAKE) magic-drc CELL=$$cell ;; \
+				magic-lvs)    $(MAKE) magic-lvs CELL=$$cell ;; \
+				magic-pex1)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=1 ;; \
+				magic-pex2)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=2 ;; \
+				magic-pex3)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=3 ;; \
+				*) echo "[REGRESSION] ERROR: unknown step '$$step' in REGRESSION_STEPS"; exit 1 ;; \
+			esac; \
+			if [ $$? -eq 0 ]; then ok_steps="$$ok_steps $$step"; else bad_steps="$$bad_steps $$step"; fi; \
+		done; \
+		cell_known=""; cell_bad=""; cell_xpass=""; \
+		for step in $$bad_steps; do \
 			case " $(KNOWN_FAILS) " in \
 				*" $$cell "*|*" $$cell:* "*|*" $$cell:$$step "*) cell_known="$$cell_known $$step" ;; \
 				*) cell_bad="$$cell_bad $$step" ;; \
 			esac; \
 		done; \
+		for step in $$ok_steps; do \
+			case " $(KNOWN_FAILS) " in \
+				*" $$cell:$$step "*) cell_xpass="$$cell_xpass $$step" ;; \
+			esac; \
+		done; \
+		if [ -z "$$bad_steps" ]; then \
+			case " $(KNOWN_FAILS) " in \
+				*" $$cell "*|*" $$cell:* "*) cell_xpass="$$cell_xpass all-steps" ;; \
+			esac; \
+		fi; \
 		if [ -n "$$cell_known" ]; then \
 			echo "[REGRESSION] KNOWN FAIL (ignored): $$cell ($${cell_known# })"; \
 			known="$$known $$cell($${cell_known# })"; \
 		fi; \
+		if [ -n "$$cell_xpass" ]; then \
+			echo "[REGRESSION] UNEXPECTED PASS: $$cell ($${cell_xpass# }) - listed in KNOWN_FAILS but passed, remove the entry"; \
+			xpassed="$$xpassed $$cell($${cell_xpass# })"; \
+		fi; \
 		if [ -n "$$cell_bad" ]; then \
 			echo "[REGRESSION] FAILED: $$cell ($${cell_bad# })"; \
 			failed="$$failed $$cell($${cell_bad# })"; \
-		elif [ -z "$$cell_known" ]; then \
+		elif [ -z "$$cell_known" ] && [ -z "$$cell_xpass" ]; then \
 			echo "[REGRESSION] PASSED: $$cell"; \
 		fi; \
 	done; \
@@ -223,8 +272,13 @@ regression: ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (us
 	if [ -n "$$known" ]; then \
 		echo "[REGRESSION] SUMMARY: KNOWN FAIL cells (ignored):$$known"; \
 	fi; \
+	if [ -n "$$xpassed" ]; then \
+		echo "[REGRESSION] SUMMARY: UNEXPECTED PASS cells:$$xpassed"; \
+	fi; \
 	if [ -n "$$failed" ]; then \
 		echo "[REGRESSION] SUMMARY: FAILED cells:$$failed"; \
+	fi; \
+	if [ -n "$$failed" ] || [ -n "$$xpassed" ]; then \
 		echo "========================================"; \
 		exit 1; \
 	elif [ -n "$$known" ]; then \
