@@ -41,7 +41,6 @@ EV_PRECISION ?= 5
 # Folder structure
 XSCHEM_SCH_DIR  := schematic/xschem
 LAY_DIR         := layout
-SCRIPTS_DIR     := scripts
 NET_SCH_DIR     := netlist/schematic
 NET_LAY_DIR     := netlist/layout
 NET_PEX_DIR     := netlist/pex
@@ -174,12 +173,6 @@ klayout-pex: ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make
 	sed -i 's/$(CELL)/$(CELL)_pex/g' $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
 	rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL)
 	rm -f $(CELL).nodes $(CELL).sim
-	@if [ -f $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym ]; then \
-		echo "Reordering pins in $(CELL)_klayout_pex_$(EXT_MODE).spice to match $(CELL)_pex.sym..."; \
-		python3 $(SCRIPTS_DIR)/reorder_spice_pins.py $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice; \
-	else \
-		echo "No symbol $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym found, skipping pin reorder."; \
-	fi
 .PHONY: klayout-pex
 
 magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make magic-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>])
@@ -187,12 +180,6 @@ magic-pex: ## Run Parasitic Extraction with Magic of the CELL cell (usage: make 
 	sak-pex.sh -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
-	@if [ -f $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym ]; then \
-		echo "Reordering pins in $(CELL)_magic_pex_$(EXT_MODE).spice to match $(CELL)_pex.sym..."; \
-		python3 $(SCRIPTS_DIR)/reorder_spice_pins.py $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice; \
-	else \
-		echo "No symbol $(XSCHEM_SCH_DIR)/$(CELL)_pex.sym found, skipping pin reorder."; \
-	fi
 .PHONY: magic-pex
 # ================================================================================================
 
