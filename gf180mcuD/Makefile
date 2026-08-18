@@ -20,9 +20,6 @@ CELL ?= gf180_nfet_03v3
 # like the IHP wrappers do (libs.tech/klayout/tech/lvs/run_lvs.py:347).
 KLAYOUT_EXT_CIR = $(CELL).cir
 
-# Magic based steps are not enabled for this design yet.
-REGRESSION_STEPS ?= klayout-drc klayout-lvs
-
 # Known failures: tolerated by regression. See ../common.mk for the entry syntax.
 # A listed step that passes is reported as UNEXPECTED PASS and fails the regression.
 KNOWN_FAILS ?=
