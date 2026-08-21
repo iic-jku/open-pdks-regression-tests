@@ -66,10 +66,7 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 # regression: the entry has to be removed from KNOWN_FAILS. For a whole-cell
 # entry (<cell> / <cell>:*) this is the case once every step of that cell passes.
 # Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
-KNOWN_FAILS ?= sg13_combined:magic-lvs \
-			sg13_rf_cmim:magic-lvs \
-			sg13_combined_cmim_ontop:magic-lvs \
-			sg13_cmomi:magic-lvs
+KNOWN_FAILS ?= sg13_cmomi:magic-lvs
 
 
 
