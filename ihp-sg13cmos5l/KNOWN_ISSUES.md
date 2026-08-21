@@ -1,10 +1,13 @@
 # Known Issues
 See issue: https://github.com/IHP-GmbH/ihp-sg13cmos5l/issues/91
 
-## Known Failing Cells
+## Magic + Netgen LVS fails on sg13_cmomi (`cmomi`)
+
+The following test fails Magic+Netgen LVS:
 
 - `sg13_cmomi` — interdigitated fringe capacitance MOM Cap - does not get extracted from the layout
 - `sg13_combined` — yet to be found MAGIC+Netgen issue
 
-## Guard Rings currently not working
-LVS-Fail expected for any cell that uses a guard ring (tap_ring)
+**KLayout LVS passes on every cell**. Only Magic+Netgen LVS is affected.
+
+See issue: https://github.com/RTimothyEdwards/magic/issues/552 regarding sg13_cmomi
