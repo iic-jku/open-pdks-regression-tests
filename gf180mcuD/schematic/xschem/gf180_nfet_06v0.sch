@@ -26,14 +26,16 @@ lab=G}
 N 130 -490 130 -440 {
 lab=S}
 N 130 -410 230 -410 {
-lab=B}
+lab=S}
 N 130 -380 130 -310 {
 lab=D}
+N 130 -480 240 -480 {lab=S}
+N 240 -480 240 -410 {lab=S}
+N 230 -410 240 -410 {lab=S}
 C {devices/title.sym} 160 -30 0 0 {name=l5 author="Julian Schwarz"}
 C {iopin.sym} 50 -410 2 0 {name=p2 lab=G}
 C {iopin.sym} 130 -310 1 0 {name=p3 lab=D}
 C {iopin.sym} 130 -490 3 0 {name=p4 lab=S}
-C {iopin.sym} 230 -410 0 0 {name=p1 lab=B}
 C {gf180mcu_fd_pr/nfet_06v0.sym} 110 -410 2 1 {name=M1
 L=0.70u
 W=0.42u

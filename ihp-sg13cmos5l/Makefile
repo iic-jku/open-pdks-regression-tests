@@ -8,13 +8,13 @@
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
 
-# PDK this design is verified against. Checked against the environment, so
-# "sak-pdk <other>" plus make in here is an error instead of a wrong result.
+# PDK this design is verified against. common.mk switches the environment to it
+# via sak-pdk, so make in here can never verify against another PDK.
 EXPECTED_PDK := ihp-sg13cmos5l
 
 # Cell name for the single-cell targets (default: top-level cell)
 # Override with: make <target> CELL=<cellname>
-CELL ?= sg13_lv_nmos_tap
+CELL ?= sg13_combined
 
 # Known failures: tolerated by regression. See ../common.mk for the entry syntax.
 # A listed step that passes is reported as UNEXPECTED PASS and fails the regression.

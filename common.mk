@@ -15,14 +15,72 @@
 
 # ================================================================================================
 # Settings the per-PDK Makefile defines before including this file:
-#   EXPECTED_PDK      PDK this design is written for. Checked against the $PDK of the
-#                     environment (set by "sak-pdk <pdk>"), so a design can never be
+#   EXPECTED_PDK      PDK this design is written for. common.mk switches the environment
+#                     to it (see "PDK selection" below), so a design can never be
 #                     silently verified against the wrong PDK.
 #   CELL              Default cell for the single-cell targets.
 #   KNOWN_FAILS       Tolerated failures, see below.
 #   REGRESSION_STEPS  Steps the regression runs per cell (optional, default below).
 #   KLAYOUT_EXT_CIR   Name of the extracted netlist (optional, see below).
 #   MAGIC_EXT_SPC     Same for the Magic+Netgen flow (optional, see below).
+# ================================================================================================
+
+# ================================================================================================
+# PDK selection
+#
+# The design has to be verified against EXPECTED_PDK, so common.mk selects that PDK itself
+# instead of trusting the PDK the shell happens to have. sak-pdk stays the single source of
+# truth: the blank call lists the installed PDKs, and "sak-pdk <pdk>" prints the variables of
+# that PDK, which are imported here and exported to every recipe (PDK, PDKPATH,
+# STD_CELL_LIBRARY, KLAYOUT_PATH, ...). A PDK that sak-pdk does not offer cannot be selected
+# and is an error, reported by check-pdk.
+#
+# sak-pdk itself is a shell alias for "source sak-pdk-script.sh", and aliases do not exist in
+# a make recipe, so the script is called directly. Its exit code is unusable (it ends on an
+# optional test), a "PDK=" line in its output is what marks success.
+# ================================================================================================
+
+# PDK the environment had before common.mk switched it (empty if it was unset).
+INCOMING_PDK := $(PDK)
+
+SAK_PDK_SCRIPT := $(firstword $(shell command -v sak-pdk-script.sh 2>/dev/null) \
+			/foss/tools/sak/sak-pdk-script.sh)
+
+# Variables "sak-pdk <pdk>" prints and common.mk hands on to the tools.
+SAK_PDK_VARS := PDK_ROOT PDK PDKPATH STD_CELL_LIBRARY SPICE_USERINIT_DIR \
+			KLAYOUT_PATH KLAYOUT_PYTHONPATH GF_PDK_OPTION
+
+# Empty once the PDK is selected, reason and hint otherwise. check-pdk turns them into an
+# error, rather than $(error) right here, so that "make help" keeps working without the PDK.
+# Always set both, and free of quotes: check-pdk echoes them unconditionally.
+PDK_ERROR :=
+PDK_ERROR_HINT :=
+
+ifeq ($(EXPECTED_PDK),)
+PDK_ERROR := EXPECTED_PDK is not set.
+PDK_ERROR_HINT := The PDK Makefile has to define it before it includes common.mk.
+else ifneq ($(INCOMING_PDK),$(EXPECTED_PDK))
+# PDKs installed in $PDK_ROOT, from the "Available PDKs:" block of the blank sak-pdk call.
+# That call lists every entry of $PDK_ROOT, files (versions.txt) included, so keep the
+# entries that are directories.
+AVAILABLE_PDKS := $(filter $(notdir $(patsubst %/,%,$(wildcard $(PDK_ROOT)/*/))),\
+			$(shell $(SAK_PDK_SCRIPT) 2>/dev/null | sed -n '/^Available PDKs:/,$$p' | tail -n +2))
+ifeq ($(filter $(EXPECTED_PDK),$(AVAILABLE_PDKS)),)
+PDK_ERROR := This design needs PDK=$(EXPECTED_PDK), which sak-pdk does not offer.
+PDK_ERROR_HINT := Available PDKs: $(if $(AVAILABLE_PDKS),$(AVAILABLE_PDKS),none at all - is $(SAK_PDK_SCRIPT) there, is PDK_ROOT set?)
+else
+SAK_PDK_ENV := $(shell $(SAK_PDK_SCRIPT) $(EXPECTED_PDK) 2>/dev/null)
+$(foreach kv,$(SAK_PDK_ENV),\
+			$(if $(filter $(SAK_PDK_VARS),$(firstword $(subst =, ,$(kv)))),$(eval export $(kv))))
+ifneq ($(PDK),$(EXPECTED_PDK))
+PDK_ERROR := sak-pdk did not switch to PDK=$(EXPECTED_PDK).
+PDK_ERROR_HINT := $(SAK_PDK_SCRIPT) $(EXPECTED_PDK) printed: $(SAK_PDK_ENV)
+else
+# Printed once: the sub-makes of regression inherit the exported PDK and skip this block.
+$(info [PDK] switched to $(PDK) (environment had PDK=$(or $(INCOMING_PDK),<unset>)), PDKPATH=$(PDKPATH), STD_CELL_LIBRARY=$(STD_CELL_LIBRARY))
+endif
+endif
+endif
 # ================================================================================================
 
 # PEX mode (1 = C-decoupled, 2 = C-coupled, 3 = full-RC)
@@ -95,7 +153,9 @@ help: ## Show this help message
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
 	@echo ''
-	@echo 'This design expects PDK=$(EXPECTED_PDK), the environment currently has PDK=$(PDK).'
+	@echo 'This design is verified against PDK=$(EXPECTED_PDK); common.mk selects it with sak-pdk, active now: PDK=$(or $(PDK),<unset>).'
+	@if [ -n '$(PDK_ERROR)' ]; then echo '  [WARNING] $(PDK_ERROR)'; fi
+	@if [ -n '$(PDK_ERROR_HINT)' ]; then echo '            $(PDK_ERROR_HINT)'; fi
 	@echo 'CELL defaults to $(CELL). Override to verify subcells.'
 	@echo 'EXT_MODE defaults to 1 (C-decoupled). 2=C-coupled, 3=full-RC.'
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
@@ -107,23 +167,14 @@ help: ## Show this help message
 .PHONY: help
 # ================================================================================================
 
-# Guard, prerequisite of every target that starts a tool. Without it a design is
-# verified against whatever PDK the shell happens to have, which fails in confusing
-# ways (or, worse, passes).
+# Guard, prerequisite of every target that starts a tool. The PDK selection above has already
+# switched the environment to EXPECTED_PDK; all that is left here is to report a switch that
+# could not happen, so a design is never verified against whatever PDK the shell happens to
+# have, which fails in confusing ways (or, worse, passes).
+# Both lines expand to nothing when there is nothing to report.
 check-pdk:
-	@if [ -z "$(EXPECTED_PDK)" ]; then \
-		echo "[ERROR] EXPECTED_PDK is not set, the PDK Makefile must define it before including common.mk."; \
-		exit 1; \
-	fi; \
-	if [ "$$PDK" != "$(EXPECTED_PDK)" ]; then \
-		echo "[ERROR] This design needs PDK=$(EXPECTED_PDK), the environment has PDK=$${PDK:-<unset>}."; \
-		echo "        Run:  sak-pdk $(EXPECTED_PDK)"; \
-		exit 1; \
-	fi; \
-	if [ -z "$(CELL)" ]; then \
-		echo "[ERROR] CELL is not set, the PDK Makefile must define a default cell."; \
-		exit 1; \
-	fi
+	@$(if $(PDK_ERROR),echo '[ERROR] $(PDK_ERROR)'; echo '        $(PDK_ERROR_HINT)'; exit 1,:)
+	@$(if $(CELL),,echo '[ERROR] CELL is not set. The PDK Makefile has to define a default cell.'; exit 1)
 .PHONY: check-pdk
 # ================================================================================================
 

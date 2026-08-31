@@ -12,7 +12,7 @@ if { ![info exists env(PDK_ROOT)] } {
 
 # Set default PDK
 if { ![info exists env(PDK)] } {
-  set ::env(PDK) ihp-sg13g2
+  set ::env(PDK) ihp-sg13cmos5l
 }
 
 # Source the PDK xschemrc file
@@ -22,3 +22,4 @@ if {![info exists PDK]} {
 
 # Add current directory to xschem library path
 append XSCHEM_LIBRARY_PATH :[file dirname [info script]]
+
