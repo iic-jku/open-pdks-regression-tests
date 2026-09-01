@@ -16,3 +16,6 @@ runs/
 backups/
 sim_build/
 simulations/
+*.lvsdb
+*.cir
+*.spc
