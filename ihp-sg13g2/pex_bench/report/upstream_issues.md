@@ -2,7 +2,7 @@
 
 Copyable drafts for https://github.com/RTimothyEdwards/magic/issues, one per finding.
 
-For a single consolidated issue covering all of them instead, use [upstream_issue_combined.md](upstream_issue_combined.md). Same content and the same numbers, one report rather than four.
+For a single consolidated issue covering all of them instead, use [upstream_issue_combined.md](upstream_issue_combined.md). Same content and the same numbers, one report rather than four. The kpex-side findings are in [upstream_issues_kpex.md](upstream_issues_kpex.md).
 
 All numbers are from Magic 8.3 r681, PDK deck ihp-sg13g2 1.0.1, kpex 0.3.15, in IIC-OSIC-TOOLS.
 Every case reproduces with `make pex-bench-defects` in `ihp-sg13g2/pex_bench` of `iic-jku/open-pdks-regression-tests`.
