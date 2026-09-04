@@ -383,7 +383,7 @@
   <p class="eyebrow">Extraction bench &middot; IHP SG13G2</p>
   <h1>Three extractors, one deck, six disagreements</h1>
   <p class="standfirst">
-    Thirty-one dummy metal layouts with hand-computable parasitics, put through Magic, kpex's 2.5D
+    Sixty-three dummy metal layouts with hand-computable parasitics, put through Magic, kpex's 2.5D
     engine and a mesh-converged FasterCap solve. The capacitance and resistance <em>models</em> are
     exact. Six things around them are not, and two of the template's make targets disagree with each
     other by 16&nbsp;% on the same layout.
@@ -392,7 +392,7 @@
     <div><dt>Extractors</dt><dd>Magic 8.3 r681, kpex 0.3.15</dd></div>
     <div><dt>Field solver</dt><dd>FasterCap 6.0.7</dd></div>
     <div><dt>PDK deck</dt><dd>ihp-sg13g2 1.0.1</dd></div>
-    <div><dt>Structures</dt><dd>31 layouts, 4 modes</dd></div>
+    <div><dt>Structures</dt><dd>63 layouts, 4 modes</dd></div>
     <div><dt>Bench</dt><dd>open-pdks-regression-tests, ihp-sg13g2/pex_bench</dd></div>
     <div><dt>Date</dt><dd>2026-09-04</dd></div>
   </dl>
@@ -1203,12 +1203,12 @@ FasterCap                    <span class="gd">2.2861</span>             <span cl
       0.2&nbsp;um spacing and 12&nbsp;% low at 1.6&nbsp;um. The five converged FasterCap points in table
       F are enough to start from.</p></li>
     <li><p><strong>Keep the bench.</strong> Every defect here reproduces in seconds on a handful of
-      rectangles, and the same 31 layouts will tell you immediately whether an upstream fix worked.</p></li>
+      rectangles, and the same 63 layouts will tell you immediately whether an upstream fix worked.</p></li>
   </ol>
 </section>
 
 <footer>
-  Bench, generators and sweeps: open-pdks-regression-tests/ihp-sg13g2/pex_bench/ &nbsp;&middot;&nbsp; 31 structures, 4 extraction
+  Bench, generators and sweeps: open-pdks-regression-tests/ihp-sg13g2/pex_bench/ &nbsp;&middot;&nbsp; 63 structures, 4 extraction
   modes, 3 model implementations, 40 field solves &nbsp;&middot;&nbsp; deck reference:
   libs.tech/magic/ihp-sg13g2-extract.tech variant () &nbsp;&middot;&nbsp; kpex reference:
   klayout_pex_protobuf/ihp-sg13g2_tech.pb.json
