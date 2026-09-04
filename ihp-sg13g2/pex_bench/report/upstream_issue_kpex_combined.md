@@ -18,7 +18,7 @@ kpex 0.3.15, Magic 8.3.681, PDK ihp-sg13g2 1.0.1, in IIC-OSIC-TOOLS.
 
 Two findings from building a PEX regression suite of 63 metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand, so every extracted value has a closed-form expected value. It lives in [`ihp-sg13g2/pex_bench`](https://github.com/iic-jku/open-pdks-regression-tests/tree/add-pex-bench/ihp-sg13g2/pex_bench) of `iic-jku/open-pdks-regression-tests`.
 
-Neither is about the capacitance model. Where the 2.5D engine and Magic disagree on this bench, the 2.5D engine is the one that matches both the tech-file coefficients and a converged FasterCap solve, which includes the sidewall rows of #197: that turned out to be a Magic regression in 8.3.679 and is filed as [magic#557](https://github.com/RTimothyEdwards/magic/issues/557).
+Neither is about the capacitance model. Where the 2.5D engine and Magic disagree on the sidewall term, which is what the deviating rows of #197 mostly are, the 2.5D engine is the one that matches both the tech-file coefficients and a converged FasterCap solve: that turned out to be a Magic regression in 8.3.679 and is filed as [magic#557](https://github.com/RTimothyEdwards/magic/issues/557). On the overlap term the two also differ, by Magic's halo split, and there the field solve does not favour 2.5D everywhere: it is closer on six of the eight layer pairs we measured, and Magic is closer on TopMetal2 over TopMetal1 (5.8 % against 12.9 %).
 
 ## 1. `--mesh` has no effect
 
