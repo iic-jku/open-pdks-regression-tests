@@ -19,7 +19,7 @@ The layouts are committed as well as generated. `make layouts-check` guards that
 
 ## Upstream reports
 
-[report/upstream_issues.md](report/upstream_issues.md) holds copyable drafts for the Magic issue tracker, one per finding, each with its minimal case and numbers. It also records the search that was done, so a finding already reported upstream is not opened twice: the double-counted coupling capacitance is [magic#550](https://github.com/RTimothyEdwards/magic/issues/550), which the file supplies a reproduction comment for rather than a new issue.
+[report/upstream_issues.md](report/upstream_issues.md) holds copyable drafts for the Magic issue tracker, one per finding, each with its minimal case and numbers, and [report/upstream_issue_combined.md](report/upstream_issue_combined.md) the same content as a single consolidated issue. It also records the search that was done, so a finding already reported upstream is not opened twice: the double-counted coupling capacitance is [magic#550](https://github.com/RTimothyEdwards/magic/issues/550), which the file supplies a reproduction comment for rather than a new issue.
 
 ## What is compared
 
