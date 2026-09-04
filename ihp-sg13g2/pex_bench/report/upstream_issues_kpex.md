@@ -37,7 +37,7 @@ coefficient, which is what the coefficient means. Magic halves it. See item 1.
 >
 > One caveat on the deviation for the shielded overlap patterns, which is a modelling difference rather than a bug on either side: Magic applies a halo split that sends part of a covered plate's edge fringe to the substrate and kpex 2.5D does not. On a 10 x 10 um TopMetal1 plate centred on a 30 x 30 um Metal1 plate, Magic gives 1.6024 fF plate-to-plate plus 0.7957 fF to substrate, kpex 2.5D 2.3178 fF plate-to-plate, and FasterCap 2.2861 plate-to-plate with 0.1267 to substrate and 0.3809 leaving the box. kpex 2.5D is the closer one there. On adjacent layers the two agree within 1.4 %, and on TopMetal2 over TopMetal1 Magic is closer, so it is a deep-stack effect.
 >
-> All of it reproduces from a bench of 63 metal-only layouts with hand-computable expected values: [`ihp-sg13g2/pex_bench`](https://github.com/iic-jku/open-pdks-regression-tests/tree/main/ihp-sg13g2/pex_bench) in `iic-jku/open-pdks-regression-tests`, `make pex-bench-defects`.
+> All of it reproduces from a bench of 63 metal-only layouts with hand-computable expected values: [`ihp-sg13g2/pex_bench`](https://github.com/iic-jku/open-pdks-regression-tests/tree/add-pex-bench/ihp-sg13g2/pex_bench) in `iic-jku/open-pdks-regression-tests`, `make pex-bench-defects`.
 
 ---
 

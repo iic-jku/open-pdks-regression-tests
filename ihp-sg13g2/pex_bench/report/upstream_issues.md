@@ -235,7 +235,7 @@ That the open-PDK coefficients are the full value, not the pre-halved one, is st
 
 Two independent checks that the full value is the intended one:
 
-- KLayout's kpex reads the identical coefficients for this PDK (`sidewall 28.735, offset -0.057`) and its 2.5D engine emits the full value at every spacing. The two tools agree to six digits on `areacap`, `perimc` and `overlap` and differ by exactly two only here.
+- KLayout's kpex reads the identical coefficients for this PDK (`sidewall 28.735, offset -0.057`) and its 2.5D engine emits the full value at every spacing. The two tools agree to six digits on `areacap` and `perimc`, and differ by exactly two only here. They also differ on `overlap`, by 1.4 % on adjacent layers, but that is the halo split of finding 6 and a separate matter.
 - A mesh-converged FasterCap solve of the same structures (raw-matrix asymmetry 0.03 % to 0.16 %) gives 6.2195, 3.6468, 2.0777, 1.0585 and 0.4364 fF for the five spacings. Magic is below that at every spacing by 23 % to 56 %; the full coefficient straddles it, which is what a fitted `1/(s+off)` form does against a curve of a different shape.
 
 Separately and more minor: the offset is rounded to whole lambda, so the deck's -0.057 um is applied as -0.05 um. Worth 4.7 % at 0.2 um spacing and nothing above 1 um.
