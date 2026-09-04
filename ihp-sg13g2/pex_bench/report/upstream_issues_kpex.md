@@ -3,7 +3,8 @@
 Copyable drafts for https://github.com/iic-jku/klayout-pex/issues.
 Numbers from kpex 0.3.15, Magic 8.3.681, PDK deck ihp-sg13g2 1.0.1, in IIC-OSIC-TOOLS.
 
-Tracker searched 2026-09-04. Nothing open covers 2 or 3 below. Issue
+Tracker searched 2026-09-04. Nothing open covers 2 or 3 below. For a single consolidated issue
+covering both, use [upstream_issue_kpex_combined.md](upstream_issue_kpex_combined.md). Issue
 [#197](https://github.com/iic-jku/klayout-pex/issues/197) is the natural home for 1: it already
 reports the Magic-versus-2.5D capacitance deviations on ihp-sg13g2 and flags sidewall patterns as
 among the worst, so what we have is its root cause rather than a new report.
@@ -41,11 +42,11 @@ coefficient, which is what the coefficient means. Magic halves it. See item 1.
 
 ---
 
-## 2. New issue: --mesh and --d_coeff are silently ignored
+## 2. New issue: --mesh is silently ignored
 
 **Title**
 
-    --mesh and --d_coeff have no effect: FasterCap runs in auto mode, which overrides them
+    --mesh has no effect: FasterCap runs in auto mode, which overrides -m
 
 **Body**
 
@@ -60,7 +61,11 @@ coefficient, which is what the coefficient means. Magic halves it. See item 1.
         Auto calculation with max error: 0.05
         Remark: Auto option overrides all other Manual settings
 
-    so the -d and -m that --d_coeff and --mesh set are passed and then discarded.
+    so the -m that --mesh sets is passed and then discarded. Measured: --mesh 0.5 and 0.05 at a
+    fixed --delaunay_amax 2 --tolerance 0.01 both give 5.95038 fF, bit-identical.
+
+    --d_coeff does still work despite the remark (0.5 gives 2.11695 fF, 0.1 gives 2.05183 fF), so
+    FasterCap's wording is broader than its behaviour and only -m is genuinely discarded.
 
     The failure mode is quiet and misleading rather than loud. Sweeping --mesh over 0.5, 0.25,
     0.12 and 0.06 on the same structure returns four bit-identical numbers, which reads as a
@@ -68,14 +73,15 @@ coefficient, which is what the coefficient means. Magic halves it. See item 1.
     respond to mesh refinement" before reading the FasterCap log.
 
     The knob that does move the answer is --delaunay_amax, the KLayout-side triangulation. On two
-    Metal1 wires 0.2 um apart the coupling goes 5.6198, 5.9185, 5.7760, 6.0584, 6.2195 fF for
-    amax 50, 10, 2, 0.5, 0.1, so the default of 50 um^2 is 11 % off the converged value. --tolerance
-    moves it too, as the -a it maps to is the one setting auto mode honours.
+    Metal1 wires 0.2 um apart at a fixed --tolerance 0.01 the coupling goes 5.89728, 5.89221,
+    5.95038, 6.05837, 6.21951 fF for amax 50, 10, 2, 0.5, 0.1, so the default of 50 um^2 reads
+    5.2 % below the finest point. --tolerance moves it too, as the -a it maps to is the one setting
+    auto mode honours.
 
     Suggestions, any of which would help:
 
-    - drop -a when the user sets --mesh or --d_coeff, so the manual settings take effect
-    - or warn when --mesh or --d_coeff is set together with auto mode, and say which knobs do work
+    - drop -a when the user sets --mesh, so the manual setting takes effect
+    - or warn when --mesh is set, and name --delaunay_amax and --tolerance as the knobs that work
     - document --delaunay_amax as the mesh control, and consider a smaller default for
       technologies with sub-micron spacings
     - the raw capacitance matrix asymmetry is a good convergence tell and is already written to
