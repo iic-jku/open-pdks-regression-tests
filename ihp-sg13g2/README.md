@@ -108,12 +108,20 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets
 
 If a matching Xschem symbol (`schematic/xschem/<CELL>_pex.sym`) exists, the `.subckt` pin order in the extracted SPICE file is automatically reordered to match the symbol's pin positions. This ensures the PEX netlist can be used directly with the corresponding Xschem symbol for simulation regardless of the selected `EXT_MODE`.
 
-**KLayout PEX** uses `kpex` with the Magic extraction engine currently (2.5D engine is work in progress):
+**KLayout PEX** uses `kpex`. The `KPEX_ENGINE` parameter selects its engine:
+
+- `magic` = kpex drives Magic (default). The coupling capacitors are then identical to `magic-pex`, so this is the same engine behind a KLayout front end, not a second opinion.
+- `2.5D` = kpex's own analytical engine. It reads the same coefficients as the Magic deck (`ihp-sg13g2_tech.pb.json`), so where it disagrees with Magic exactly one of the two has a bug.
+- `fastercap` = a FasterCap field solve on the kpex process stack, capacitance only. `KPEX_AMAX` sets the KLayout-side triangulation (`--delaunay_amax`, kpex default 50 um^2, far too coarse for sub-micron gaps) and `KPEX_TOL` the FasterCap auto tolerance. kpex's `--mesh` has no effect, since FasterCap's auto mode overrides it.
+
+The output is `<CELL>_klayout_pex_<EXT_MODE>.spice` for the Magic engine and `<CELL>_klayout_<engine>_pex_<EXT_MODE>.spice` for the other two.
 
 ```sh
 make klayout-pex
 make klayout-pex CELL=sg13_lv_nmos_tap
 make klayout-pex CELL=sg13_lv_nmos_tap EXT_MODE=3
+make klayout-pex CELL=sg13_lv_nmos_tap EXT_MODE=2 KPEX_ENGINE=2.5D
+make klayout-pex CELL=sg13_lv_nmos_tap EXT_MODE=2 KPEX_ENGINE=fastercap KPEX_AMAX=2
 ```
 
 **Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC):
@@ -133,6 +141,19 @@ For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the `sak
 ```sh
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
 ```
+
+## PEX Bench
+
+[pex_bench/](pex_bench/) is a second, independent PEX test: 63 metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand (a 50 x 50 um plate, a 0.5 x 50 um wire, a plate over a plate, two wires at swept spacing, a wire with two ports, via chains, a tee and a cross). Each one is extracted with Magic in all three modes and with the kpex 2.5D engine, the numbers are compared with the deck arithmetic and, optionally, with a FasterCap field solve, and the result is checked against `pex_bench/expected/results.json`.
+
+```sh
+make pex-bench                      # Magic + kpex 2.5D, compare, check against expected (about a minute)
+make pex-bench FASTERCAP=1          # additionally field-solve the 20 comparison cells (minutes)
+make pex-bench-defects              # reproduce the six defects below on their smallest cases
+make -C pex_bench help              # the finer-grained targets
+```
+
+What it established on Magic 8.3 r681, kpex 0.3.15 and PDK deck 1.0.1 is written up in [pex_bench/report/pex_bench_report.html](pex_bench/report/pex_bench_report.html). In short: the area, perimeter, sheet and contact terms are exact in every implementation, and six things around them are not. Full-RC (`EXT_MODE=3`) either doubles every coupling capacitance (`MINDELAY=0`) or collapses the resistor network and leaves ports floating (the shipped `MINDELAY=1`), see [magic#550](https://github.com/RTimothyEdwards/magic/issues/550). `EXT_MODE=1` drops interconnect coupling instead of grounding it. `sak-pex.sh` issues `ext2spice lvs`, whose `hierarchy on` loses 16 % of the substrate capacitance on a layout with devices, which is why `magic-pex` and `klayout-pex` disagree. Magic's lateral (sidewall) coupling is exactly half the deck coefficient, while kpex 2.5D emits the full value and a converged field solve sits above Magic at every spacing. And Magic's halo model sends part of a shielded plate's coupling to the substrate. The bench is what tells you when any of that changes.
 
 ## Regression
 

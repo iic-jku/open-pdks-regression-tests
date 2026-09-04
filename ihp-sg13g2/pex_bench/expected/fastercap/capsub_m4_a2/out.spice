@@ -1,0 +1,17 @@
+*********************************************************
+*** NGSPICE file created by KLayout-PEX 0.3.15
+*** -----------------------------------------------------
+***     Extraction Engine: KPEX/FasterCap
+***     Technology: ihp_sg13g2
+***     Date: 2026-09-04 11:24:57
+*********************************************************
+
+.SUBCKT capsub_m4
+CCext_0_1 VSUBS \$2 29.1726f
+CCext_0_2 VSUBS \$3 3.16555f
+CCext_1_2 \$2 \$3 9.08459a
+CCext_1_1 \$2 VSUBS 2.09552f
+CCext_2_2 \$3 VSUBS 299.695a
+RRext_FC_GND_GND FC_GND GND 0 PEX_RES
+RRext_VSUBS_GND VSUBS GND 0 PEX_RES
+.ENDS capsub_m4
