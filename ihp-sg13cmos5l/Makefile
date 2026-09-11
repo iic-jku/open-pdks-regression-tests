@@ -18,7 +18,6 @@ CELL ?= sg13_combined
 
 # Known failures: tolerated by regression. See ../common.mk for the entry syntax.
 # A listed step that passes is reported as UNEXPECTED PASS and fails the regression.
-KNOWN_FAILS ?= sg13_combined:magic-lvs \
-			sg13_cmomi:magic-lvs
+KNOWN_FAILS ?= sg13_cmomi:magic-lvs
 
 include $(MAKEFILE_DIR)/../common.mk
