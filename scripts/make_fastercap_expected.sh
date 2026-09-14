@@ -153,6 +153,10 @@ if [ ! -f "$REPO/common.mk" ]; then
 fi
 
 KPEX_VERSION=$(kpex --version 2>&1 | head -1)
+# Which kpex actually runs. A user install in ~/.local/bin shadows the system wheel, and the
+# two can ship different PDK payloads: the wheel drops the 47 symlinked cmos5l LVS rule decks,
+# so the same version string can mean "LVS works" on one machine and not on the next.
+KPEX_PATH=$(command -v kpex 2>/dev/null || echo "not found")
 MAGIC_VERSION=$(magic --version 2>/dev/null | head -1)
 TOOLS_VERSION=${IIC_OSIC_TOOLS_VERSION:-unknown}
 CORES=$(nproc)
@@ -170,6 +174,7 @@ echo " jobs      : $JOBS   threads per job: ${THREADS:-kpex default, cpu_count x
 if [ "$TIMEOUT" -gt 0 ] 2>/dev/null; then echo " timeout   : ${TIMEOUT}s per solve"; fi
 echo " tools     : IIC_OSIC_TOOLS_VERSION=$TOOLS_VERSION"
 echo " kpex      : $KPEX_VERSION"
+echo " binary    : $KPEX_PATH"
 echo " magic     : $MAGIC_VERSION"
 [ "$DRY_RUN" -eq 1 ] && echo " MODE      : dry run, nothing is solved"
 echo
@@ -192,6 +197,28 @@ mkvar() {
 }
 
 TOTAL_FAIL=0
+
+# Ctrl+C or a kill has to take the solves with it. The jobs below are subshells started with
+# "&", and a non-interactive shell puts them in its own process group rather than each in one
+# of their own, so there is no group to signal per job: the make, kpex and FasterCap under a
+# job are plain descendants and survive a kill of the job alone. Walk the tree instead.
+kill_tree() {
+	local p=$1 c
+	for c in $(pgrep -P "$p" 2>/dev/null); do kill_tree "$c"; done
+	kill -TERM "$p" 2>/dev/null
+}
+
+abort() {
+	trap - INT TERM
+	local p
+	echo >&2
+	echo "[ABORT] signal received, stopping the running solves" >&2
+	for p in $(jobs -p); do kill_tree "$p"; done
+	wait 2>/dev/null
+	echo "[ABORT] stopped. Finished points keep their done marker, so a rerun resumes." >&2
+	exit 130
+}
+trap abort INT TERM
 TOTAL_WARN=0
 
 # ------------------------------------------------------------------ calibrate
@@ -269,6 +296,25 @@ if [ -n "$CALIBRATE" ]; then
 	echo "================================================================================"
 	exit $((TOTAL_FAIL != 0))
 fi
+
+# One line saying why a solve failed, so a sweep that dies overnight is readable without
+# opening 32 logs. The bench Makefile only prints a pointer: the traceback itself sits in
+# kpex's own log one level down, and make's "*** [Makefile:NN: target] Error 1" is never
+# the reason. Takes the logs to search, innermost first.
+fail_reason() {
+	local l
+	for l in "$@"; do
+		[ -f "$l" ] || continue
+		grep -v "^make:" "$l" 2>/dev/null \
+			| grep -m1 -E "Error|error:|ERROR|Traceback|Exception|No such file|not found|Aborted|Killed" \
+			| cut -c1-150 | grep . && return 0
+	done
+	for l in "$@"; do
+		[ -f "$l" ] || continue
+		grep -v "^[[:space:]]*$" "$l" 2>/dev/null | tail -1 | cut -c1-150 | grep . && return 0
+	done
+	return 1
+}
 
 for PDK in $PDKS; do
 	BENCH=$REPO/$PDK/pex_bench
@@ -357,6 +403,8 @@ for PDK in $PDKS; do
 				cp "$src"/out.spice "$out"/ 2>/dev/null
 				if ! ls "$out"/*Result_Matrix_Raw.csv > /dev/null 2>&1; then
 					echo "$tag  no matrix written, see netlist/fastercap_${cell}_a${amax}.log"
+					reason=$(fail_reason "$src/log" "$BENCH/netlist/fastercap_${cell}_a${amax}.log")
+					[ -n "$reason" ] && echo "$tag    -> $reason"
 					echo "${cell}_a${amax}" >> "$VERDICT_FAIL"
 					exit 0
 				fi
@@ -374,6 +422,8 @@ for PDK in $PDKS; do
 				# whether to raise --timeout or to go read a traceback.
 				[ "$rc" -eq 124 ] && why="TIMEOUT after ${TIMEOUT}s" || why="FAILED"
 				echo "$tag  $why, see netlist/fastercap_${cell}_a${amax}.log"
+				reason=$(fail_reason "$src/log" "$BENCH/netlist/fastercap_${cell}_a${amax}.log")
+				[ -n "$reason" ] && echo "$tag    -> $reason"
 				case " $known " in
 					*" $cell "*) echo "$tag  known fail for this PDK, tolerated" ;;
 					*)           echo "${cell}_a${amax}" >> "$VERDICT_FAIL" ;;
@@ -407,6 +457,7 @@ for PDK in $PDKS; do
 			echo "| cells | $n_cells |"
 			echo "| IIC_OSIC_TOOLS_VERSION | $TOOLS_VERSION |"
 			echo "| kpex | $KPEX_VERSION |"
+			echo "| kpex binary | $KPEX_PATH |"
 			echo "| magic | $MAGIC_VERSION |"
 			echo
 			echo "## When to redo this"
