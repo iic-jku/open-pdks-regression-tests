@@ -223,6 +223,7 @@ if [ -n "$CALIBRATE" ]; then
 		echo "--------------------------------------------------------------------------------"
 		echo " calibrate $PDK / $CALIBRATE"
 		echo "--------------------------------------------------------------------------------"
+		mkdir -p "$BENCH/netlist"		# same reason as in the produce path below
 		CAL_OUT=$BENCH/netlist/calibrate_${CALIBRATE}.txt
 		{
 			echo "# $PDK / $CALIBRATE, $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -295,6 +296,10 @@ for PDK in $PDKS; do
 	DEST=$BENCH/expected/fastercap
 	if [ "$DRY_RUN" -eq 0 ]; then
 		mkdir -p "$DEST"
+		# make creates netlist/ itself, but the shell opens the log redirect of every solve
+		# below before make ever starts, so on a checkout where this bench has never run
+		# each one dies with "No such file or directory" in no time at all.
+		mkdir -p "$BENCH/netlist"
 		# fc() in compare_engines.py looks in netlist/pex/kpex/fastercap/ BEFORE the filed
 		# matrices, so anything stale left there wins and would be pinned by --refresh.
 		if [ "$KEEP_RUNS" -eq 0 ] && [ -d "$BENCH/netlist/pex/kpex/fastercap" ]; then
