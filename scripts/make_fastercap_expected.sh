@@ -133,7 +133,24 @@ done
 if ! command -v FasterCap > /dev/null; then
 	echo "[WARNING] FasterCap is not on PATH; kpex may still find it, but check the logs." >&2
 fi
-[ -f "$REPO/common.mk" ] || { echo "[ERROR] $REPO does not look like the regression-test repo" >&2; exit 1; }
+# REPO is derived from where this script sits, which assumes it sits inside the checkout.
+# Copying the file somewhere on its own is the usual way to end up here; --repo fixes that.
+if [ ! -f "$REPO/common.mk" ]; then
+	{
+		echo "[ERROR] $REPO has no common.mk, so it is not the regression-test checkout."
+		echo "        This path came from the script's own location"
+		echo "        ($(realpath "${BASH_SOURCE[0]}")); pass --repo <path> if the"
+		echo "        checkout is elsewhere, for instance when only this file was copied over."
+		echo "        What is actually there:"
+		if [ -d "$REPO" ]; then
+			ls -A "$REPO" 2>/dev/null | head -20 | sed "s/^/          /"
+			[ -d "$REPO/.git" ] && echo "          (a git checkout of: $(git -C "$REPO" remote get-url origin 2>/dev/null || echo unknown), branch $(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown))"
+		else
+			echo "          the directory does not exist"
+		fi
+	} >&2
+	exit 1
+fi
 
 KPEX_VERSION=$(kpex --version 2>&1 | head -1)
 MAGIC_VERSION=$(magic --version 2>/dev/null | head -1)
