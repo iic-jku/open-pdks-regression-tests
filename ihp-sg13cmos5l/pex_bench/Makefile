@@ -112,6 +112,10 @@ pex-bench-magic: check-pdk ## Extract every layout with Magic in modes 1, 2 and 
 .PHONY: pex-bench-magic
 
 pex-bench-2.5d: check-pdk ## Extract the comparison cells with the kpex 2.5D engine (usage: make pex-bench-2.5d)
+	@# Clean up front as well: the tail cleanup below is a separate recipe line, so a loop
+	@# ending in "exit 1" aborts the target before ever reaching it and the droppings then
+	@# outlive the failed run. Cleaning here means the next run tidies whatever it left.
+	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 	@fails=; known=; xpass=; \
 	for kf in $(KPEX_KNOWN_FAILS); do \
 		case " $(KPEX_CELLS) " in *" $$kf "*) ;; \
@@ -140,6 +144,10 @@ pex-bench-2.5d: check-pdk ## Extract the comparison cells with the kpex 2.5D eng
 .PHONY: pex-bench-2.5d
 
 pex-bench-fastercap: check-pdk ## Field-solve the comparison cells with kpex FasterCap (usage: make pex-bench-fastercap [KPEX_AMAX=<um2>] [KPEX_TOL=<frac>])
+	@# Clean up front as well: the tail cleanup below is a separate recipe line, so a loop
+	@# ending in "exit 1" aborts the target before ever reaching it and the droppings then
+	@# outlive the failed run. Cleaning here means the next run tidies whatever it left.
+	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 	@for cell in $(KPEX_CELLS); do \
 		d=$(KPEX_DIR)/fastercap/$${cell}_a$(KPEX_AMAX); mkdir -p $$d; \
 		kpex --pdk $(PDK) --cell $$cell --gds $(LAY_DIR)/$$cell.gds --fastercap \
