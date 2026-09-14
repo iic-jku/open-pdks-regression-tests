@@ -282,7 +282,9 @@ magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make mag
 # kept, since its capacitance matrices are the data the netlist was reduced from.
 klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>])
 	mkdir -p $(NET_PEX_DIR)
-	PDK_UNDERSCORED=$$(echo $$PDK | sed -e 's/-/_/g'); \
+	@# kpex takes the PDK name as it is: {gf180mcuD, ihp-sg13g2, ihp-sg13cmos5l, sky130A}.
+	@# The underscored spelling this recipe used to build survives only as a legacy alias for
+	@# ihp_sg13g2; for every other PDK it produces an invalid choice and kpex refuses to start.
 	case $(EXT_MODE) in \
 		1) echo "WARNING: KPEX does not support C-decoupled (C) mode yet, using C-coupled (CC) mode instead."; KPEX_MODE=CC ;; \
 		2) KPEX_MODE=CC ;; \
@@ -298,7 +300,7 @@ klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (u
 	esac; \
 	SCHEMATIC=""; [ -f $(XSCHEM_SCH_DIR)/$(CELL).sch ] && SCHEMATIC="--schematic $(XSCHEM_SCH_DIR)/$(CELL).sch"; \
 	kpex \
-	--pdk $$PDK_UNDERSCORED \
+	--pdk $$PDK \
 	--cell $(CELL) \
 	$$SCHEMATIC \
 	--gds $(LAY_DIR)/$(CELL).gds \
