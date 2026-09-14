@@ -245,6 +245,15 @@ if [ -n "$CALIBRATE" ]; then
 	for PDK in $PDKS; do
 		BENCH=$REPO/$PDK/pex_bench
 		[ -f "$BENCH/Makefile" ] || { echo "[SKIP] no bench in $BENCH"; continue; }
+		# same reason as in the produce path: do not run a ladder of solves against a bench
+		# whose tooling cannot field-solve at all
+		cal_engines=$(mkvar "$BENCH" PEX_ENGINES)
+		if [ -n "$cal_engines" ]; then
+			case " $cal_engines " in
+				*" fastercap "*) ;;
+				*) echo "[SKIP] $PDK does not list fastercap in PEX_ENGINES: $cal_engines"; continue ;;
+			esac
+		fi
 		[ -f "$BENCH/layout/$CALIBRATE.gds" ] || {
 			echo "[ERROR] $PDK has no layout/$CALIBRATE.gds" >&2; TOTAL_FAIL=1; continue; }
 		echo "--------------------------------------------------------------------------------"
@@ -325,6 +334,22 @@ for PDK in $PDKS; do
 		echo "[SKIP] no bench in $BENCH"
 		echo
 		continue
+	fi
+
+	# A bench states in PEX_ENGINES what its tooling can actually run. Solving a PDK that
+	# cannot run kpex at all would produce one failed solve per cell and per amax and nothing
+	# else, so ask first instead of finding out sixteen times. An older bench answers empty;
+	# assume it can, and let the solve itself say otherwise.
+	engines=$(mkvar "$BENCH" PEX_ENGINES)
+	if [ -n "$engines" ]; then
+		case " $engines " in
+			*" fastercap "*) ;;
+			*) echo "[SKIP] $PDK does not list fastercap in PEX_ENGINES: $engines"
+			   echo "       Nothing to solve here until that changes; see the bench Makefile"
+			   echo "       for why the engine is not available."
+			   echo
+			   continue ;;
+		esac
 	fi
 
 	pdk_cells=${CELLS:-$(mkvar "$BENCH" KPEX_CELLS)}
