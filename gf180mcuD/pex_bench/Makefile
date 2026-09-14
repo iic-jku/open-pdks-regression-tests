@@ -48,6 +48,10 @@ KPEX_CELLS := capsub_m1 capsub_m2 capsub_m3 capsub_m4 capsub_m5 \
 	overlap_m1_m3 overlap_m1_m5 \
 	sidewall_m1_s0p2 sidewall_m1_s0p4 sidewall_m1_s0p8 sidewall_m1_s1p6 sidewall_m1_s3p2
 
+# Extraction engines this bench can run on an unmodified container. The regression test asks
+# the bench for this list rather than assuming one, and calls no engine that is not in it.
+PEX_ENGINES := magic kpex25 fastercap
+
 # kpex 2.5D cells that are expected to fail, tolerated like common.mk's KNOWN_FAILS: a listed
 # cell that fails is reported and ignored, a listed cell that passes fails the target so the
 # entry gets removed. Use it only for a defect that is understood and written down.
@@ -167,10 +171,21 @@ pex-bench-expected: ## Overwrite $(EXPECTED)/results.json with the fresh results
 	@python3 $(SCRIPTS)/check_results.py $(FRESH) $(EXPECTED)/results.json --write
 .PHONY: pex-bench-expected
 
-pex-bench: check-pdk ## Magic + kpex 2.5D on every cell, compare, check against expected (usage: make pex-bench [FASTERCAP=1] [KPEX_AMAX=<um2>])
+pex-bench: check-pdk ## Magic, then the engines in PEX_ENGINES, compare, check against expected (usage: make pex-bench [FASTERCAP=1] [KPEX_AMAX=<um2>])
 	$(MAKE) --no-print-directory pex-bench-magic
-	$(MAKE) --no-print-directory pex-bench-2.5d
-	@if [ "$(FASTERCAP)" = "1" ]; then $(MAKE) --no-print-directory pex-bench-fastercap; fi
+	@# PEX_ENGINES is this bench's own statement of what its tooling can run here, so the
+	@# collecting target honours it too and a hand-run does not walk into an engine the PDK
+	@# cannot use. The single targets stay callable: pex-bench-2.5d still gives the real error.
+	@case " $(PEX_ENGINES) " in \
+		*" kpex25 "*) $(MAKE) --no-print-directory pex-bench-2.5d ;; \
+		*) echo "[KPEX 2.5D] skipped: kpex25 is not in PEX_ENGINES" ;; \
+	esac
+	@if [ "$(FASTERCAP)" = "1" ]; then \
+		case " $(PEX_ENGINES) " in \
+			*" fastercap "*) $(MAKE) --no-print-directory pex-bench-fastercap ;; \
+			*) echo "[FASTERCAP] skipped: fastercap is not in PEX_ENGINES" ;; \
+		esac; \
+	fi
 	$(MAKE) --no-print-directory pex-bench-compare
 	$(MAKE) --no-print-directory pex-bench-check
 .PHONY: pex-bench
