@@ -135,6 +135,20 @@ For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the `sak
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
 ```
 
+## PEX Bench
+
+[pex_bench/](pex_bench/) is a second, independent PEX test: 54 metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand (a 50 x 50 um plate, a 0.5 x 50 um wire, a plate over a plate, two wires at swept spacing, a wire with two ports, via chains, a tee and a cross). Each one is extracted with Magic in all three modes and with the kpex 2.5D engine, the numbers are compared with the deck arithmetic and, optionally, with a FasterCap field solve, and the result is checked against `pex_bench/expected/results.json`.
+
+```sh
+make pex-bench                      # Magic + kpex 2.5D, compare, check against expected (a few minutes)
+make pex-bench FASTERCAP=1          # additionally field-solve the 16 comparison cells (minutes)
+make -C pex_bench help              # the finer-grained targets
+```
+
+It is the [ihp-sg13g2 bench](../ihp-sg13g2/pex_bench/) ported to this PDK: same geometry, every layer and every coefficient read from `ihp-sg13cmos5l-extract.tech`. The thick top metal is called `tm1` here as it is there, since it is the same physical layer (GDS 126) even though this deck calls it `metal5`; the thin `m5` of ihp-sg13g2 does not exist in cmos5l. The defects the bench found in ihp-sg13g2 are properties of Magic and kpex, not of the PDK - the write-up is in [../ihp-sg13g2/pex_bench/report/pex_bench_report.html](../ihp-sg13g2/pex_bench/report/pex_bench_report.html). The lateral coupling case is even cleaner in this PDK: the deck offset of 0.003 um quantises to zero, so Magic emits exactly half the deck coefficient at all five spacings.
+
+The port also turned up one defect that is specific to this PDK. kpex's `ihp-sg13cmos5l_tech.pb.json` carries **ihp-sg13g2's** sidewall coefficients: it is the ihp-sg13g2 list with the `Metal5` and `TopMetal2` rows removed and `allm6` relabelled `TopMetal1`, so not one of the six values is this PDK's. Metal1 should be 43.268 aF with offset +0.003 um and kpex uses 28.735 / -0.057, and the resulting error on lateral coupling grows with spacing, from -5.7 % at 0.2 um to -32.3 % at 3.2 um. The substrate, overlap, sideoverlap and resistance blocks of the same file are correct, so this is one wrong block, not a wholesale copy. `expected/results.json` pins the values kpex actually produces, so the check will notice when it is fixed.
+
 ## Regression
 
 The `regression` target is this repository's end-to-end smoke test for the [IIC-OSIC-TOOLS](https://github.com/iic-jku/iic-osic-tools) environment. It runs the full DRC / LVS / PEX toolchain over **every** cell in `layout/`, so a single command exercises both the KLayout and the Magic + Netgen flows across all supported devices.

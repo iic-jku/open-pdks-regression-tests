@@ -30,6 +30,14 @@ MINDELAY ?= 0
 KPEX_AMAX ?= 2
 KPEX_TOL ?= 0.05
 
+# Threads for the FasterCap field solve. Empty means kpex's own default, which is
+# os.cpu_count() * 4 - 128 threads on a 32-core machine, four times oversubscribed on an
+# OpenMP solver. Set it explicitly on a big machine, and remember that FasterCap is only
+# part of the run: the KLayout triangulation and the LVS in front of it are single-threaded,
+# so cell-level parallelism buys more than threads per cell past a handful.
+# Left empty by default so the committed expected values stay reproducible bit for bit.
+KPEX_THREADS ?=
+
 # Set FASTERCAP=1 to include the field solve in pex-bench (minutes, not seconds)
 FASTERCAP ?= 0
 
@@ -39,6 +47,11 @@ KPEX_CELLS := capsub_m1 capsub_m2 capsub_m3 capsub_m4 capsub_m5 capsub_tm1 capsu
 	overlap_m1_m2 overlap_m2_m3 overlap_m3_m4 overlap_m4_m5 overlap_m5_tm1 \
 	overlap_tm1_tm2 overlap_m1_m3 overlap_m1_tm1 \
 	sidewall_m1_s0p2 sidewall_m1_s0p4 sidewall_m1_s0p8 sidewall_m1_s1p6 sidewall_m1_s3p2
+
+# kpex 2.5D cells that are expected to fail, tolerated like common.mk's KNOWN_FAILS: a listed
+# cell that fails is reported and ignored, a listed cell that passes fails the target so the
+# entry gets removed. Use it only for a defect that is understood and written down.
+KPEX_KNOWN_FAILS ?=
 
 # common.mk's regression on this directory means: every layout through the three Magic modes
 REGRESSION_STEPS ?= magic-pex1 magic-pex2 magic-pex3
@@ -55,6 +68,7 @@ FRESH     := $(RUN_DIR)/results.json
 # ================================================================================================
 
 layouts: ## Regenerate every layout/*.gds from the generators in scripts/ (usage: make layouts)
+	@mkdir -p $(LAY_DIR)
 	@for g in $(SCRIPTS)/gen_*.py; do \
 		klayout -b -r $$g > $(RUN_DIR).genlog 2>&1 || { echo "[LAYOUTS] FAILED $$g"; cat $(RUN_DIR).genlog; rm -f $(RUN_DIR).genlog; exit 1; }; \
 		grep -v '^wrote' $(RUN_DIR).genlog || true; \
@@ -76,21 +90,42 @@ layouts-check: ## Assert the generators reproduce layout/ byte for byte (usage: 
 .PHONY: layouts-check
 
 pex-bench-magic: check-pdk ## Extract every layout with Magic in modes 1, 2 and 3 (usage: make pex-bench-magic)
-	@for cell in $(LAYOUT_CELLS); do \
+	@fails=; \
+	for cell in $(LAYOUT_CELLS); do \
 		for mode in 1 2 3; do \
-			$(MAKE) --no-print-directory magic-pex CELL=$$cell EXT_MODE=$$mode > /dev/null || { echo "[MAGIC] FAILED $$cell mode $$mode"; exit 1; }; \
+			$(MAKE) --no-print-directory magic-pex CELL=$$cell EXT_MODE=$$mode > /dev/null || { echo "[MAGIC] FAILED $$cell mode $$mode"; fails="$$fails $$cell:$$mode"; }; \
 		done; \
 		echo "[MAGIC] $$cell: modes 1 2 3"; \
-	done
+	done; \
+	[ -z "$$fails" ] || { echo "[MAGIC] failed:$$fails"; exit 1; }
 .PHONY: pex-bench-magic
 
 pex-bench-2.5d: check-pdk ## Extract the comparison cells with the kpex 2.5D engine (usage: make pex-bench-2.5d)
-	@for cell in $(KPEX_CELLS); do \
+	@fails=; known=; xpass=; \
+	for kf in $(KPEX_KNOWN_FAILS); do \
+		case " $(KPEX_CELLS) " in *" $$kf "*) ;; \
+			*) echo "[KPEX 2.5D] WARNING: stale KPEX_KNOWN_FAILS entry '$$kf': not in KPEX_CELLS" ;; \
+		esac; \
+	done; \
+	for cell in $(KPEX_CELLS); do \
 		d=$(KPEX_DIR)/2.5D/$$cell; mkdir -p $$d; \
-		kpex --pdk $(PDK) --cell $$cell --gds $(LAY_DIR)/$$cell.gds --2.5D --out_dir $$d --out_spice $$d/out.spice > $$d/log 2>&1 || { echo "[KPEX 2.5D] FAILED $$cell, see $$d/log"; exit 1; }; \
-		rm -rf $$d/.kpex_cache; \
-		echo "[KPEX 2.5D] $$cell: $$(grep -h '^Cext_1 ' $$d/out.spice | awk '{print $$2, $$3, $$4}')"; \
-	done
+		if kpex --pdk $(PDK) --cell $$cell --gds $(LAY_DIR)/$$cell.gds --2.5D --out_dir $$d --out_spice $$d/out.spice > $$d/log 2>&1; then \
+			rm -rf $$d/.kpex_cache; \
+			echo "[KPEX 2.5D] $$cell: $$(grep -h '^Cext_1 ' $$d/out.spice | awk '{print $$2, $$3, $$4}')"; \
+			case " $(KPEX_KNOWN_FAILS) " in *" $$cell "*) xpass="$$xpass $$cell" ;; esac; \
+		else \
+			case " $(KPEX_KNOWN_FAILS) " in \
+				*" $$cell "*) echo "[KPEX 2.5D] KNOWN FAIL (ignored): $$cell, see $$d/log"; known="$$known $$cell" ;; \
+				*) echo "[KPEX 2.5D] FAILED $$cell, see $$d/log"; fails="$$fails $$cell" ;; \
+			esac; \
+		fi; \
+	done; \
+	[ -z "$$known" ] || echo "[KPEX 2.5D] known fails:$$known"; \
+	[ -z "$$xpass" ] || { echo "[KPEX 2.5D] UNEXPECTED PASS:$$xpass - listed in KPEX_KNOWN_FAILS but passed, remove the entry"; exit 1; }; \
+	[ -z "$$fails" ] || { echo "[KPEX 2.5D] failed:$$fails"; exit 1; }
+	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input; the
+	@# directory it picks differs per PDK runset, so clean both places it has been seen in.
+	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 .PHONY: pex-bench-2.5d
 
 pex-bench-fastercap: check-pdk ## Field-solve the comparison cells with kpex FasterCap (usage: make pex-bench-fastercap [KPEX_AMAX=<um2>] [KPEX_TOL=<frac>])
@@ -98,10 +133,14 @@ pex-bench-fastercap: check-pdk ## Field-solve the comparison cells with kpex Fas
 		d=$(KPEX_DIR)/fastercap/$${cell}_a$(KPEX_AMAX); mkdir -p $$d; \
 		kpex --pdk $(PDK) --cell $$cell --gds $(LAY_DIR)/$$cell.gds --fastercap \
 			--delaunay_amax $(KPEX_AMAX) --delaunay_b 0.5 --tolerance $(KPEX_TOL) \
+			$(if $(KPEX_THREADS),--threads $(KPEX_THREADS),) \
 			--out_dir $$d --out_spice $$d/out.spice > $$d/log 2>&1 || { echo "[FASTERCAP] FAILED $$cell, see $$d/log"; exit 1; }; \
 		find $$d -type d \( -name FasterCap_Input_Files -o -name Geometries -o -name .kpex_cache \) -prune -exec rm -rf {} + 2>/dev/null; \
 		python3 $(SCRIPTS)/read_kpex.py $$d | sed 's/^/[FASTERCAP] /'; \
 	done
+	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input; the
+	@# directory it picks differs per PDK runset, so clean both places it has been seen in.
+	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 .PHONY: pex-bench-fastercap
 
 pex-bench-compare: ## Print tables A to I from whatever has been extracted and write $(FRESH) (usage: make pex-bench-compare)

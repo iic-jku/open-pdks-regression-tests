@@ -1,0 +1,872 @@
+[
+ {
+  "table": "A",
+  "key": "m1_plate",
+  "source": "deck",
+  "value": 81.1462
+ },
+ {
+  "table": "A",
+  "key": "m1_plate",
+  "source": "magic",
+  "value": 81.14620000000001
+ },
+ {
+  "table": "A",
+  "key": "m1_wire",
+  "source": "deck",
+  "value": 4.7151309999999995
+ },
+ {
+  "table": "A",
+  "key": "m1_wire",
+  "source": "magic",
+  "value": 4.71513
+ },
+ {
+  "table": "A",
+  "key": "m2_plate",
+  "source": "deck",
+  "value": 44.1996
+ },
+ {
+  "table": "A",
+  "key": "m2_plate",
+  "source": "magic",
+  "value": 44.1996
+ },
+ {
+  "table": "A",
+  "key": "m2_wire",
+  "source": "deck",
+  "value": 3.7384980000000003
+ },
+ {
+  "table": "A",
+  "key": "m2_wire",
+  "source": "magic",
+  "value": 3.7385
+ },
+ {
+  "table": "A",
+  "key": "m3_plate",
+  "source": "deck",
+  "value": 31.2392
+ },
+ {
+  "table": "A",
+  "key": "m3_plate",
+  "source": "magic",
+  "value": 31.2392
+ },
+ {
+  "table": "A",
+  "key": "m3_wire",
+  "source": "deck",
+  "value": 3.284471
+ },
+ {
+  "table": "A",
+  "key": "m3_wire",
+  "source": "magic",
+  "value": 3.28447
+ },
+ {
+  "table": "A",
+  "key": "m4_plate",
+  "source": "deck",
+  "value": 24.6356
+ },
+ {
+  "table": "A",
+  "key": "m4_plate",
+  "source": "magic",
+  "value": 24.635600000000004
+ },
+ {
+  "table": "A",
+  "key": "m4_wire",
+  "source": "deck",
+  "value": 3.033503
+ },
+ {
+  "table": "A",
+  "key": "m4_wire",
+  "source": "magic",
+  "value": 3.0335000000000005
+ },
+ {
+  "table": "A",
+  "key": "m5_plate",
+  "source": "deck",
+  "value": 20.572200000000002
+ },
+ {
+  "table": "A",
+  "key": "m5_plate",
+  "source": "magic",
+  "value": 20.5722
+ },
+ {
+  "table": "A",
+  "key": "m5_wire",
+  "source": "deck",
+  "value": 3.213936
+ },
+ {
+  "table": "A",
+  "key": "m5_wire",
+  "source": "magic",
+  "value": 3.2139400000000005
+ },
+ {
+  "table": "B",
+  "key": "m2_over_m1",
+  "source": "deck",
+  "value": 7.80534
+ },
+ {
+  "table": "B",
+  "key": "m2_over_m1",
+  "source": "magic",
+  "value": 7.677510000000001
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m2",
+  "source": "deck",
+  "value": 7.86314
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m2",
+  "source": "magic",
+  "value": 7.7314300000000005
+ },
+ {
+  "table": "B",
+  "key": "m4_over_m3",
+  "source": "deck",
+  "value": 7.81754
+ },
+ {
+  "table": "B",
+  "key": "m4_over_m3",
+  "source": "magic",
+  "value": 7.688890000000001
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m4",
+  "source": "deck",
+  "value": 6.04278
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m4",
+  "source": "magic",
+  "value": 5.83137
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m1",
+  "source": "deck",
+  "value": 3.4881599999999997
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m1",
+  "source": "magic",
+  "value": 3.20889
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m1",
+  "source": "deck",
+  "value": 2.14684
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m1",
+  "source": "magic",
+  "value": 1.5913900000000003
+ },
+ {
+  "table": "C",
+  "key": "s0p2",
+  "source": "deck",
+  "value": 13.779591836734692
+ },
+ {
+  "table": "C",
+  "key": "s0p2",
+  "source": "magic",
+  "value": 6.752
+ },
+ {
+  "table": "C",
+  "key": "s0p4",
+  "source": "deck",
+  "value": 5.837463976945244
+ },
+ {
+  "table": "C",
+  "key": "s0p4",
+  "source": "magic",
+  "value": 2.8937100000000004
+ },
+ {
+  "table": "C",
+  "key": "s0p8",
+  "source": "deck",
+  "value": 2.7116465863453816
+ },
+ {
+  "table": "C",
+  "key": "s0p8",
+  "source": "magic",
+  "value": 1.3504000000000003
+ },
+ {
+  "table": "C",
+  "key": "s1p6",
+  "source": "deck",
+  "value": 1.3093729799612153
+ },
+ {
+  "table": "C",
+  "key": "s1p6",
+  "source": "magic",
+  "value": 0.6534200000000001
+ },
+ {
+  "table": "C",
+  "key": "s3p2",
+  "source": "deck",
+  "value": 0.6436606291706386
+ },
+ {
+  "table": "C",
+  "key": "s3p2",
+  "source": "magic",
+  "value": 0.32152
+ },
+ {
+  "table": "D",
+  "key": "m1",
+  "source": "deck",
+  "value": 8.91
+ },
+ {
+  "table": "D",
+  "key": "m1",
+  "source": "magic",
+  "value": 8.9105
+ },
+ {
+  "table": "D",
+  "key": "m2",
+  "source": "deck",
+  "value": 8.91
+ },
+ {
+  "table": "D",
+  "key": "m2",
+  "source": "magic",
+  "value": 8.9105
+ },
+ {
+  "table": "D",
+  "key": "m3",
+  "source": "deck",
+  "value": 8.91
+ },
+ {
+  "table": "D",
+  "key": "m3",
+  "source": "magic",
+  "value": 8.9105
+ },
+ {
+  "table": "D",
+  "key": "m4",
+  "source": "deck",
+  "value": 8.91
+ },
+ {
+  "table": "D",
+  "key": "m4",
+  "source": "magic",
+  "value": 8.9105
+ },
+ {
+  "table": "D",
+  "key": "m5",
+  "source": "deck",
+  "value": 3.96
+ },
+ {
+  "table": "D",
+  "key": "m5",
+  "source": "magic",
+  "value": 3.9605
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n1",
+  "source": "deck",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n1",
+  "source": "magic",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n2",
+  "source": "deck",
+  "value": 2.25
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n2",
+  "source": "magic",
+  "value": 2.2499999999999996
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n4",
+  "source": "deck",
+  "value": 1.125
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n4",
+  "source": "magic",
+  "value": 1.1249999999999998
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n8",
+  "source": "deck",
+  "value": 0.5625
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n8",
+  "source": "magic",
+  "value": 0.5624999999999998
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n1",
+  "source": "deck",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n1",
+  "source": "magic",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n2",
+  "source": "deck",
+  "value": 2.25
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n2",
+  "source": "magic",
+  "value": 2.2499999999999996
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n4",
+  "source": "deck",
+  "value": 1.125
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n4",
+  "source": "magic",
+  "value": 1.1249999999999998
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n8",
+  "source": "deck",
+  "value": 0.5625
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n8",
+  "source": "magic",
+  "value": 0.5624999999999998
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n1",
+  "source": "deck",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n1",
+  "source": "magic",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n2",
+  "source": "deck",
+  "value": 2.25
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n2",
+  "source": "magic",
+  "value": 2.2499999999999996
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n4",
+  "source": "deck",
+  "value": 1.125
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n4",
+  "source": "magic",
+  "value": 1.1249999999999998
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n8",
+  "source": "deck",
+  "value": 0.5625
+ },
+ {
+  "table": "E",
+  "key": "m3_m4_n8",
+  "source": "magic",
+  "value": 0.5624999999999998
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n1",
+  "source": "deck",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n1",
+  "source": "magic",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n2",
+  "source": "deck",
+  "value": 2.25
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n2",
+  "source": "magic",
+  "value": 2.2500000000000004
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n4",
+  "source": "deck",
+  "value": 1.125
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n4",
+  "source": "magic",
+  "value": 1.1250000000000002
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n8",
+  "source": "deck",
+  "value": 0.5625
+ },
+ {
+  "table": "E",
+  "key": "m4_m5_n8",
+  "source": "magic",
+  "value": 0.5625000000000002
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "deck",
+  "value": 81.14620000000001
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "magic",
+  "value": 81.14620000000001
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "kpex25",
+  "value": 81.1463
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "deck",
+  "value": 4.7151309999999995
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "magic",
+  "value": 4.71513
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "kpex25",
+  "value": 4.715210000000001
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "deck",
+  "value": 44.1996
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "magic",
+  "value": 44.1996
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "kpex25",
+  "value": 44.1997
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "deck",
+  "value": 3.7384980000000008
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "magic",
+  "value": 3.7385
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "kpex25",
+  "value": 3.73862
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "deck",
+  "value": 31.2392
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "magic",
+  "value": 31.2392
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "kpex25",
+  "value": 31.239400000000003
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "deck",
+  "value": 3.284471
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "magic",
+  "value": 3.28447
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "kpex25",
+  "value": 3.2846400000000004
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "deck",
+  "value": 24.6356
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "magic",
+  "value": 24.635600000000004
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "kpex25",
+  "value": 24.635800000000003
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "deck",
+  "value": 3.0335030000000005
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "magic",
+  "value": 3.0335000000000005
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "kpex25",
+  "value": 3.0337000000000005
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "deck",
+  "value": 20.572200000000002
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "magic",
+  "value": 20.5722
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "kpex25",
+  "value": 23.5703
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "deck",
+  "value": 3.213936
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "magic",
+  "value": 3.2139400000000005
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "kpex25",
+  "value": 4.08216
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "deck",
+  "value": 7.80534
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "magic",
+  "value": 7.677510000000001
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "kpex25",
+  "value": 7.805370000000001
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "deck",
+  "value": 7.8631400000000005
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "magic",
+  "value": 7.7314300000000005
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "kpex25",
+  "value": 7.863180000000001
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "deck",
+  "value": 7.817540000000001
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "magic",
+  "value": 7.688890000000001
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "kpex25",
+  "value": 7.817570000000001
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m4",
+  "source": "deck",
+  "value": 6.04278
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m4",
+  "source": "magic",
+  "value": 5.83137
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "deck",
+  "value": 3.48816
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "magic",
+  "value": 3.20889
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "kpex25",
+  "value": 3.4882400000000002
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "deck",
+  "value": 2.1468400000000005
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "magic",
+  "value": 1.5913900000000003
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "deck",
+  "value": 13.779591836734692
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "magic",
+  "value": 6.752
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "kpex25",
+  "value": 13.779600000000002
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "deck",
+  "value": 5.837463976945244
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "magic",
+  "value": 2.8937100000000004
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "kpex25",
+  "value": 5.837460000000001
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "deck",
+  "value": 2.7116465863453816
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "magic",
+  "value": 1.3504000000000003
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "kpex25",
+  "value": 2.71165
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "deck",
+  "value": 1.3093729799612153
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "magic",
+  "value": 0.6534200000000001
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "kpex25",
+  "value": 1.30937
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "deck",
+  "value": 0.6436606291706387
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "magic",
+  "value": 0.32152
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "kpex25",
+  "value": 0.643661
+ }
+]

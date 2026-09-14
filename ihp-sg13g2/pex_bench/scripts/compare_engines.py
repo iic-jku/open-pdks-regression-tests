@@ -117,6 +117,10 @@ def rel(got, ref):
     return "%+7.1f%%" % ((got - ref) / ref * 100.0) if (got is not None and ref) else "       -"
 
 
+def pc(x):
+    return "      -" if x != x else "%6.2f%%" % x
+
+
 def keep(table, key, source, value):
     if value is not None:
         ROWS.append((table, key, source, value * 1e15))
@@ -145,8 +149,8 @@ for m in AREA:
             fv, fres = to_sub[n], resid.get(n, 0.0)
         for src, val in (("deck", pred), ("magic", mv), ("kpex25", kv), ("fastercap", fv)):
             keep("F", key, src, val)
-        print("%-14s %s %s %s %s %s %6s %s %6.2f%% %s" % (
-            "%s %s" % (m, tag), ff(pred), ff(mv), ff(kv), ff(fv), rel(fv, mv), amax, ff(fres), asym, origin))
+        print("%-14s %s %s %s %s %s %6s %s %7s %s" % (
+            "%s %s" % (m, tag), ff(pred), ff(mv), ff(kv), ff(fv), rel(fv, mv), amax, ff(fres), pc(asym), origin))
 
 print()
 print(sep)
@@ -164,8 +168,8 @@ for (lo, up), ov, sov in OVER:
     fv, amax, asym, origin = (r[1], r[4], r[3], r[5]) if r else (None, "-", float("nan"), "")
     for src, val in (("deck", pred), ("magic", mg), ("kpex25", kv), ("fastercap", fv)):
         keep("G", key, src, val)
-    print("%-16s %s %s %s %s %s %s %6s %6.2f%% %s" % (
-        "%s over %s" % (up, lo), ff(pred), ff(mg), ff(kv), ff(fv), rel(fv, mg), rel(fv, kv), amax, asym, origin))
+    print("%-16s %s %s %s %s %s %s %6s %7s %s" % (
+        "%s over %s" % (up, lo), ff(pred), ff(mg), ff(kv), ff(fv), rel(fv, mg), rel(fv, kv), amax, pc(asym), origin))
 
 print()
 print(sep)
@@ -183,8 +187,8 @@ for s, tag in SPACINGS:
     fv, amax, asym, origin = (r[1], r[4], r[3], r[5]) if r else (None, "-", float("nan"), "")
     for src, val in (("deck", pred), ("magic", mg), ("kpex25", kv), ("fastercap", fv)):
         keep("H", "s" + tag, src, val)
-    print("%-9.2f %s %s %s %s %s %s %6s %6.2f%% %s" % (
-        s, ff(pred), ff(mg), ff(kv), ff(fv), rel(mg, fv), rel(kv, fv), amax, asym, origin))
+    print("%-9.2f %s %s %s %s %s %s %6s %7s %s" % (
+        s, ff(pred), ff(mg), ff(kv), ff(fv), rel(mg, fv), rel(kv, fv), amax, pc(asym), origin))
 
 print()
 print(sep)
