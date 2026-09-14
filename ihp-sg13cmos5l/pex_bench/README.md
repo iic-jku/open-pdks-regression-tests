@@ -50,6 +50,15 @@ Vias: `via1` m1-m2, `via2` m2-m3, `via3` m3-m4 at 9000 mOhm/cut each, `via4` m4-
 | kpex 2.5D | `kpex --2.5D` | a second implementation, reading the identical coefficients from the kpex tech protobuf |
 | FasterCap | `kpex --fastercap` | a boundary-element field solve on the kpex process stack |
 
+**Both kpex columns are empty in this PDK today, and the bench does not ask for them.** The
+kpex wheel ships the `sg13cmos5l` LVS deck without the 47 rule decks it `%include`s, so
+`create_lvsdb` fails before an engine is even chosen and no kpex run of any kind succeeds on
+an unmodified container. The bench therefore declares `PEX_ENGINES := magic` in its Makefile,
+the regression test calls no kpex engine here, and `expected/results.json` holds only the deck
+and Magic columns. Nothing is tolerated or hidden: the values are absent, not wrong. Once the
+wheel ships the rule decks, put `kpex25 fastercap` back into `PEX_ENGINES` and bless the
+columns with `make pex-bench-expected`. See `../../ihp-sg13g2/pex_bench/report/upstream_issues_kpex.md`.
+
 `make klayout-pex` with the default `KPEX_ENGINE=magic` is not a further opinion: kpex then drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates.
