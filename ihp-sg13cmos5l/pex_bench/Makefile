@@ -19,7 +19,8 @@ CELL ?= sidewall_m1_s0p2
 EXT_MODE ?= 2
 
 # Full-RC settings the bench uses for the resistance tables: the only combination that makes
-# Magic emit a resistor for an unbranched net at all (see report/pex_bench_report.html, defect 2)
+# Magic emit a resistor for an unbranched net at all
+# (see ../../ihp-sg13g2/pex_bench/report/pex_bench_report.html, defect 2)
 THRESHOLD ?= 0
 MINRES ?= 0
 MINDELAY ?= 0

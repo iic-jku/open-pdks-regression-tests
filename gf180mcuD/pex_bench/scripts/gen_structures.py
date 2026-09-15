@@ -14,8 +14,8 @@ os.makedirs(OUT, exist_ok=True)
 
 DBU = 0.001
 
-# GDS numbers from libs.tech/klayout/tech/sg13cmos5l.map, pin datatype 2 carries the port
-# labels.
+# GDS numbers from libs.tech/klayout/tech/gf180mcu.map, pin datatype 10 carries the pin boxes
+# and the port labels.
 #
 # Five conductors, m5 being the thick top metal (40 mOhm/sq against 90 for the thin ones).
 # It is called m5 and not tm1 as in the IHP PDKs because that is what this PDK calls it

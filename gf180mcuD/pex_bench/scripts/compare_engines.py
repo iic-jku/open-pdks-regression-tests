@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tables F to I: three implementations of the SG13G2 parasitic model against a field solve.
+"""Tables F to I: three implementations of the gf180mcuD parasitic model against a field solve.
 
   deck        the arithmetic of gf180mcuD.tech, extract section, done by hand
   Magic       netlist/pex/<cell>_magic_pex_2.spice        (make pex-bench-magic)

@@ -20,7 +20,8 @@ Exit codes, so a CI test can triage a failure without reading the log:
      not move this column; it shows up as tool drift against an unchanged deck instead.
   2  only tool values drifted (magic, kpex25, fastercap) while the deck held. A new Magic or
      kpex version behaves differently. Six of the expected magic values encode known defects
-     (report/pex_bench_report.html), so check whether upstream fixed one before re-blessing.
+     (../../ihp-sg13g2/pex_bench/report/pex_bench_report.html), so check whether upstream
+     fixed one before re-blessing.
   3  the run did not complete: the fresh results are missing entirely, or values are
      missing from them, so the comparison is on partial data. Fix the run before reading
      any drift verdict.
@@ -122,7 +123,7 @@ def main():
     if tool_drift:
         print("[CHECK] TOOL: %d values moved while the deck held. Magic or kpex behaves "
               "differently than when the expected values were written. Check the versions "
-              "and report/pex_bench_report.html before re-blessing." % tool_drift)
+              "and ../../ihp-sg13g2/pex_bench/report/pex_bench_report.html before re-blessing." % tool_drift)
         return EXIT_TOOL
     return EXIT_OK
 

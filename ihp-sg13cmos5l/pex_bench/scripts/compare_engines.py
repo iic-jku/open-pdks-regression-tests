@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Tables F to I: three implementations of the SG13G2 parasitic model against a field solve.
+"""Tables F to I: three implementations of the ihp-sg13cmos5l parasitic model against a field solve.
 
-  deck        the arithmetic of ihp-sg13g2-extract.tech, done by hand
+  deck        the arithmetic of ihp-sg13cmos5l-extract.tech, done by hand
   Magic       netlist/pex/<cell>_magic_pex_2.spice        (make pex-bench-magic)
   kpex 2.5D   netlist/pex/kpex/2.5D/<cell>/out.spice       (make pex-bench-2.5d)
   FasterCap   netlist/pex/kpex/fastercap/<cell>_a<amax>/   (make pex-bench-fastercap)

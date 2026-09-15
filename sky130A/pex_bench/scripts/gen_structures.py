@@ -14,8 +14,8 @@ os.makedirs(OUT, exist_ok=True)
 
 DBU = 0.001
 
-# GDS numbers from libs.tech/klayout/tech/sg13cmos5l.map, pin datatype 2 carries the port
-# labels.
+# GDS numbers from libs.tech/klayout/tech/sky130A.map, pin datatype 16 carries the pin boxes
+# and the port labels.
 #
 # Six conductors. Unlike the other three PDKs this stack starts below Metal1 with the local
 # interconnect li1, a genuine conductor with its own coefficients and a sheet resistance two

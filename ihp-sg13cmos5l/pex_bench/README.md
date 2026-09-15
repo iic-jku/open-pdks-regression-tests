@@ -9,7 +9,7 @@ Two results of this port are worth reading before trusting a number here:
 
 - **kpex's sidewall coefficients for this PDK are ihp-sg13g2's.** `klayout_pex_protobuf/ihp-sg13cmos5l_tech.pb.json` holds the ihp-sg13g2 `sidewalls` list with the `Metal5` and `TopMetal2` rows removed and `allm6` relabelled `TopMetal1`; none of the six remaining values is from `ihp-sg13cmos5l-extract.tech`. Metal1 is 43.268 aF / +0.003 um in the deck and 28.735 / -0.057 in kpex. Because the two offsets pull in opposite directions the error grows with spacing: -5.7 % at 0.2 um, -32.3 % at 3.2 um. Table H is the row that shows it.
 
-  The sidewall block is the worst of it but not all of it. A full audit of that file against this PDK's deck, in `klayout-pex-docu/Issue_cmos5l_sidewall_coefficients.md`, finds **36 of 107 coefficients** carrying the ihp-sg13g2 value: the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct throughout. Root cause is `cxx/gen_tech_pb/pdk/ihp_sg13.cpp`, which builds both PDKs from one function: wherever an `is_g2()` branch exists because the layer set differs the cmos5l value was entered, and wherever the layer exists in both but the value differs, the sg13g2 value stands.
+  The sidewall block is the worst of it but not all of it. A full audit of that file against this PDK's deck finds **36 of 107 coefficients** carrying the ihp-sg13g2 value: the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct throughout. Root cause is `cxx/gen_tech_pb/pdk/ihp_sg13.cpp`, which builds both PDKs from one function: wherever an `is_g2()` branch exists because the layer set differs the cmos5l value was entered, and wherever the layer exists in both but the value differs, the sg13g2 value stands.
 
   Do not conclude from a diff of the two tech files that the rest is fine - that was our first reading and it is wrong. A coefficient that is bad *because* it equals ihp-sg13g2's shows up as identical in such a diff. Only a comparison against this PDK's own deck finds it.
 - **The table B / G deficit is lost, not moved to the substrate.** Magic gets the plate-to-plate term (100 um^2 x overlap coefficient) exactly right in all six pairs and under-delivers only the 40 um of edge fringe, by a fraction that falls monotonically with vertical separation: 94.1 % delivered for the adjacent thin-metal pairs, 90.7 % for m4-tm1, 83.2 % for m1-m3, 62.1 % for m1-tm1. `sidehalo` is 8 um while the lower plate extends 10 um past the upper one on every side, so the halo, not the plate edge, is what truncates the integration. The top-plate-to-substrate capacitance Magic emits alongside it does not absorb the deficit: it depends only on the upper layer (0.37505 fF for both `overlap_m2_m3` and `overlap_m1_m3`, 0.65826 fF for both `overlap_m4_tm1` and `overlap_m1_tm1`) while the deficits of those pairs differ by more than a factor of two.
@@ -17,8 +17,7 @@ Two results of this port are worth reading before trusting a number here:
 Everything runs inside the IIC-OSIC-TOOLS container from this directory. `make help` lists the targets.
 
 ```sh
-make pex-bench                  # Magic modes 1/2/3 on every layout, kpex 2.5D on the comparison cells, tables, check
-make pex-bench FASTERCAP=1      # also field-solve the comparison cells (KPEX_AMAX=2 by default, minutes)
+make pex-bench                  # Magic modes 1/2/3 on every layout, tables, check - no kpex here, see below
 make magic-pex CELL=cross_m1 EXT_MODE=3 MINDELAY=1      # any single cell, any setting
 make klayout-pex CELL=sidewall_m1_s0p8 KPEX_ENGINE=2.5D
 make layouts                    # regenerate layout/ from scripts/gen_*.py
@@ -88,14 +87,14 @@ The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for
 
 - `netlist/pex/<cell>_magic_pex_<mode>.spice`, `netlist/pex/kpex/2.5D/<cell>/`, `netlist/pex/kpex/fastercap/<cell>_a<amax>/` are the run outputs (ignored by git).
 - `scripts/analyse.py` prints tables A to E (deck against Magic), `scripts/compare_engines.py` tables F to I (all engines against the field solve). Both write their values to JSON.
-- `scripts/check_results.py` compares that JSON with `expected/results.json`: deck, Magic and kpex 2.5D values to 0.05 %, FasterCap to 5 % (the triangulation is rebuilt every run, so points scatter). FasterCap values are optional in the check, so the bench passes without a field solve.
+- `scripts/check_results.py` compares that JSON with `expected/results.json`: deck, Magic and kpex 2.5D values to 0.05 % (this PDK currently has no kpex 2.5D values, see above), FasterCap to 5 % (the triangulation is rebuilt every run, so points scatter). FasterCap values are optional in the check, so the bench passes without a field solve.
 - Its exit code says what drifted, so a CI test can triage without reading the log: `0` clean, `1` a deck value moved (the hand-maintained tables were edited), `2` only tool values moved, `3` the run is incomplete or the fresh file is missing or broken, `4` usage error or the expected file is missing.
 
 `make pex-bench-expected` overwrites `expected/results.json` with a fresh run. Do that after a deliberate change (a new tool version that fixes a defect), never to make a failing check pass.
 
-Unlike the ihp-sg13g2 bench this directory ships no `expected/fastercap/` matrices, so the FasterCap column stays empty until a field solve is run locally with `FASTERCAP=1`.
+Unlike the ihp-sg13g2 bench this directory ships no `expected/fastercap/` matrices, and none can be produced while kpex cannot run for this PDK: `make pex-bench FASTERCAP=1` skips the field solve and `scripts/make_fastercap_expected.sh` skips the PDK, both because `fastercap` is not in `PEX_ENGINES`.
 
-To produce a set, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
+Once it is, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
 the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices
 contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and
 `--tolerance` is written up once, in
