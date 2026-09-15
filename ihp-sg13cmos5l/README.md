@@ -1,7 +1,6 @@
-# DRC / LVS / PEX Regression Tests for the ihp-sg13g2 Open-PDK
+# DRC / LVS / PEX Regression Tests for the ihp-sg13cmos5l Open-PDK
 
-This Makefile-driven repository runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic+Netgen. This regression test is always executed before a new release for the IIC-OSIC-TOOLS is released. The test script can be found [here](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_lvs_drc_pex_sg13g2.sh).
-
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13cmos5l Open-PDK, using both KLayout and Magic + Netgen. The IIC-OSIC-TOOLS run it before every release, as [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh).
 
 ## Show Available Targets
 
@@ -109,12 +108,22 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets
 
 If a matching Xschem symbol (`schematic/xschem/<CELL>_pex.sym`) exists, the `.subckt` pin order in the extracted SPICE file is automatically reordered to match the symbol's pin positions. This ensures the PEX netlist can be used directly with the corresponding Xschem symbol for simulation regardless of the selected `EXT_MODE`.
 
-**KLayout PEX** uses `kpex` with the Magic extraction engine currently (2.5D engine is work in progress):
+**KLayout PEX** uses `kpex`. The `KPEX_ENGINE` parameter selects its engine:
+
+- `magic` = kpex drives Magic (default). The coupling capacitors are then identical to `magic-pex`, so this is the same engine behind a KLayout front end, not a second opinion.
+- `2.5D` = kpex's own analytical engine, reading its coefficients from `ihp-sg13cmos5l_tech.pb.json`.
+- `fastercap` = a FasterCap field solve on the kpex process stack, capacitance only. `KPEX_AMAX` sets the KLayout-side triangulation (`--delaunay_amax`) and `KPEX_TOL` the FasterCap auto tolerance.
+
+The output is `<CELL>_klayout_pex_<EXT_MODE>.spice` for the Magic engine and `<CELL>_klayout_<engine>_pex_<EXT_MODE>.spice` for the other two.
+
+> [!WARNING]
+> `klayout-pex` does not run for this PDK on an unmodified IIC-OSIC-TOOLS image, with any engine. The kpex wheel ships the `sg13cmos5l` LVS deck without the rule decks it includes, so kpex fails while building the LVS database, before an engine is chosen. See [PEX Bench](#pex-bench) below.
 
 ```sh
 make klayout-pex
 make klayout-pex CELL=sg13_lv_nmos_tap
 make klayout-pex CELL=sg13_lv_nmos_tap EXT_MODE=3
+make klayout-pex CELL=sg13_lv_nmos_tap EXT_MODE=2 KPEX_ENGINE=2.5D
 ```
 
 **Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC):
@@ -156,28 +165,36 @@ The `regression` target is this repository's end-to-end smoke test for the [IIC-
 make regression
 ```
 
-The target auto-discovers every cell from the `.gds` files in `layout/`, then, for each cell, runs the individual verification targets and records which ones fail:
+The target auto-discovers every cell from the `.gds` files in `layout/`, then runs the steps listed in `REGRESSION_STEPS` on each cell and records which ones fail. The default steps are:
 
 - `klayout-drc`
 - `klayout-lvs`
 - `magic-drc`
 - `magic-lvs`
-- `magic-pex EXT_MODE=1` (C-decoupled)
-- `magic-pex EXT_MODE=2` (C-coupled)
-- `magic-pex EXT_MODE=3` (full-RC)
+- `magic-pex1` (C-decoupled)
+- `magic-pex2` (C-coupled)
+- `magic-pex3` (full-RC)
 
-> [!NOTE]
-> `klayout-pex` is currently commented out in the regression loop. Re-enable the three `klayout-pex` lines in the `regression` target to include it.
+`klayout-pex1`, `klayout-pex2` and `klayout-pex3` exist as steps but are not in the default list. For this PDK they would fail on every cell, see the warning under [Parasitic Extraction (PEX)](#parasitic-extraction-pex).
 
-Each cell prints a `PASSED`/`FAILED` line, and the run ends with a summary listing every cell that failed together with the tools that failed for it, for example:
+```sh
+make regression LAYOUT_CELLS="sg13_rhigh sg13_rppd" REGRESSION_STEPS="klayout-lvs magic-lvs"
+```
+
+Each cell prints a `PASSED`, `FAILED`, `KNOWN FAIL (ignored)` or `UNEXPECTED PASS` line, and the run ends with a summary, for example:
 
 ```
 [REGRESSION] PASSED: sg13_lv_nmos_tap
 ...
-[REGRESSION] SUMMARY: FAILED cells: sg13_rf_cmim(MAGIC-LVS) sg13_combined(MAGIC-LVS)
+[REGRESSION] KNOWN FAIL (ignored): sg13_cmomi (magic-lvs)
+...
+========================================
+[REGRESSION] SUMMARY: KNOWN FAIL cells (ignored): sg13_cmomi(magic-lvs)
+[REGRESSION] SUMMARY: No unexpected failures
+========================================
 ```
 
-If any cell fails, `make regression` exits with a non-zero status (`exit 1`), so it can be used directly as a CI gate. Known, expected failures are documented in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+`make regression` exits with a non-zero status when a step fails that is not listed or a listed step passes, so it can be used directly as a CI gate.
 
 The following tools and flows are checked:
 
@@ -187,12 +204,19 @@ The following tools and flows are checked:
 | KLayout LVS (`sak-lvs.sh -k` → `run_lvs.py`) | `klayout-lvs` |
 | Magic DRC (`sak-drc.sh -m`) | `magic-drc` |
 | Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
-| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC) | `magic-pex EXT_MODE=1/2/3` |
+| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
+
+### Known failures
+
+`KNOWN_FAILS` in this directory's `Makefile` lists the failures that are currently expected, one entry per `<cell>:<step>`, or `<cell>` for every step of that cell. Why each entry is there is written up in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
+- A listed step that fails is reported as `KNOWN FAIL (ignored)` and does not fail the regression.
+- A listed step that passes is reported as `UNEXPECTED PASS` and **does** fail the regression, so an entry cannot outlive the bug it stands for. Remove the entry, and its section in `KNOWN_ISSUES.md`, once that happens.
+- Any other failing step fails the regression.
 
 ## Supported Cells / Files
 
-The `regression` target auto-discovers every cell from the `.gds` files in `layout/`. Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass any of these names via `CELL=<cellname>` to run a single target on one cell.
-A regression over a selected list of cells is also possible with `LAYOUT_CELLS="Cell1 Cell2 ... CellN"`, eg. by calling `make regression LAYOUT_CELLS="Cell1 Cell2 ... CellN"`
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image; `KNOWN_FAILS` in the `Makefile` is the reference.
 
 **Low-voltage MOS transistors**
 
@@ -218,7 +242,7 @@ A regression over a selected list of cells is also possible with `LAYOUT_CELLS="
 
 **Capacitors**
 
-- `sg13_cmomi` (FAILED: Magic+Netgen LVS)
+- `sg13_cmomi` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Resistors**
 
@@ -233,4 +257,4 @@ A regression over a selected list of cells is also possible with `LAYOUT_CELLS="
 
 **Combined test cells**
 
-- `sg13_combined` (FAILED: Magic+Netgen LVS)
+- `sg13_combined` (PASS)
