@@ -1,11 +1,13 @@
 # Known Issues
 
-## Magic + Netgen LVS fails on sg13_cmomi (`cmomi`)
+Every entry of `KNOWN_FAILS` in the [Makefile](Makefile) has a section here. Remove both once the step passes: the regression reports a listed step that passes as `UNEXPECTED PASS` and fails.
 
-The following test fails Magic+Netgen LVS:
+KLayout LVS passes on every cell. Only Magic + Netgen LVS is affected.
 
-- `sg13_cmomi` — new interdigitated fringe capacitance (MOM Cap) - not extracted by LVS
+## Magic + Netgen LVS fails on `sg13_cmomi`
 
-**KLayout LVS passes on every cell**. Only Magic+Netgen LVS is affected.
+`KNOWN_FAILS` entry: `sg13_cmomi:magic-lvs`
 
-See issue: https://github.com/RTimothyEdwards/magic/issues/552
+Magic does not extract the interdigitated MOM capacitor (`cap_cmomi`) from the layout.
+
+Upstream: [magic#552](https://github.com/RTimothyEdwards/magic/issues/552)

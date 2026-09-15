@@ -1,0 +1,1273 @@
+<title>SG13G2 PEX Bench Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+
+<style>
+  :root {
+    --bg:         #f6f7f4;
+    --surface:    #ffffff;
+    --surface-2:  #edefe8;
+    --ink:        #14191b;
+    --ink-2:      #4d5652;
+    --ink-3:      #767f7a;
+    --rule:       #d5d9d0;
+    --rule-soft:  #e6e9e1;
+    --accent:     #a35a2c;
+    --accent-bg:  #f2e4d8;
+    --ok:         #2c6b4f;
+    --ok-bg:      #dfeee5;
+    --bad:        #a33028;
+    --bad-bg:     #f6e0dd;
+    --warn:       #866311;
+    --warn-bg:    #f2e9cf;
+    --cool:       #2f5d78;
+    --cool-bg:    #dde8ef;
+
+    --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-body:    "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #14171a;
+      --surface:   #1b1f22;
+      --surface-2: #22272b;
+      --ink:       #e9ebe6;
+      --ink-2:     #a2aba6;
+      --ink-3:     #7d8681;
+      --rule:      #333a3e;
+      --rule-soft: #272d31;
+      --accent:    #dc8f5b;
+      --accent-bg: #3a291d;
+      --ok:        #6cbc8e;
+      --ok-bg:     #1d3329;
+      --bad:       #e5806f;
+      --bad-bg:    #3a221f;
+      --warn:      #d6ab4d;
+      --warn-bg:   #33290f;
+      --cool:      #7db2d0;
+      --cool-bg:   #1c2c36;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #14171a;
+    --surface:   #1b1f22;
+    --surface-2: #22272b;
+    --ink:       #e9ebe6;
+    --ink-2:     #a2aba6;
+    --ink-3:     #7d8681;
+    --rule:      #333a3e;
+    --rule-soft: #272d31;
+    --accent:    #dc8f5b;
+    --accent-bg: #3a291d;
+    --ok:        #6cbc8e;
+    --ok-bg:     #1d3329;
+    --bad:       #e5806f;
+    --bad-bg:    #3a221f;
+    --warn:      #d6ab4d;
+    --warn-bg:   #33290f;
+    --cool:      #7db2d0;
+    --cool-bg:   #1c2c36;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; padding: 0 28px 96px; }
+  .prose { max-width: 68ch; }
+
+  /* ---------- masthead ---------- */
+
+  header.mast {
+    border-bottom: 2px solid var(--ink);
+    padding: 56px 0 22px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.06;
+    letter-spacing: -0.021em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+    max-width: 20ch;
+  }
+  .standfirst {
+    font-size: 19px;
+    color: var(--ink-2);
+    margin: 0 0 30px;
+    max-width: 64ch;
+  }
+  .runmeta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 18px 26px;
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    border-top: 1px solid var(--rule);
+    padding-top: 18px;
+  }
+  .runmeta dt {
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 10.5px;
+    font-weight: 600;
+    margin: 0 0 3px;
+  }
+  .runmeta dd { margin: 0; color: var(--ink); }
+
+  /* ---------- sections ---------- */
+
+  section { margin-bottom: 58px; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 25px;
+    letter-spacing: -0.012em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .h2rule { border: 0; border-top: 1px solid var(--rule); margin: 0 0 22px; }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+    margin: 30px 0 8px;
+  }
+  p { margin: 0 0 15px; }
+  ul { margin: 0 0 15px; padding-left: 20px; }
+  li { margin-bottom: 7px; }
+  code, .m {
+    font-family: var(--f-mono);
+    font-size: 0.855em;
+    background: var(--surface-2);
+    padding: 0.1em 0.36em;
+    border-radius: 2px;
+  }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* ---------- verdict list ---------- */
+
+  .verdicts { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+  .verdict {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 20px;
+    align-items: baseline;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .chip {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    border-radius: 2px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .chip.ok   { background: var(--ok-bg);   color: var(--ok); }
+  .chip.bad  { background: var(--bad-bg);  color: var(--bad); }
+  .chip.warn { background: var(--warn-bg); color: var(--warn); }
+  .chip.cool { background: var(--cool-bg); color: var(--cool); }
+  .verdict p { margin: 0; font-size: 16px; }
+  .verdict strong { font-weight: 600; }
+
+  /* ---------- engine legend ---------- */
+
+  .engines {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 0 0 22px;
+  }
+  .engine { background: var(--surface); padding: 15px 17px; }
+  .engine h4 {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin: 0 0 5px;
+    color: var(--accent);
+  }
+  .engine p { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.5; }
+
+  /* ---------- tables ---------- */
+
+  .tablewrap {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    margin: 0 0 10px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--f-display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--ink-2);
+    padding: 11px 14px 9px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface-2);
+  }
+  th, td {
+    padding: 6px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--rule-soft);
+    white-space: nowrap;
+  }
+  th {
+    font-weight: 600;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  th:first-child, td:first-child { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tr.unconv td { color: var(--ink-3); font-style: italic; }
+  td.d-ok   { color: var(--ok); }
+  td.d-bad  { color: var(--bad); font-weight: 600; }
+  td.d-warn { color: var(--warn); }
+  td.d-cool { color: var(--cool); }
+  .tnote { font-size: 14px; color: var(--ink-2); margin: 0 0 32px; max-width: 68ch; }
+
+  /* ---------- code ---------- */
+
+  pre {
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    background: var(--surface-2);
+    border-left: 2px solid var(--accent);
+    padding: 13px 16px;
+    overflow-x: auto;
+    margin: 0 0 16px;
+  }
+  pre .c { color: var(--ink-3); }
+  pre .hl { color: var(--bad); font-weight: 600; }
+  pre .gd { color: var(--ok); font-weight: 600; }
+
+  /* ---------- findings ---------- */
+
+  .finding {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding: 22px 24px;
+    margin-bottom: 22px;
+  }
+  .finding > .fhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .finding h3 { margin: 0; font-size: 19px; }
+  .impact {
+    border-top: 1px solid var(--rule-soft);
+    margin-top: 16px;
+    padding-top: 13px;
+    font-size: 15.5px;
+    color: var(--ink-2);
+  }
+  .impact b {
+    font-family: var(--f-display);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* ---------- charts ---------- */
+
+  figure { margin: 0 0 32px; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption { font-size: 14px; color: var(--ink-2); margin-top: 8px; max-width: 68ch; }
+  .chartbox {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding: 20px 18px 12px;
+    overflow-x: auto;
+  }
+
+  /* ---------- recommendations ---------- */
+
+  ol.recs { margin: 0; padding-left: 0; list-style: none; counter-reset: r; }
+  ol.recs li {
+    counter-increment: r;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  ol.recs li::before {
+    content: counter(r);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    padding-top: 4px;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 620px) {
+    .verdict { grid-template-columns: 1fr; gap: 7px; }
+    .chip { justify-self: start; }
+  }
+</style>
+
+<div class="page">
+
+<header class="mast">
+  <p class="eyebrow">Extraction bench &middot; IHP SG13G2</p>
+  <h1>Three extractors, one deck, six disagreements</h1>
+  <p class="standfirst">
+    Sixty-three dummy metal layouts with hand-computable parasitics, put through Magic, kpex's 2.5D
+    engine and a mesh-converged FasterCap solve. The capacitance and resistance <em>models</em> are
+    exact. Six things around them are not, and two of the template's make targets disagree with each
+    other by 16&nbsp;% on the same layout.
+  </p>
+  <dl class="runmeta">
+    <div><dt>Extractors</dt><dd>Magic 8.3 r681, kpex 0.3.15</dd></div>
+    <div><dt>Field solver</dt><dd>FasterCap 6.0.7</dd></div>
+    <div><dt>PDK deck</dt><dd>ihp-sg13g2 1.0.1</dd></div>
+    <div><dt>Structures</dt><dd>63 layouts, 4 modes</dd></div>
+    <div><dt>Bench</dt><dd>open-pdks-regression-tests, ihp-sg13g2/pex_bench</dd></div>
+    <div><dt>Date</dt><dd>2026-09-04</dd></div>
+  </dl>
+</header>
+
+<section>
+  <h2>Verdict</h2>
+  <hr class="h2rule">
+  <div class="verdicts">
+    <div class="verdict">
+      <span class="chip ok">Exact</span>
+      <p><strong>Capacitance to substrate, sheet resistance, contact resistance.</strong> All three
+      implementations reproduce the deck to six digits on all seven metals and all four via types,
+      including the 1/n scaling for parallel cuts.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip ok">Corroborated</span>
+      <p><strong>The deck's substrate coefficients are consistent with a field solve</strong> on Metal1
+      to Metal4, within the roughly 10&nbsp;% the triangulation was still moving. Sound, not yet
+      precise.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 1</span>
+      <p><strong>EXT_MODE=3 double-counts coupling</strong> at <span class="m">MINDELAY=0</span>.
+      Total extracted capacitance on the template inverter goes from 248&nbsp;fF to 511&nbsp;fF.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 2</span>
+      <p><strong>EXT_MODE=3 collapses resistor networks</strong> at the shipped
+      <span class="m">MINDELAY=1</span>. A four-terminal net loses two arms and one port is left floating.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 3</span>
+      <p><strong>EXT_MODE=1 discards interconnect coupling</strong> rather than lumping it to ground.
+      The inverter input nets come out with zero wiring capacitance.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 4</span>
+      <p><strong>magic-pex and klayout-pex are the same engine and still disagree.</strong>
+      <span class="m">sak-pex.sh</span> issues <span class="m">ext2spice lvs</span>, which loses
+      40.5&nbsp;fF of substrate capacitance on the inverter.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 5</span>
+      <p><strong>Magic's lateral coupling is half the deck value</strong> and 23&nbsp;% to 56&nbsp;%
+      below a converged field solve at every spacing. A regression: the halving arrived in
+      <span class="m">8.3.679</span> on 2026-08-02 and the double-count it compensates for does not
+      happen. kpex's 2.5D engine, reading the same coefficients, emits the full value.</p>
+    </div>
+    <div class="verdict">
+      <span class="chip bad">Defect 6</span>
+      <p><strong>Magic's halo model sends shielded plate-to-plate coupling to the substrate.</strong>
+      On TopMetal1 over Metal1 it under-reports the coupling by 30&nbsp;% and assigns 0.8&nbsp;fF to
+      the substrate where the field solve puts 0.13&nbsp;fF there and 0.38&nbsp;fF leaving upward.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>What was compared, and how</h2>
+  <hr class="h2rule">
+
+  <div class="engines">
+    <div class="engine">
+      <h4>deck</h4>
+      <p>The arithmetic of <span class="m">ihp-sg13g2-extract.tech</span> variant <span class="m">()</span>,
+      done by hand. The reference the PDK specifies.</p>
+    </div>
+    <div class="engine">
+      <h4>Magic</h4>
+      <p><span class="m">sak-pex.sh</span>, that is <span class="m">make magic-pex</span>. Magic's
+      implementation of that deck.</p>
+    </div>
+    <div class="engine">
+      <h4>kpex 2.5D</h4>
+      <p><span class="m">kpex --2.5D</span>. A second, independent implementation, reading the identical
+      coefficients from <span class="m">ihp-sg13g2_tech.pb.json</span>.</p>
+    </div>
+    <div class="engine">
+      <h4>FasterCap</h4>
+      <p><span class="m">kpex --fastercap</span>. A boundary-element field solve on the same stack.
+      No model, no coefficients.</p>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>
+      Those four columns are the whole point of the exercise. The deck and Magic tell you whether the
+      tool implements the model. kpex's 2.5D engine is the control: it reads the same numbers, so where
+      it disagrees with Magic exactly one of them has a bug. FasterCap then arbitrates, because it
+      knows nothing about either.
+    </p>
+    <p>
+      <strong>The one target that is not a fourth opinion is <span class="m">make klayout-pex</span>.</strong>
+      It passes <span class="m">--magic --magic_mode CC</span>, so it drives Magic. Its coupling
+      capacitors on the inverter are bit-identical to <span class="m">make magic-pex</span>: 26.3603,
+      15.8261, 9.20502, 0.02526 fF and so on, every digit. The repository has two PEX targets and one
+      capacitance engine.
+    </p>
+    <p>
+      kpex's process stack matches the PDK cross-section exactly, which is what makes the field solve
+      admissible as an arbiter: Metal1 <span class="m">z=1.04 t=0.42</span>, Metal2 to Metal5
+      <span class="m">t=0.49</span>, TopMetal1 <span class="m">t=2.0</span>, TopMetal2
+      <span class="m">t=3.0</span>, ILD <span class="m">k=4.1</span>, all identical to
+      <span class="m">sg13g2_for_EM.xs</span>.
+    </p>
+  </div>
+
+  <h3>The structures</h3>
+  <div class="prose">
+    <p>
+      Each layout isolates one term. Substrate capacitance pairs a 50&nbsp;x&nbsp;50&nbsp;um plate
+      (A/P = 12.5) with a 0.5&nbsp;x&nbsp;50&nbsp;um wire (A/P = 0.25) on the same layer, 60&nbsp;um
+      apart: two shapes give two equations, so the area and perimeter coefficients separate instead of
+      trading off. Overlap centres a 10&nbsp;x&nbsp;10&nbsp;um upper plate inside a
+      30&nbsp;x&nbsp;30&nbsp;um lower one, so the upper plate sees nothing but the lower plate and its
+      own edge fringe. Resistance uses a 1&nbsp;um wide wire with a port at each end, 99&nbsp;um apart.
+    </p>
+  </div>
+  <pre>C_substrate  = area x areacap  +  perimeter x perimc          <span class="c"># aF/um2, aF/um</span>
+C_overlap    = overlap_area x overlap  +  edge x sideoverlap
+C_sidewall   = k x length / (separation + offset)              <span class="c"># from defaultsidewall</span>
+R            = squares x resist  +  cuts x contact             <span class="c"># mOhm/sq, mOhm/cut</span></pre>
+</section>
+
+<section>
+  <h2>What the models get right</h2>
+  <hr class="h2rule">
+
+  <div class="tablewrap">
+    <table>
+      <caption>A &nbsp;&middot;&nbsp; Capacitance to substrate. deck = Magic = kpex 2.5D, to six digits [fF]</caption>
+      <thead><tr><th>Structure</th><th>Hand calc</th><th>Magic</th><th>kpex 2.5D</th><th>Delta</th></tr></thead>
+      <tbody>
+        <tr><td>Metal1 plate</td><td>95.4545</td><td>95.4545</td><td>95.4546</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal1 wire</td><td>4.8735</td><td>4.8735</td><td>4.8735</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal2 plate</td><td>52.4096</td><td>52.4096</td><td>52.4097</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal2 wire</td><td>3.9691</td><td>3.9691</td><td>3.9692</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal3 plate</td><td>36.2554</td><td>36.2554</td><td>36.2555</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal3 wire</td><td>3.4664</td><td>3.4664</td><td>3.4665</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal4 plate</td><td>28.1866</td><td>28.1866</td><td>28.1868</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal4 wire</td><td>3.1611</td><td>3.1611</td><td>3.1613</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal5 plate</td><td>23.3454</td><td>23.3454</td><td>23.3456</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal5 wire</td><td>2.9586</td><td>2.9586</td><td>2.9588</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>TopMetal1 plate</td><td>21.5991</td><td>21.5991</td><td>21.5994</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>TopMetal1 wire</td><td>3.9169</td><td>3.9169</td><td>3.9172</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>TopMetal2 plate</td><td>14.3175</td><td>14.3175</td><td>14.3178</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>TopMetal2 wire</td><td>3.2295</td><td>3.2295</td><td>3.2298</td><td class="d-ok">0.00 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    Fourteen independent checks against two independent implementations. Wherever Magic and kpex 2.5D
+    agree to six digits, as they do here, the model is not where a problem can be hiding.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>B &nbsp;&middot;&nbsp; Sheet resistance, 1 um wide wire, ports 99 um apart [Ohm]</caption>
+      <thead><tr><th>Layer</th><th>Sheet [mOhm/sq]</th><th>99 x sheet</th><th>Magic</th><th>Delta</th></tr></thead>
+      <tbody>
+        <tr><td>Metal1</td><td>110</td><td>10.8900</td><td>10.8905</td><td class="d-ok">0.00 %</td></tr>
+        <tr><td>Metal2</td><td>88</td><td>8.7120</td><td>8.7125</td><td class="d-ok">0.01 %</td></tr>
+        <tr><td>Metal3</td><td>88</td><td>8.7120</td><td>8.7125</td><td class="d-ok">0.01 %</td></tr>
+        <tr><td>Metal4</td><td>88</td><td>8.7120</td><td>8.7125</td><td class="d-ok">0.01 %</td></tr>
+        <tr><td>Metal5</td><td>88</td><td>8.7120</td><td>8.7125</td><td class="d-ok">0.01 %</td></tr>
+        <tr><td>TopMetal1</td><td>18</td><td>1.7820</td><td>1.7825</td><td class="d-ok">0.03 %</td></tr>
+        <tr><td>TopMetal2</td><td>11</td><td>1.0890</td><td>1.0895</td><td class="d-ok">0.05 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    The residual 0.5&nbsp;mOhm is the half square under each 0.2&nbsp;um port box. Magic measures
+    between the label positions, not the wire ends, which is correct and worth knowing when a hand
+    check disagrees by exactly one square.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>C &nbsp;&middot;&nbsp; Contact resistance, n cuts in parallel, metal arms subtracted [Ohm]</caption>
+      <thead><tr><th>Via</th><th>Deck [mOhm/cut]</th><th>n = 1</th><th>n = 2</th><th>n = 4</th><th>n = 8</th></tr></thead>
+      <tbody>
+        <tr><td>Via1</td><td>9000</td><td>9.0000</td><td>4.5000</td><td>2.2500</td><td>1.1250</td></tr>
+        <tr><td>Via2</td><td>9000</td><td>9.0000</td><td>4.5000</td><td>2.2500</td><td>1.1250</td></tr>
+        <tr><td>TopVia1</td><td>2200</td><td>2.2000</td><td>1.1000</td><td>0.5500</td><td>0.2750</td></tr>
+        <tr><td>TopVia2</td><td>1100</td><td>1.1000</td><td>0.5500</td><td>0.2779</td><td>0.1450</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    Exact to the printed digits except the last two TopVia2 entries, where the cuts spread far enough
+    across the landing pad that the pad's own metal resistance moves. That is the fixture, not the tool.
+    A warning for anyone building a similar bench: the first attempt used 0.19&nbsp;um cut spacing on a
+    2&nbsp;um pad, which pushed cuts off the metal and made it look as though Magic were counting three
+    of four vias. It was counting exactly the cuts that were there.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>D &nbsp;&middot;&nbsp; The deck's substrate coefficients against the FasterCap field solve [fF]</caption>
+      <thead><tr><th>Structure</th><th>Deck = Magic = 2.5D</th><th>FasterCap</th><th>FC vs deck</th><th>Matrix asym.</th></tr></thead>
+      <tbody>
+        <tr><td>Metal1 plate</td><td>95.4545</td><td>90.1901</td><td class="d-ok">-5.5 %</td><td>1.63 %</td></tr>
+        <tr><td>Metal1 wire</td><td>4.8735</td><td>4.9716</td><td class="d-ok">+2.0 %</td><td>1.63 %</td></tr>
+        <tr><td>Metal2 plate</td><td>52.4096</td><td>51.6560</td><td class="d-ok">-1.4 %</td><td>1.08 %</td></tr>
+        <tr><td>Metal2 wire</td><td>3.9691</td><td>3.9883</td><td class="d-ok">+0.5 %</td><td>1.08 %</td></tr>
+        <tr><td>Metal3 plate</td><td>36.2554</td><td>36.7783</td><td class="d-ok">+1.4 %</td><td>0.33 %</td></tr>
+        <tr><td>Metal3 wire</td><td>3.4664</td><td>3.4818</td><td class="d-ok">+0.4 %</td><td>0.33 %</td></tr>
+        <tr><td>Metal4 plate</td><td>28.1866</td><td>29.1726</td><td class="d-ok">+3.5 %</td><td>1.66 %</td></tr>
+        <tr><td>Metal4 wire</td><td>3.1611</td><td>3.1656</td><td class="d-ok">+0.1 %</td><td>1.66 %</td></tr>
+        <tr class="unconv"><td>Metal5 plate</td><td>23.3454</td><td>27.0297</td><td>+15.8 %</td><td>16.01 %</td></tr>
+        <tr class="unconv"><td>Metal5 wire</td><td>2.9586</td><td>3.0467</td><td>+3.0 %</td><td>16.01 %</td></tr>
+        <tr class="unconv"><td>TopMetal1 plate</td><td>21.5991</td><td>20.5111</td><td>-5.0 %</td><td>5.47 %</td></tr>
+        <tr class="unconv"><td>TopMetal1 wire</td><td>3.9169</td><td>3.2775</td><td>-16.3 %</td><td>5.47 %</td></tr>
+        <tr class="unconv"><td>TopMetal2 plate</td><td>14.3175</td><td>13.6810</td><td>-4.4 %</td><td>18.66 %</td></tr>
+        <tr class="unconv"><td>TopMetal2 wire</td><td>3.2295</td><td>2.6950</td><td>-16.5 %</td><td>18.66 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    FasterCap at <span class="m">--delaunay_amax 2</span>. The last column is the raw capacitance
+    matrix's asymmetry, weighted by magnitude and thresholded at 0.1&nbsp;fF, which is the convergence
+    tell. The greyed rows are above 5&nbsp;% and are <em>not quotable</em>: the upper metals sit far
+    enough from the substrate that this triangulation has not settled on them. The other four are
+    not fully settled either: between <span class="m">amax 50</span> and <span class="m">amax 2</span>
+    the plates moved 6 to 12&nbsp;% and the wires 13 to 15&nbsp;%, all downward, and the finer plate
+    solve was abandoned at 6.6&nbsp;GB. So the honest reading is that the deck's
+    <span class="m">areacap</span> and <span class="m">perimc</span> agree with a field solve to within
+    the 10&nbsp;% or so the mesh is still worth, on both a wide plate and a thin wire. That is enough
+    to say the substrate model is sound, and everything below is about what the tools do with it. It
+    is not enough to quote 2&nbsp;%.
+  </p>
+</section>
+
+<section>
+  <h2>Defect 1 &nbsp;&middot;&nbsp; Full-RC counts every coupling capacitance twice</h2>
+  <hr class="h2rule">
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>EXT_MODE=3 with MINDELAY=0</h3>
+    </div>
+    <p>
+      Two parallel Metal1 wires, 0.5&nbsp;um wide, 200&nbsp;um long, 0.2&nbsp;um apart, each given a
+      stub so both nets branch and qualify for resistance extraction. Same GDS, two settings:
+    </p>
+<pre><span class="c">* EXT_MODE=2, the capacitance reference</span>
+C0 s1 s0        19.1567f      <span class="c"># coupling</span>
+C1 s1 sub       14.0930f
+C2 s0 sub       14.0930f
+
+<span class="c">* EXT_MODE=3, THRESHOLD=10000 MINRES=1000 MINDELAY=0</span>
+R0..R5          <span class="c"># correct, arm values within 0.1 %</span>
+C0 s1 s0        19.1567f      <span class="c"># coupling, still here</span>
+C1 s1  w#       15.00077f  <span class="hl">\</span>
+C2 b1  w#        4.35815f   <span class="hl">|</span> sum over net s1 = 33.2497 fF
+C3 a1  w#        4.37121f   <span class="hl">|</span>       = 14.0930 + 19.1567
+C8 s1.n0 w#      9.51957f  <span class="hl">/</span>  <span class="hl">the coupling, added to ground as well</span></pre>
+    <p>
+      The relation is exact. Each net's substrate capacitance in the full-RC netlist equals its true
+      substrate capacitance plus the whole of its coupling capacitance, spread over the RC nodes, while
+      the coupling element itself is still emitted. Node <span class="m">s0</span> carries 52.4&nbsp;fF
+      where the correct answer is 33.25&nbsp;fF. On the smallest possible case, two coupled wires with
+      no resistor network at all, it reads <span class="m">7.85871 = 3.06954 + 4.78917</span> on each
+      node, again to the last digit.
+    </p>
+    <div class="impact">
+      <b>Impact on the template inverter</b>
+      Total extracted capacitance rises from 248.4&nbsp;fF to 510.8&nbsp;fF. The output node
+      <span class="m">vout1</span> goes from 35.8&nbsp;fF to 60.8&nbsp;fF, an over-estimate of
+      70&nbsp;%. A post-layout delay or power number taken from this netlist is pessimistic by roughly
+      that much.
+    </div>
+  </div>
+
+  <figure>
+    <div class="chartbox">
+      <svg viewBox="0 0 660 208" role="img" aria-label="Total extracted capacitance on the template inverter across four PEX settings: mode 1 gives 166.5 fF, mode 2 gives 248.4 fF, mode 3 with MINDELAY 1 gives 248.4 fF, mode 3 with MINDELAY 0 gives 510.8 fF.">
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <g stroke="var(--rule-soft)" stroke-width="1">
+            <line x1="235.5" y1="14" x2="235.5" y2="170"></line>
+            <line x1="320.9" y1="14" x2="320.9" y2="170"></line>
+            <line x1="406.4" y1="14" x2="406.4" y2="170"></line>
+            <line x1="491.8" y1="14" x2="491.8" y2="170"></line>
+            <line x1="577.3" y1="14" x2="577.3" y2="170"></line>
+          </g>
+          <line x1="362.3" y1="8" x2="362.3" y2="176" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"></line>
+          <text x="362.3" y="200" fill="var(--accent)" text-anchor="middle" font-size="10" font-weight="600">reference 248.4 fF</text>
+
+          <rect x="150" y="20"  width="142.2" height="22" fill="var(--warn)"></rect>
+          <rect x="150" y="58"  width="212.3" height="22" fill="var(--ok)"></rect>
+          <rect x="150" y="96"  width="212.3" height="22" fill="var(--ok)"></rect>
+          <rect x="150" y="134" width="436.5" height="22" fill="var(--bad)"></rect>
+
+          <g fill="var(--ink)" font-size="11" font-weight="600">
+            <text x="299"   y="36">166.5 fF</text>
+            <text x="369.3" y="74">248.4 fF</text>
+            <text x="369.3" y="112">248.4 fF</text>
+            <text x="593.5" y="150">510.8 fF</text>
+          </g>
+          <g fill="var(--ink-2)" text-anchor="end" font-size="11">
+            <text x="140" y="36">MODE 1</text>
+            <text x="140" y="74">MODE 2</text>
+            <text x="140" y="112">MODE 3 y=1</text>
+            <text x="140" y="150">MODE 3 y=0</text>
+          </g>
+          <line x1="150" y1="170" x2="620" y2="170" stroke="var(--rule)" stroke-width="1"></line>
+          <g fill="var(--ink-3)" text-anchor="middle" font-size="10">
+            <text x="150"   y="185">0</text>
+            <text x="235.5" y="185">100</text>
+            <text x="320.9" y="185">200</text>
+            <text x="406.4" y="185">300</text>
+            <text x="491.8" y="185">400</text>
+            <text x="577.3" y="185">500</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      Total extracted capacitance on <span class="m">inverter_top</span>, identical GDS, four settings
+      of one tool. Mode 3 with <span class="m">MINDELAY=1</span> only matches the reference because it
+      barely extracts any resistance. Turn the resistance on and the capacitance doubles.
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Defect 2 &nbsp;&middot;&nbsp; The shipped MINDELAY collapses resistor networks</h2>
+  <hr class="h2rule">
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>EXT_MODE=3 with the default MINDELAY=1</h3>
+    </div>
+    <p>
+      One Metal1 net shaped as a cross: four arms of 199.5, 199.5, 299.5 and 199&nbsp;um meeting at one
+      junction, a port at the end of each arm, nothing else in the layout.
+    </p>
+<pre><span class="c">* THRESHOLD=0 MINRES=0 MINDELAY=0 -- correct star, arms within 0.3 %</span>
+.subckt cross_m1 w e s n
+R0 n.n0 e   32.9345          <span class="c"># 299.5 um at 110 mOhm/sq = 32.945</span>
+R1 n.n0 s   21.9565
+R2 w n.n0   21.9565
+R3 n.n0 n   21.8245
+.ends
+
+<span class="c">* THRESHOLD=10000 MINRES=1000 MINDELAY=1 -- the shipped defaults</span>
+.subckt cross_m1 w e s n
+R0 n s      21.9565
+R1 w n      21.9565
+.ends                        <span class="hl"># port e appears in no element at all</span></pre>
+    <p>
+      Two failures in one netlist. Port <span class="m">e</span> is declared and connected to nothing,
+      so it is a floating node in simulation. Port <span class="m">n</span> survives but has been
+      silently aliased onto the junction, so its 21.82&nbsp;Ohm arm now reads zero. The same collapse
+      happens on a three-arm tee, where a 32.93&nbsp;Ohm arm disappears.
+    </p>
+    <p>
+      Any non-zero <span class="m">MINDELAY</span> does this, and the value does not matter: 1, 2 and 10
+      behave alike. <span class="m">MINRES</span>, the knob actually documented as the network
+      simplification control, is innocent. It merges nothing at 1000&nbsp;mOhm on 11&nbsp;Ohm arms,
+      exactly as it should.
+    </p>
+    <div class="impact">
+      <b>Partial safety net</b>
+      The repo's <span class="m">scripts/check_pex_ports.py</span> catches the fully dropped port and
+      fails the target with exit 1. It cannot catch the aliased port, because that one is connected,
+      just to the wrong node through zero ohms. The inverter's netlist passes the check while carrying
+      32&nbsp;% fewer resistors than the same layout at <span class="m">MINDELAY=0</span> (1048 against
+      1539).
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>Two-terminal and unbranched nets get no resistance at all</h3>
+    </div>
+    <p>
+      A 1&nbsp;um wide, 1000&nbsp;um long Metal1 wire is 110&nbsp;Ohm with 115&nbsp;fF against the
+      substrate, an RC delay of 12.6&nbsp;ps. At the shipped defaults it extracts as an ideal short, and
+      adding a third port in the middle changes nothing. Only <span class="m">THRESHOLD=0</span>
+      together with <span class="m">MINDELAY=0</span> produces the resistor, and then it is right:
+      <span class="m">R0 l r 109.891</span> against a hand value of 109.89.
+    </p>
+    <p>
+      The threshold behaves as documented on a <em>branched</em> net, where the network survives at
+      <span class="m">THRESHOLD=10000</span> and disappears at 100000, bracketing the net's real
+      10.96&nbsp;Ohm. On a straight net it drops the network at any non-zero threshold, including
+      1&nbsp;mOhm. Magic's log states the split plainly: <span class="m">Nets extracted: 1</span>
+      followed by <span class="m">Nets output: 0</span>. The resistance is computed and then discarded.
+    </p>
+    <div class="impact">
+      <b>What this hits in practice</b>
+      Point-to-point routes, a clock spine feeding one sink, supply stubs, any long wire between exactly
+      two things. These are the nets whose resistance a designer most wants to see, and they are exactly
+      the ones the default configuration omits.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Defect 3 &nbsp;&middot;&nbsp; C-decoupled drops coupling instead of grounding it</h2>
+  <hr class="h2rule">
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>EXT_MODE=1</h3>
+    </div>
+    <p>
+      Both macro READMEs and the <span class="m">sak-pex.sh</span> header call mode 1 "C-decoupled",
+      which a reader takes to mean coupling capacitors referred to ground. That is not what comes out.
+      On the template inverter, mode 1 emits four capacitors in total:
+    </p>
+<pre><span class="c">* EXT_MODE=1, the complete capacitor list</span>
+C0 vout1 VSS 41.61635f
+C1 vout2 VSS 41.61635f
+C2 vout3 VSS 41.61635f
+C3 vout4 VSS 41.61635f
+<span class="c">* VDD and all four vin nets carry no parasitic capacitance at all</span></pre>
+    <p>
+      In mode 2 the net <span class="m">vin1</span> carries 26.36&nbsp;fF to VDD and 15.83&nbsp;fF to
+      <span class="m">vout1</span>, so 42.2&nbsp;fF of real wiring capacitance. In mode 1 it carries
+      zero. The dummy bench shows the mechanism: two coupled wires come out with exactly the
+      capacitance each would have in isolation, 4.8735&nbsp;fF, instead of the 7.859&nbsp;fF a properly
+      decoupled extraction gives. Magic is not lumping the neighbour's coupling to ground, it is
+      treating the neighbour as absent, which also removes the shielding of the substrate fringe.
+    </p>
+    <div class="impact">
+      <b>Impact</b>
+      33&nbsp;% of the inverter's total capacitance, and 100&nbsp;% of the wiring capacitance on a
+      shielded signal net. Mode 1 is the fast option reached for at the chip top level, where routing is
+      densest and the error is therefore largest.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Defect 4 &nbsp;&middot;&nbsp; One engine, two targets, two answers</h2>
+  <hr class="h2rule">
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>ext2spice lvs loses 16 % of the substrate capacitance</h3>
+    </div>
+    <p>
+      <span class="m">make klayout-pex</span> and <span class="m">make magic-pex</span> both run Magic,
+      and their coupling capacitors are identical to the last digit. Their substrate capacitors are not.
+      The only difference in how they drive Magic is one line: <span class="m">sak-pex.sh</span> issues
+      <span class="m">ext2spice lvs</span> and kpex does not.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <caption>E &nbsp;&middot;&nbsp; Substrate capacitors on inverter_top, same layout, same engine [fF]</caption>
+        <thead><tr><th>Net pair</th><th>without ext2spice lvs</th><th>with ext2spice lvs</th><th>Delta</th></tr></thead>
+        <tbody>
+          <tr><td>VDD - VSS</td><td>13.2367</td><td>0.0000</td><td class="d-bad">-13.2367</td></tr>
+          <tr><td>vin1 - VSS</td><td>13.6621</td><td>0.0000</td><td class="d-bad">-13.6621</td></tr>
+          <tr><td>vin2 - VSS</td><td>13.6267</td><td>0.0000</td><td class="d-bad">-13.6267</td></tr>
+          <tr><td>vin3 - VSS</td><td>13.6267</td><td>0.0000</td><td class="d-bad">-13.6267</td></tr>
+          <tr><td>vin4 - VSS</td><td>13.6621</td><td>0.0000</td><td class="d-bad">-13.6621</td></tr>
+          <tr><td>vout1 - VSS</td><td>3.8929</td><td>10.7240</td><td class="d-warn">+6.8311</td></tr>
+          <tr><td>vout2 - VSS</td><td>3.8921</td><td>10.7054</td><td class="d-warn">+6.8133</td></tr>
+          <tr><td>vout3 - VSS</td><td>3.8921</td><td>10.7054</td><td class="d-warn">+6.8133</td></tr>
+          <tr><td>vout4 - VSS</td><td>3.8929</td><td>10.7240</td><td class="d-warn">+6.8311</td></tr>
+          <tr><td><strong>Total netlist</strong></td><td><strong>288.9447</strong></td><td><strong>248.4193</strong></td><td class="d-bad"><strong>-40.5255</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Every coupling capacitor is unchanged. All 40.5&nbsp;fF of the difference is substrate
+      capacitance, and four <span class="m">vin</span> nets plus <span class="m">VDD</span> come out
+      with exactly zero.
+    </p>
+    <p>
+      The responsible sub-option is <span class="m">ext2spice hierarchy</span>, which
+      <span class="m">ext2spice lvs</span> switches on. Setting it alone reproduces the loss exactly,
+      and <span class="m">ext2spice lvs</span> followed by <span class="m">ext2spice hierarchy off</span>
+      restores the full 288.94&nbsp;fF. The other things the shortcut changes
+      (<span class="m">global off</span>, <span class="m">blackbox on</span>,
+      <span class="m">subcircuit top auto</span>, <span class="m">format ngspice</span>) each make no
+      difference on their own.
+    </p>
+    <p>
+      It only bites on layouts containing devices. On the three device-less bench structures,
+      hierarchy on and off give byte-identical netlists. On a single
+      <span class="m">sg13g2_inv_1</span> the total is conserved at 0.71408&nbsp;fF either way, but net
+      <span class="m">A</span>'s 0.16306&nbsp;fF of substrate capacitance is moved onto
+      <span class="m">Y</span> and <span class="m">VDD</span> in exact halves. On the macro it is not
+      conserved at all.
+    </p>
+    <p>
+      To remove any doubt about which of the two is right, the same standard cell was given a
+      0.5&nbsp;x&nbsp;200&nbsp;um Metal2 wire on its gate net <span class="m">A</span>, reached through
+      one Via1 in the pin. That wire is worth about 15.8&nbsp;fF of substrate capacitance by the deck,
+      and there is nothing else it could belong to.
+    </p>
+<pre><span class="c">* sg13g2_inv_1 with a 200 um Metal2 wire on A, ext2spice hierarchy off</span>
+C3 Y   VSS   0.16752f
+C4 A   VSS  <span class="gd">15.9216f</span>       <span class="c"># the wire, on the net it is drawn on</span>
+C5 VDD VSS   0.13605f
+
+<span class="c">* same layout, ext2spice hierarchy on</span>
+C3 Y   VSS   <span class="hl">8.12832f</span>       <span class="c"># 0.16752 + 7.9608</span>
+C4 VDD VSS   <span class="hl">8.09685f</span>       <span class="c"># 0.13605 + 7.9608</span>
+                             <span class="hl"># A has no capacitance at all; 2 x 7.9608 = 15.9216</span></pre>
+    <p>
+      With hierarchy on, the wire's entire capacitance leaves the gate net and lands in two exact halves
+      on the output and the supply. The total is conserved on this cell and not on the macro, so the
+      failure is not even consistent about that, but in both cases the flat output is the one that puts
+      the charge on the net that carries the metal.
+    </p>
+    <div class="impact">
+      <b>Impact</b>
+      The repository ships two PEX targets that disagree by 16&nbsp;% on the same layout, and the one
+      most people run, <span class="m">magic-pex</span>, is the one losing capacitance. Fixing it is one
+      line: drop <span class="m">ext2spice lvs</span> from <span class="m">sak-pex.sh</span> and set the
+      options it was wanted for explicitly.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Defect 5 &nbsp;&middot;&nbsp; Lateral coupling is half the deck value, since 8.3.679</h2>
+  <hr class="h2rule">
+
+  <div class="prose">
+    <p>
+      The deck writes <span class="m">defaultsidewall allm1 metal1 28.735 -0.057</span>. Magic emits
+      <span class="m">14.3675 x L / (s - 0.05)</span>, to five digits at every spacing over a 16-fold
+      range: half the coefficient, with the offset quantised to whole lambda. Magic's tech reader halves
+      the parsed value on the stated grounds that both edges of a pair get visited, and on this geometry
+      the second visit does not happen. Writing <span class="m">57.470</span> in the deck instead returns
+      1.91567&nbsp;fF at 0.8&nbsp;um against the 1.93371 expected, so the single application of the 0.5
+      is the whole of the effect.
+    </p>
+    <p>
+      <strong>kpex's 2.5D engine settles what that means.</strong> It reads the identical coefficients
+      (<span class="m">"capacitance": 28.735, "offset": -0.057, "side_halo": 8</span> in
+      <span class="m">ihp-sg13g2_tech.pb.json</span>) and emits the full value:
+      10.0472&nbsp;fF at 0.2&nbsp;um, 1.93371&nbsp;fF at 0.8&nbsp;um, matching the deck formula to six
+      digits at every spacing. Two implementations of one deck, differing by exactly two on this term
+      and agreeing to six digits on every other term. One of them is wrong.
+    </p>
+  </div>
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Regression</span>
+      <h3>It arrived on 2026-08-02, in 8.3.679</h3>
+    </div>
+    <p>
+      Two commits that afternoon.
+      <span class="m">51522d6</span> (8.3.678 to 8.3.679) introduced the halving in
+      <span class="m">ExtCouple.c</span>, and
+      <span class="m">c81b995</span> moved it to the tech-file parser without changing the result.
+      Before them there was no halving anywhere, so a deck carrying capiche's coefficients extracted
+      the full value. The same layout and the same PDK therefore give half the sidewall coupling in
+      8.3.679 that they gave in 8.3.678.
+    </p>
+    <p>
+      The commit message is also the specification, and it says the open-PDK numbers are the full
+      coefficient rather than a pre-halved one:
+    </p>
+<pre><span class="c">51522d6, "Multiple changes", 2026-08-02</span>
+Changed the way that magic interprets the "sidewall" coefficient
+so that it is entered into the tech file as the actual sidewall
+coefficient instead of being half the value to correct for magic's
+double counting of edges.  The correction is instead done when
+parsing the tech file.  <span class="gd">This measure was taken because the open
+PDK values generated by "capiche" were not halving the value</span>, so I
+either change magic or I change all the tech files.
+
+<span class="c">extract/ExtCouple.c, the comment added by the same commit</span>
+Important!  The sidewall coeffient is correct for the coupling between
+edges, but <span class="hl">both edges will be checked, causing a double-count</span>, so each
+edge should contribute half of the total.</pre>
+    <p>
+      The premise in that last sentence is what fails. On two parallel wires the second edge is not
+      checked, the halving is never undone, and what comes out is half of the coefficient the PDK
+      wrote. Current master, 8.3.683, still halves; nothing since 2026-08-02 has touched this code.
+    </p>
+    <div class="impact">
+      <b>What this changes about the finding</b>
+      It is not a long-standing modelling convention to be argued about, it is a four-week-old
+      regression with a commit, a version and the maintainer's own statement of intent. It also
+      settles the Magic-versus-kpex disagreement in kpex's favour: the 2.5D engine emitting the full
+      value is doing what the commit message says the coefficient means.
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>F &nbsp;&middot;&nbsp; Sidewall coupling, Metal1, W = 0.5 um, L = 50 um [fF]</caption>
+      <thead><tr><th>Separation [um]</th><th>Deck formula</th><th>Magic</th><th>kpex 2.5D</th><th>FasterCap</th><th>Magic vs FC</th><th>2.5D vs FC</th></tr></thead>
+      <tbody>
+        <tr><td>0.2</td><td>10.0472</td><td>4.7892</td><td>10.0472</td><td>6.2195</td><td class="d-bad">-23.0 %</td><td class="d-warn">+61.5 %</td></tr>
+        <tr><td>0.4</td><td>4.1888</td><td>2.0525</td><td>4.1888</td><td>3.6468</td><td class="d-bad">-43.7 %</td><td class="d-warn">+14.9 %</td></tr>
+        <tr><td>0.8</td><td>1.9337</td><td>0.9578</td><td>1.9337</td><td>2.0777</td><td class="d-bad">-53.9 %</td><td class="d-ok">-6.9 %</td></tr>
+        <tr><td>1.6</td><td>0.9311</td><td>0.4635</td><td>0.9311</td><td>1.0585</td><td class="d-bad">-56.2 %</td><td class="d-ok">-12.0 %</td></tr>
+        <tr><td>3.2</td><td>0.4571</td><td>0.2281</td><td>0.4571</td><td>0.4364</td><td class="d-bad">-47.7 %</td><td class="d-ok">+4.8 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    FasterCap at <span class="m">--delaunay_amax 0.1 --tolerance 0.01</span>, matrix asymmetry
+    0.03&nbsp;% to 0.16&nbsp;% on every row, so these five values are converged. Mean absolute error
+    against the field solve: <strong>Magic 44.9&nbsp;%, kpex 2.5D 20.0&nbsp;%</strong>.
+  </p>
+
+  <figure>
+    <div class="chartbox">
+      <svg viewBox="0 0 660 268" role="img" aria-label="Sidewall coupling versus wire separation on a log scale. FasterCap runs from 6.22 fF at 0.2 micron down to 0.44 fF at 3.2 micron. The deck formula as kpex 2.5D emits it straddles that curve, above at 0.2 and 0.4 micron and below at 0.8 and 1.6. Magic's halved output lies below the field solve at all five spacings.">
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <g stroke="var(--rule-soft)" stroke-width="1">
+            <line x1="70" y1="22.3" x2="600" y2="22.3"></line>
+            <line x1="70" y1="55.6" x2="600" y2="55.6"></line>
+            <line x1="70" y1="99.5" x2="600" y2="99.5"></line>
+            <line x1="70" y1="132.8" x2="600" y2="132.8"></line>
+            <line x1="70" y1="166.0" x2="600" y2="166.0"></line>
+            <line x1="70" y1="210" x2="600" y2="210"></line>
+          </g>
+          <g fill="var(--ink-3)" text-anchor="end">
+            <text x="60" y="26">10</text>
+            <text x="60" y="59">5</text>
+            <text x="60" y="103">2</text>
+            <text x="60" y="136">1</text>
+            <text x="60" y="169">0.5</text>
+            <text x="60" y="213">0.2</text>
+          </g>
+          <text x="22" y="120" fill="var(--ink-3)" font-size="10" transform="rotate(-90 22 120)" text-anchor="middle">coupling [fF]</text>
+
+          <polyline points="70,22.10 202.5,64.08 335,101.14 467.5,136.22 600,170.35"
+                    fill="none" stroke="var(--warn)" stroke-width="2"></polyline>
+          <polyline points="70,45.10 202.5,70.72 335,97.71 467.5,130.06 600,172.57"
+                    fill="none" stroke="var(--cool)" stroke-width="2.5"></polyline>
+          <polyline points="70,57.64 202.5,98.29 335,134.86 467.5,169.67 600,203.70"
+                    fill="none" stroke="var(--bad)" stroke-width="2"></polyline>
+
+          <g fill="var(--warn)">
+            <circle cx="70" cy="22.10" r="3.4"></circle><circle cx="202.5" cy="64.08" r="3.4"></circle>
+            <circle cx="335" cy="101.14" r="3.4"></circle><circle cx="467.5" cy="136.22" r="3.4"></circle>
+            <circle cx="600" cy="170.35" r="3.4"></circle>
+          </g>
+          <g fill="var(--cool)">
+            <circle cx="70" cy="45.10" r="4"></circle><circle cx="202.5" cy="70.72" r="4"></circle>
+            <circle cx="335" cy="97.71" r="4"></circle><circle cx="467.5" cy="130.06" r="4"></circle>
+            <circle cx="600" cy="172.57" r="4"></circle>
+          </g>
+          <g fill="var(--bad)">
+            <circle cx="70" cy="57.64" r="3.4"></circle><circle cx="202.5" cy="98.29" r="3.4"></circle>
+            <circle cx="335" cy="134.86" r="3.4"></circle><circle cx="467.5" cy="169.67" r="3.4"></circle>
+            <circle cx="600" cy="203.70" r="3.4"></circle>
+          </g>
+
+          <line x1="70" y1="210" x2="600" y2="210" stroke="var(--rule)" stroke-width="1"></line>
+          <g fill="var(--ink-3)" text-anchor="middle">
+            <text x="70" y="228">0.2</text><text x="202.5" y="228">0.4</text>
+            <text x="335" y="228">0.8</text><text x="467.5" y="228">1.6</text>
+            <text x="600" y="228">3.2</text>
+          </g>
+          <text x="335" y="244" fill="var(--ink-3)" text-anchor="middle">wire separation [um]</text>
+
+          <g font-size="11" font-weight="600">
+            <rect x="70" y="255" width="16" height="3" fill="var(--cool)"></rect>
+            <text x="92" y="260" fill="var(--ink)">FasterCap (converged)</text>
+            <rect x="270" y="255" width="16" height="3" fill="var(--warn)"></rect>
+            <text x="292" y="260" fill="var(--ink)">deck / kpex 2.5D</text>
+            <rect x="450" y="255" width="16" height="3" fill="var(--bad)"></rect>
+            <text x="472" y="260" fill="var(--ink)">Magic (halved)</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      The shape of the disagreement, on a log axis. The deck formula straddles the field solve: too high
+      at 0.2 and 0.4&nbsp;um, too low at 0.8 and 1.6, right again at 3.2. That crossing pattern is what
+      a least-squares fit of a <span class="m">1/(s+off)</span> form to a curve of a different shape
+      looks like. Magic's curve is the same shape sitting entirely below the target. A fitted model does
+      not lie below its own fitting data at every point; a fitted model divided by two does.
+    </figcaption>
+  </figure>
+
+  <div class="prose">
+    <p>
+      So the evidence runs four ways and all four point the same direction. Magic and kpex 2.5D
+      implement the same deck and agree to six digits on the substrate terms, and differ by exactly two
+      here. Magic
+      applies a halving whose justification does not hold on this geometry. The converged field solve
+      sits above Magic at every one of five spacings, by 23&nbsp;% to 56&nbsp;%. And the commit that
+      introduced the halving says in as many words that the open-PDK coefficients are the full value.
+    </p>
+    <p>
+      The remaining honest caveat is that the deck's own model is a poor fit at close spacing, 61&nbsp;%
+      high at 0.2&nbsp;um. Fixing the factor of two would leave that. But 20&nbsp;% mean error with the
+      sign changing is a fit; 45&nbsp;% mean error with the sign never changing is a bug.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>Defect 6 &nbsp;&middot;&nbsp; The halo model routes shielded coupling to the substrate</h2>
+  <hr class="h2rule">
+
+  <div class="tablewrap">
+    <table>
+      <caption>G &nbsp;&middot;&nbsp; Interlayer overlap, upper plate fully inside the lower one. Deck and 2.5D agree to 5 digits [fF]</caption>
+      <thead><tr><th>Pair</th><th>Deck / 2.5D</th><th>Magic</th><th>FasterCap</th><th>Magic vs FC</th><th>2.5D vs FC</th></tr></thead>
+      <tbody>
+        <tr><td>Metal2 over Metal1</td><td>8.7043</td><td>8.5872</td><td>9.5845</td><td class="d-warn">-10.4 %</td><td class="d-warn">-9.2 %</td></tr>
+        <tr><td>Metal3 over Metal2</td><td>8.7040</td><td>8.5870</td><td>9.3835</td><td class="d-warn">-8.5 %</td><td class="d-warn">-7.2 %</td></tr>
+        <tr><td>Metal4 over Metal3</td><td>8.7040</td><td>8.5870</td><td>9.2278</td><td class="d-warn">-6.9 %</td><td class="d-warn">-5.7 %</td></tr>
+        <tr><td>Metal5 over Metal4</td><td>8.7032</td><td>8.5862</td><td>9.2045</td><td class="d-warn">-6.7 %</td><td class="d-warn">-5.4 %</td></tr>
+        <tr class="unconv"><td>TopMetal1 over Metal5</td><td>6.9052</td><td>6.6614</td><td>6.7619</td><td>-1.5 %</td><td>+2.1 %</td></tr>
+        <tr><td>TopMetal2 over TopMetal1</td><td>3.0861</td><td>2.5742</td><td>2.7327</td><td class="d-bad">-5.8 %</td><td class="d-ok">+12.9 %</td></tr>
+        <tr><td>Metal3 over Metal1</td><td>3.7926</td><td>3.5437</td><td>4.3790</td><td class="d-bad">-19.1 %</td><td class="d-warn">-13.4 %</td></tr>
+        <tr><td>TopMetal1 over Metal1</td><td>2.3178</td><td>1.6024</td><td>2.2861</td><td class="d-bad">-29.9 %</td><td class="d-ok">+1.4 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    The TopMetal1-over-Metal5 row has 11.8&nbsp;% matrix asymmetry and is not quotable. The rest are
+    below 2.5&nbsp;%.
+  </p>
+
+  <div class="finding">
+    <div class="fhead">
+      <span class="chip bad">Defect</span>
+      <h3>The upper plate's edge charge goes to ground instead of to the plate below</h3>
+    </div>
+    <p>
+      Magic applies a halo fringe model that splits the upper plate's edge capacitance between the plate
+      below and the substrate, capped by <span class="m">sidehalo 8</span>. kpex 2.5D applies no such
+      split. For adjacent layers the two land within 1.4&nbsp;% of each other and it does not matter.
+      For distant layers it matters a lot, and the field solve says the split is wrong:
+    </p>
+<pre><span class="c">* TopMetal1 10x10 plate centred on a Metal1 30x30 plate</span>
+                        top-to-bottom   top-to-substrate   top-to-far-field
+Magic                        1.6024             0.7957         (no such node)
+kpex 2.5D                    2.3178             (none)         (no such node)
+FasterCap                    <span class="gd">2.2861</span>             <span class="gd">0.1267</span>             0.3809</pre>
+    <p>
+      The upper plate is completely covered by the lower one, so almost nothing should reach the
+      substrate, and the field solve puts 0.13&nbsp;fF there. It also sends 0.38&nbsp;fF upward into the
+      far field, which Magic has no node for, so the fairest comparison gives Magic's substrate term
+      0.51&nbsp;fF to account for. Magic assigns 0.80&nbsp;fF, and takes it out of the plate-to-plate
+      coupling, which it then under-reports by 30&nbsp;%. The same shape appears on the other
+      Metal1-based pair, Metal3 over Metal1, where Magic's coupling is 19&nbsp;% below the solve and
+      kpex 2.5D's 13&nbsp;%. On adjacent layers the two models sit within 1.4&nbsp;% of each other
+      and the split is harmless. On TopMetal2 over TopMetal1 Magic is in fact the closer of the two,
+      so this is a defect of the deep-stack case, not of the halo idea as such.
+    </p>
+    <div class="impact">
+      <b>Why the direction matters</b>
+      This is not a magnitude error, it is charge sent to the wrong node. Capacitance to a signal net
+      below and capacitance to ground behave completely differently: one carries crosstalk and Miller
+      loading, the other does not. An extraction that moves 0.7&nbsp;fF from the first to the second is
+      optimistic about coupling in exactly the case, a wide plate over a distant plane, where a designer
+      is relying on the extractor rather than intuition.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Running the kpex field solver correctly</h2>
+  <hr class="h2rule">
+  <div class="prose">
+    <p>
+      One trap is worth writing down because it silently produces confident wrong numbers.
+      <strong><span class="m">kpex --mesh</span> does nothing.</strong> kpex invokes FasterCap in auto
+      mode, <span class="m">FasterCap -b -i -v -a0.05 -d0.5 -m0.5 -f2 -ap</span>, and FasterCap's own log
+      says <em>"Auto calculation with max error: 0.05. Remark: Auto option overrides all other Manual
+      settings"</em>. A four-point <span class="m">--mesh</span> sweep returns four identical numbers,
+      which reads as a converged result and is nothing of the kind.
+    </p>
+    <p>
+      The knobs that work are <span class="m">--delaunay_amax</span>, the KLayout-side triangulation,
+      default <strong>50&nbsp;um&sup2;</strong>, and <span class="m">--tolerance</span>, FasterCap's
+      auto target. On a 0.2&nbsp;um gap the default triangulation is worth 11&nbsp;% on the coupling.
+    </p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>H &nbsp;&middot;&nbsp; Sidewall coupling against triangulation, --delaunay_amax [fF]</caption>
+      <thead><tr><th>Separation</th><th>a = 50</th><th>a = 10</th><th>a = 2</th><th>a = 0.5</th><th>a = 0.1</th><th>Asym. at a = 0.1</th></tr></thead>
+      <tbody>
+        <tr><td>0.2 um</td><td>5.6198</td><td>5.9185</td><td>5.7760</td><td>6.0584</td><td>6.2195</td><td class="d-ok">0.16 %</td></tr>
+        <tr><td>0.4 um</td><td>3.4251</td><td>&mdash;</td><td>3.5226</td><td>3.5938</td><td>3.6468</td><td class="d-ok">0.05 %</td></tr>
+        <tr><td>0.8 um</td><td>2.1170</td><td>2.0697</td><td>2.0471</td><td>2.0522</td><td>2.0777</td><td class="d-ok">0.06 %</td></tr>
+        <tr><td>1.6 um</td><td>1.0743</td><td>&mdash;</td><td>1.0535</td><td>1.0562</td><td>1.0585</td><td class="d-ok">0.06 %</td></tr>
+        <tr><td>3.2 um</td><td>0.4237</td><td>&mdash;</td><td>0.4441</td><td>0.4375</td><td>0.4364</td><td class="d-ok">0.03 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">
+    Judge convergence from the raw capacitance matrix's asymmetry, weighted by magnitude and thresholded
+    at 0.1&nbsp;fF so a sign flip on a numerically zero entry does not dominate. Below about
+    0.2&nbsp;% the answer has settled. The 18.7&nbsp;% on <span class="m">capsub_tm2</span> is why those
+    rows in table D are greyed out rather than quoted. The triangulation is rebuilt from scratch each
+    run, so neighbouring points carry uncorrelated scatter, and that scatter is the error bar.
+  </p>
+
+  <div class="prose">
+    <p>
+      Two further things to know before comparing a field solve to a model. kpex reports the far-field
+      residual, the flux that escapes the simulation box, as <span class="m">Cext_i_i</span> tied to
+      VSUBS in the emitted netlist. It is a boundary artifact, between 0.17 and 4.2&nbsp;fF on this
+      bench, and it belongs in its own column, not added to the substrate term. And on a layout
+      containing devices the totals are not comparable at all: Magic deliberately excludes the device
+      region because the compact models cover it, while FasterCap treats the gate and the diffusion as
+      plain conductors. Only device-less structures give an apples-to-apples capacitance comparison,
+      which is why the whole bench is metal-only.
+    </p>
+    <p>
+      On resistance, kpex drives Magic rather than solving anything itself, using a different recipe
+      than <span class="m">sak-pex.sh</span> does: <span class="m">ext2sim</span> plus
+      <span class="m">extresist all</span> with the deprecated <span class="m">extresist tolerance</span>,
+      against sak-pex's <span class="m">extract do resistance</span> plus the threshold/mindelay/minres
+      triple. On the template inverter that recipe gives 881 resistors and, notably, the correct total
+      capacitance of 288.94&nbsp;fF, so it avoids defects 1 and 4. Its resistor topology on the
+      device-less bench cases is not right (on the asymmetric tee it emits the correct star plus a
+      duplicate degenerate mesh), but kpex's resistance support is young and device-less nets are
+      outside what <span class="m">extresist</span> is built for, so that is recorded as an observation
+      rather than counted as a defect.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>What to do</h2>
+  <hr class="h2rule">
+  <ol class="recs">
+    <li><p><strong>Do not ship a full-RC netlist from this flow yet.</strong> Neither setting of
+      EXT_MODE=3 is usable: <span class="m">MINDELAY=1</span> gives correct capacitance with a wrong
+      resistor network, <span class="m">MINDELAY=0</span> gives a correct resistor network with doubled
+      coupling. Use EXT_MODE=2 for capacitance and treat resistance separately until this is fixed.</p></li>
+    <li><p><strong>Drop <span class="m">ext2spice lvs</span> from <span class="m">sak-pex.sh</span></strong>
+      and set the options it was wanted for explicitly, leaving <span class="m">hierarchy</span> off.
+      That is a one-line change and it recovers 16&nbsp;% of the substrate capacitance, and it makes the
+      two PEX targets agree.</p></li>
+    <li><p><strong>Stop using EXT_MODE=1.</strong> It is faster because it extracts less, and what it
+      leaves out is the interconnect coupling. Correct the word "decoupled" in both macro READMEs and in
+      the <span class="m">sak-pex.sh</span> header to say the coupling is omitted.</p></li>
+    <li><p><strong>Add a mode-2 against mode-3 total-capacitance check to the flow.</strong> The two
+      modes run on the same geometry with the same capacitance deck, so their per-net totals should
+      agree within the RC node split. A ratio near 2 is the double count, and it is a few lines against
+      netlists the flow already produces.</p></li>
+    <li><p><strong>Report defects 2, 3, 4 and 5 upstream to Magic</strong> with the cross, sidewall,
+      hierarchy and coupling cases. They are a handful of shapes each and reproduce in under a second.
+      Defect 1 is already open as <a href="https://github.com/RTimothyEdwards/magic/issues/550">#550</a>,
+      filed from reading the source with no reproduction case, so it wants a comment rather than a
+      duplicate. Defect 5 is the one to lead with: it is a regression in 8.3.679 with a commit and a
+      stated intent behind it.</p></li>
+    <li><p><strong>Pin the Magic version in the container, and treat 8.3.679 as the boundary.</strong>
+      Any SG13G2 crosstalk number extracted since 2026-08-02 is half what the deck specifies, and any
+      taken before it is not. That is worth knowing before an old result is compared with a new one.</p></li>
+    <li><p><strong>Ask IHP to re-fit the sidewall coefficients against a field solve.</strong> Even with
+      the factor of two corrected, the <span class="m">1/(s+off)</span> form is 61&nbsp;% high at
+      0.2&nbsp;um spacing and 12&nbsp;% low at 1.6&nbsp;um. The five converged FasterCap points in table
+      F are enough to start from.</p></li>
+    <li><p><strong>Keep the bench.</strong> Every defect here reproduces in seconds on a handful of
+      rectangles, and the same 63 layouts will tell you immediately whether an upstream fix worked.</p></li>
+  </ol>
+</section>
+
+<footer>
+  Bench, generators and sweeps: open-pdks-regression-tests/ihp-sg13g2/pex_bench/ &nbsp;&middot;&nbsp; 63 structures, 4 extraction
+  modes, 3 model implementations, 40 field solves &nbsp;&middot;&nbsp; deck reference:
+  libs.tech/magic/ihp-sg13g2-extract.tech variant () &nbsp;&middot;&nbsp; kpex reference:
+  klayout_pex_protobuf/ihp-sg13g2_tech.pb.json
+</footer>
+
+</div>

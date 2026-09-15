@@ -1,0 +1,16 @@
+*********************************************************
+*** NGSPICE file created by KLayout-PEX 0.3.15
+*** -----------------------------------------------------
+***     Extraction Engine: KPEX/FasterCap
+***     Technology: ihp_sg13g2
+***     Date: 2026-09-04 11:26:38
+*********************************************************
+
+.SUBCKT overlap_m2_m3
+CCext_0_1 VSUBS \$2 21.0077f
+CCext_1_2 \$2 \$3 9.38347f
+CCext_1_1 \$2 VSUBS 1.52718f
+CCext_2_2 \$3 VSUBS 169.573a
+RRext_FC_GND_GND FC_GND GND 0 PEX_RES
+RRext_VSUBS_GND VSUBS GND 0 PEX_RES
+.ENDS overlap_m2_m3

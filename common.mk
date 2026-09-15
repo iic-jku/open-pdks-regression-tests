@@ -99,6 +99,17 @@ MINRES ?= 1000
 # Override with: make <target> MINDELAY=<ps>
 MINDELAY ?= 1
 
+# kpex engine for klayout-pex: magic (drives Magic, default), 2.5D (kpex's analytical engine) or
+# fastercap (field solve, capacitance only). See ihp-sg13g2/pex_bench for how the three compare.
+# Override with: make klayout-pex KPEX_ENGINE=<magic|2.5D|fastercap>
+KPEX_ENGINE ?= magic
+
+# fastercap only: KLayout-side triangulation --delaunay_amax in um^2 (kpex default 50, coarse) and
+# the FasterCap auto tolerance -a. FasterCap's -m is overridden by -a, so kpex's --mesh does nothing.
+# Override with: make klayout-pex KPEX_ENGINE=fastercap KPEX_AMAX=<um2> KPEX_TOL=<frac>
+KPEX_AMAX ?= 50
+KPEX_TOL ?= 0.05
+
 # KLayout DRC level: precheck, macro, or regular (sak-drc.sh -l, only used by klayout-drc; default: macro)
 # Override with: make <target> DRC_LEVEL=<precheck|macro|regular>
 DRC_LEVEL ?= macro
@@ -148,7 +159,7 @@ KNOWN_FAILS ?=
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -158,6 +169,7 @@ help: ## Show this help message
 	@if [ -n '$(PDK_ERROR_HINT)' ]; then echo '            $(PDK_ERROR_HINT)'; fi
 	@echo 'CELL defaults to $(CELL). Override to verify subcells.'
 	@echo 'EXT_MODE defaults to 1 (C-decoupled). 2=C-coupled, 3=full-RC.'
+	@echo 'KPEX_ENGINE defaults to magic for klayout-pex. 2.5D=kpex analytical engine, fastercap=field solve (KPEX_AMAX, KPEX_TOL).'
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
@@ -265,28 +277,43 @@ magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make mag
 # ================================================================================================
 
 # PEX Targets
-klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>])
+# Output name: <CELL>_klayout_pex_<EXT_MODE>.spice for the Magic engine (unchanged), and
+# <CELL>_klayout_<engine>_pex_<EXT_MODE>.spice for the kpex engines. The fastercap run directory is
+# kept, since its capacitance matrices are the data the netlist was reduced from.
+klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>])
 	mkdir -p $(NET_PEX_DIR)
-	PDK_UNDERSCORED=$$(echo $$PDK | sed -e 's/-/_/g'); \
+	@# kpex takes the PDK name as it is: {gf180mcuD, ihp-sg13g2, ihp-sg13cmos5l, sky130A}.
+	@# The underscored spelling this recipe used to build survives only as a legacy alias for
+	@# ihp_sg13g2; for every other PDK it produces an invalid choice and kpex refuses to start.
 	case $(EXT_MODE) in \
 		1) echo "WARNING: KPEX does not support C-decoupled (C) mode yet, using C-coupled (CC) mode instead."; KPEX_MODE=CC ;; \
 		2) KPEX_MODE=CC ;; \
 		3) KPEX_MODE=RC ;; \
 		*) echo "Invalid EXT_MODE: $(EXT_MODE). Use 1, 2, or 3."; exit 1;; \
 	esac; \
+	case $(KPEX_ENGINE) in \
+		magic)     ENGINE_OPTS="--magic --magic_mode $$KPEX_MODE"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice ;; \
+		2.5D)      ENGINE_OPTS="--2.5D --mode $$KPEX_MODE"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_2.5D_pex_$(EXT_MODE).spice ;; \
+		fastercap) [ "$(EXT_MODE)" = "3" ] && echo "WARNING: the FasterCap engine extracts capacitance only, EXT_MODE=3 gives no resistors."; \
+		           ENGINE_OPTS="--fastercap --delaunay_amax $(KPEX_AMAX) --delaunay_b 0.5 --tolerance $(KPEX_TOL)"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_fastercap_pex_$(EXT_MODE).spice ;; \
+		*) echo "Invalid KPEX_ENGINE: $(KPEX_ENGINE). Use magic, 2.5D, or fastercap."; exit 1;; \
+	esac; \
+	SCHEMATIC=""; [ -f $(XSCHEM_SCH_DIR)/$(CELL).sch ] && SCHEMATIC="--schematic $(XSCHEM_SCH_DIR)/$(CELL).sch"; \
 	kpex \
-	--pdk $$PDK_UNDERSCORED \
+	--pdk $$PDK \
 	--cell $(CELL) \
-	--schematic $(XSCHEM_SCH_DIR)/$(CELL).sch \
+	$$SCHEMATIC \
 	--gds $(LAY_DIR)/$(CELL).gds \
-	--magic \
-	--magic_mode $$KPEX_MODE \
+	$$ENGINE_OPTS \
 	--out_dir $(NET_PEX_DIR) \
-	--out_spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
-#	--2.5D
-#	--mode $$KPEX_MODE
-	sed -i 's/$(CELL)/$(CELL)_pex/g' $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
-	rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL)
+	--out_spice $$OUT || { echo "[ERROR] kpex failed, see $(NET_PEX_DIR)/$(CELL)__$(CELL)/kpex.log"; exit 1; }; \
+	[ -f $$OUT ] || { echo "[ERROR] kpex wrote no netlist $$OUT, see $(NET_PEX_DIR)/$(CELL)__$(CELL)/kpex.log"; exit 1; }; \
+	sed -i 's/$(CELL)/$(CELL)_pex/g' $$OUT; \
+	if [ "$(KPEX_ENGINE)" = "fastercap" ]; then \
+		find $(NET_PEX_DIR)/$(CELL)__$(CELL) -type d \( -name FasterCap_Input_Files -o -name Geometries \) -prune -exec rm -rf {} + 2>/dev/null; \
+	else \
+		rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL); \
+	fi
 	rm -f $(CELL).nodes $(CELL).sim
 .PHONY: klayout-pex
 

@@ -21,3 +21,11 @@ CELL ?= sg13_combined
 KNOWN_FAILS ?= sg13_cmomi:magic-lvs
 
 include $(MAKEFILE_DIR)/../common.mk
+
+# PEX bench: dummy metal layouts with hand-computable parasitics, extracted with Magic and the
+# engines listed in pex_bench/Makefile (PEX_ENGINES) and checked against expected values.
+FASTERCAP ?= 0
+
+pex-bench: ## Run the PEX bench with the engines in pex_bench PEX_ENGINES against expected values (usage: make pex-bench)
+	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench FASTERCAP=$(FASTERCAP)
+.PHONY: pex-bench

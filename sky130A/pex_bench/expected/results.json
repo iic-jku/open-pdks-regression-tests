@@ -1,0 +1,938 @@
+[
+ {
+  "table": "A",
+  "key": "li1_plate",
+  "source": "deck",
+  "value": 100.61500000000001
+ },
+ {
+  "table": "A",
+  "key": "li1_plate",
+  "source": "magic",
+  "value": 100.61
+ },
+ {
+  "table": "A",
+  "key": "li1_wire",
+  "source": "deck",
+  "value": 5.035450000000001
+ },
+ {
+  "table": "A",
+  "key": "li1_wire",
+  "source": "magic",
+  "value": 5.03545
+ },
+ {
+  "table": "A",
+  "key": "m1_plate",
+  "source": "deck",
+  "value": 72.56400000000001
+ },
+ {
+  "table": "A",
+  "key": "m1_plate",
+  "source": "magic",
+  "value": 72.564
+ },
+ {
+  "table": "A",
+  "key": "m1_wire",
+  "source": "deck",
+  "value": 4.74207
+ },
+ {
+  "table": "A",
+  "key": "m1_wire",
+  "source": "magic",
+  "value": 4.74207
+ },
+ {
+  "table": "A",
+  "key": "m2_plate",
+  "source": "deck",
+  "value": 51.302
+ },
+ {
+  "table": "A",
+  "key": "m2_plate",
+  "source": "magic",
+  "value": 51.30200000000001
+ },
+ {
+  "table": "A",
+  "key": "m2_wire",
+  "source": "deck",
+  "value": 4.25126
+ },
+ {
+  "table": "A",
+  "key": "m2_wire",
+  "source": "magic",
+  "value": 4.25126
+ },
+ {
+  "table": "A",
+  "key": "m3_plate",
+  "source": "deck",
+  "value": 39.123
+ },
+ {
+  "table": "A",
+  "key": "m3_plate",
+  "source": "magic",
+  "value": 39.123
+ },
+ {
+  "table": "A",
+  "key": "m3_wire",
+  "source": "deck",
+  "value": 4.44924
+ },
+ {
+  "table": "A",
+  "key": "m3_wire",
+  "source": "magic",
+  "value": 4.44924
+ },
+ {
+  "table": "A",
+  "key": "m4_plate",
+  "source": "deck",
+  "value": 28.386
+ },
+ {
+  "table": "A",
+  "key": "m4_plate",
+  "source": "magic",
+  "value": 28.386
+ },
+ {
+  "table": "A",
+  "key": "m4_wire",
+  "source": "deck",
+  "value": 3.91518
+ },
+ {
+  "table": "A",
+  "key": "m4_wire",
+  "source": "magic",
+  "value": 3.91518
+ },
+ {
+  "table": "A",
+  "key": "m5_plate",
+  "source": "deck",
+  "value": 23.57
+ },
+ {
+  "table": "A",
+  "key": "m5_plate",
+  "source": "magic",
+  "value": 23.57
+ },
+ {
+  "table": "A",
+  "key": "m5_wire",
+  "source": "deck",
+  "value": 4.08185
+ },
+ {
+  "table": "A",
+  "key": "m5_wire",
+  "source": "magic",
+  "value": 4.081850000000001
+ },
+ {
+  "table": "B",
+  "key": "m1_over_li1",
+  "source": "deck",
+  "value": 13.8
+ },
+ {
+  "table": "B",
+  "key": "m1_over_li1",
+  "source": "magic",
+  "value": 13.717100000000002
+ },
+ {
+  "table": "B",
+  "key": "m2_over_m1",
+  "source": "deck",
+  "value": 16.068
+ },
+ {
+  "table": "B",
+  "key": "m2_over_m1",
+  "source": "magic",
+  "value": 15.988300000000002
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m2",
+  "source": "deck",
+  "value": 11.413
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m2",
+  "source": "magic",
+  "value": 11.284200000000002
+ },
+ {
+  "table": "B",
+  "key": "m4_over_m3",
+  "source": "deck",
+  "value": 11.223799999999999
+ },
+ {
+  "table": "B",
+  "key": "m4_over_m3",
+  "source": "magic",
+  "value": 11.090400000000002
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m4",
+  "source": "deck",
+  "value": 10.1458
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m4",
+  "source": "magic",
+  "value": 9.95333
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m1",
+  "source": "deck",
+  "value": 5.6464
+ },
+ {
+  "table": "B",
+  "key": "m3_over_m1",
+  "source": "magic",
+  "value": 5.39649
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m1",
+  "source": "deck",
+  "value": 2.6755999999999998
+ },
+ {
+  "table": "B",
+  "key": "m5_over_m1",
+  "source": "magic",
+  "value": 2.0345100000000005
+ },
+ {
+  "table": "C",
+  "key": "s0p2",
+  "source": "deck",
+  "value": 4.888888888888888
+ },
+ {
+  "table": "C",
+  "key": "s0p2",
+  "source": "magic",
+  "value": 2.44444
+ },
+ {
+  "table": "C",
+  "key": "s0p4",
+  "source": "deck",
+  "value": 3.3846153846153846
+ },
+ {
+  "table": "C",
+  "key": "s0p4",
+  "source": "magic",
+  "value": 1.69231
+ },
+ {
+  "table": "C",
+  "key": "s0p8",
+  "source": "deck",
+  "value": 2.095238095238095
+ },
+ {
+  "table": "C",
+  "key": "s0p8",
+  "source": "magic",
+  "value": 1.04762
+ },
+ {
+  "table": "C",
+  "key": "s1p6",
+  "source": "deck",
+  "value": 1.1891891891891893
+ },
+ {
+  "table": "C",
+  "key": "s1p6",
+  "source": "magic",
+  "value": 0.59459
+ },
+ {
+  "table": "C",
+  "key": "s3p2",
+  "source": "deck",
+  "value": 0.6376811594202899
+ },
+ {
+  "table": "C",
+  "key": "s3p2",
+  "source": "magic",
+  "value": 0.31884
+ },
+ {
+  "table": "D",
+  "key": "li1",
+  "source": "deck",
+  "value": 1267.2
+ },
+ {
+  "table": "D",
+  "key": "li1",
+  "source": "magic",
+  "value": 1267.2
+ },
+ {
+  "table": "D",
+  "key": "m1",
+  "source": "deck",
+  "value": 12.375
+ },
+ {
+  "table": "D",
+  "key": "m1",
+  "source": "magic",
+  "value": 12.3755
+ },
+ {
+  "table": "D",
+  "key": "m2",
+  "source": "deck",
+  "value": 12.375
+ },
+ {
+  "table": "D",
+  "key": "m2",
+  "source": "magic",
+  "value": 12.3755
+ },
+ {
+  "table": "D",
+  "key": "m3",
+  "source": "deck",
+  "value": 4.6530000000000005
+ },
+ {
+  "table": "D",
+  "key": "m3",
+  "source": "magic",
+  "value": 4.6535
+ },
+ {
+  "table": "D",
+  "key": "m4",
+  "source": "deck",
+  "value": 4.6530000000000005
+ },
+ {
+  "table": "D",
+  "key": "m4",
+  "source": "magic",
+  "value": 4.6535
+ },
+ {
+  "table": "D",
+  "key": "m5",
+  "source": "deck",
+  "value": 2.871
+ },
+ {
+  "table": "D",
+  "key": "m5",
+  "source": "magic",
+  "value": 2.8715
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n1",
+  "source": "deck",
+  "value": 9.3
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n1",
+  "source": "magic",
+  "value": 9.299999999999997
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n2",
+  "source": "deck",
+  "value": 4.65
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n2",
+  "source": "magic",
+  "value": 4.649999999999999
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n4",
+  "source": "deck",
+  "value": 2.325
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n4",
+  "source": "magic",
+  "value": 2.3249999999999957
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n8",
+  "source": "deck",
+  "value": 1.1625
+ },
+ {
+  "table": "E",
+  "key": "li1_m1_n8",
+  "source": "magic",
+  "value": 1.1625000000000014
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n1",
+  "source": "deck",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n1",
+  "source": "magic",
+  "value": 4.5
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n2",
+  "source": "deck",
+  "value": 2.25
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n2",
+  "source": "magic",
+  "value": 2.2500000000000004
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n4",
+  "source": "deck",
+  "value": 1.125
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n4",
+  "source": "magic",
+  "value": 1.1250000000000004
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n8",
+  "source": "deck",
+  "value": 0.5625
+ },
+ {
+  "table": "E",
+  "key": "m1_m2_n8",
+  "source": "magic",
+  "value": 0.5625000000000004
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n1",
+  "source": "deck",
+  "value": 3.41
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n1",
+  "source": "magic",
+  "value": 3.41
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n2",
+  "source": "deck",
+  "value": 1.705
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n2",
+  "source": "magic",
+  "value": 1.705
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n4",
+  "source": "deck",
+  "value": 0.8525
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n4",
+  "source": "magic",
+  "value": 0.8525000000000003
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n8",
+  "source": "deck",
+  "value": 0.42625
+ },
+ {
+  "table": "E",
+  "key": "m2_m3_n8",
+  "source": "magic",
+  "value": 0.4262520000000003
+ },
+ {
+  "table": "F",
+  "key": "li1_plate",
+  "source": "deck",
+  "value": 100.61500000000001
+ },
+ {
+  "table": "F",
+  "key": "li1_plate",
+  "source": "magic",
+  "value": 100.61
+ },
+ {
+  "table": "F",
+  "key": "li1_plate",
+  "source": "kpex25",
+  "value": 100.61500000000001
+ },
+ {
+  "table": "F",
+  "key": "li1_wire",
+  "source": "deck",
+  "value": 5.035450000000001
+ },
+ {
+  "table": "F",
+  "key": "li1_wire",
+  "source": "magic",
+  "value": 5.03545
+ },
+ {
+  "table": "F",
+  "key": "li1_wire",
+  "source": "kpex25",
+  "value": 5.03551
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "deck",
+  "value": 72.56400000000001
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "magic",
+  "value": 72.564
+ },
+ {
+  "table": "F",
+  "key": "m1_plate",
+  "source": "kpex25",
+  "value": 72.5641
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "deck",
+  "value": 4.74207
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "magic",
+  "value": 4.74207
+ },
+ {
+  "table": "F",
+  "key": "m1_wire",
+  "source": "kpex25",
+  "value": 4.74216
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "deck",
+  "value": 51.30200000000001
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "magic",
+  "value": 51.30200000000001
+ },
+ {
+  "table": "F",
+  "key": "m2_plate",
+  "source": "kpex25",
+  "value": 51.30210000000001
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "deck",
+  "value": 4.25126
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "magic",
+  "value": 4.25126
+ },
+ {
+  "table": "F",
+  "key": "m2_wire",
+  "source": "kpex25",
+  "value": 4.251380000000001
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "deck",
+  "value": 39.123000000000005
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "magic",
+  "value": 39.123
+ },
+ {
+  "table": "F",
+  "key": "m3_plate",
+  "source": "kpex25",
+  "value": 39.1232
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "deck",
+  "value": 4.4492400000000005
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "magic",
+  "value": 4.44924
+ },
+ {
+  "table": "F",
+  "key": "m3_wire",
+  "source": "kpex25",
+  "value": 4.449430000000001
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "deck",
+  "value": 28.386000000000003
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "magic",
+  "value": 28.386
+ },
+ {
+  "table": "F",
+  "key": "m4_plate",
+  "source": "kpex25",
+  "value": 28.386200000000002
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "deck",
+  "value": 3.91518
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "magic",
+  "value": 3.91518
+ },
+ {
+  "table": "F",
+  "key": "m4_wire",
+  "source": "kpex25",
+  "value": 3.915420000000001
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "deck",
+  "value": 23.57
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "magic",
+  "value": 23.57
+ },
+ {
+  "table": "F",
+  "key": "m5_plate",
+  "source": "kpex25",
+  "value": 23.5703
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "deck",
+  "value": 4.081850000000001
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "magic",
+  "value": 4.081850000000001
+ },
+ {
+  "table": "F",
+  "key": "m5_wire",
+  "source": "kpex25",
+  "value": 4.08216
+ },
+ {
+  "table": "G",
+  "key": "m1_over_li1",
+  "source": "deck",
+  "value": 13.8
+ },
+ {
+  "table": "G",
+  "key": "m1_over_li1",
+  "source": "magic",
+  "value": 13.717100000000002
+ },
+ {
+  "table": "G",
+  "key": "m1_over_li1",
+  "source": "kpex25",
+  "value": 13.800000000000002
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "deck",
+  "value": 16.068
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "magic",
+  "value": 15.988300000000002
+ },
+ {
+  "table": "G",
+  "key": "m2_over_m1",
+  "source": "kpex25",
+  "value": 16.068
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "deck",
+  "value": 11.413000000000002
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "magic",
+  "value": 11.284200000000002
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m2",
+  "source": "kpex25",
+  "value": 11.413000000000002
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "deck",
+  "value": 11.2238
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "magic",
+  "value": 11.090400000000002
+ },
+ {
+  "table": "G",
+  "key": "m4_over_m3",
+  "source": "kpex25",
+  "value": 11.223800000000002
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m4",
+  "source": "deck",
+  "value": 10.1458
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m4",
+  "source": "magic",
+  "value": 9.95333
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m4",
+  "source": "kpex25",
+  "value": 10.1459
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "deck",
+  "value": 5.646400000000001
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "magic",
+  "value": 5.39649
+ },
+ {
+  "table": "G",
+  "key": "m3_over_m1",
+  "source": "kpex25",
+  "value": 5.646470000000001
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "deck",
+  "value": 2.6755999999999998
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "magic",
+  "value": 2.0345100000000005
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "kpex25",
+  "value": 2.6758
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "deck",
+  "value": 4.888888888888889
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "magic",
+  "value": 2.44444
+ },
+ {
+  "table": "H",
+  "key": "s0p2",
+  "source": "kpex25",
+  "value": 4.888890000000001
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "deck",
+  "value": 3.3846153846153846
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "magic",
+  "value": 1.69231
+ },
+ {
+  "table": "H",
+  "key": "s0p4",
+  "source": "kpex25",
+  "value": 3.38462
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "deck",
+  "value": 2.0952380952380953
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "magic",
+  "value": 1.04762
+ },
+ {
+  "table": "H",
+  "key": "s0p8",
+  "source": "kpex25",
+  "value": 2.09524
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "deck",
+  "value": 1.1891891891891893
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "magic",
+  "value": 0.59459
+ },
+ {
+  "table": "H",
+  "key": "s1p6",
+  "source": "kpex25",
+  "value": 1.1891900000000002
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "deck",
+  "value": 0.6376811594202899
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "magic",
+  "value": 0.31884
+ },
+ {
+  "table": "H",
+  "key": "s3p2",
+  "source": "kpex25",
+  "value": 0.637681
+ }
+]
