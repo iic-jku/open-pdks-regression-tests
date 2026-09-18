@@ -24,5 +24,5 @@ for l in open(sys.argv[1]):
 print("%.4f fF (expect 33.2497 = 14.093 + 19.1567)"%t)
 PY
 sak-pex.sh -m 1 -w runs/rv/k layout/sidewall_m1_s0p2.gds >/dev/null 2>&1;  show "D3 sidewall s0p2 mode1 (expect 4.87346 each)" runs/rv/k/sidewall_m1_s0p2.pex.spice
-echo "--- kpex 2.5D sidewall s0p8 (expect 1.93371) ---"
+echo "--- kpex 2.5D sidewall s0p8 (expect 0.966857, kpex >= 0.4.3) ---"
 kpex --pdk ihp-sg13g2 --cell sidewall_m1_s0p8 --gds layout/sidewall_m1_s0p8.gds --2.5D --out_dir runs/rv/l --out_spice runs/rv/l/out.spice >/dev/null 2>&1; grep -h "^C" runs/rv/l/out.spice | head -1

@@ -861,7 +861,7 @@
   "table": "H",
   "key": "s0p2",
   "source": "kpex25",
-  "value": 4.888890000000001
+  "value": 2.44444
  },
  {
   "table": "H",
@@ -879,7 +879,7 @@
   "table": "H",
   "key": "s0p4",
   "source": "kpex25",
-  "value": 3.38462
+  "value": 1.69231
  },
  {
   "table": "H",
@@ -897,7 +897,7 @@
   "table": "H",
   "key": "s0p8",
   "source": "kpex25",
-  "value": 2.09524
+  "value": 1.04762
  },
  {
   "table": "H",
@@ -915,7 +915,7 @@
   "table": "H",
   "key": "s1p6",
   "source": "kpex25",
-  "value": 1.1891900000000002
+  "value": 0.5945950000000001
  },
  {
   "table": "H",
@@ -933,6 +933,6 @@
   "table": "H",
   "key": "s3p2",
   "source": "kpex25",
-  "value": 0.637681
+  "value": 0.31884100000000004
  }
 ]
