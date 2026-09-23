@@ -193,7 +193,13 @@ check-pdk:
 # DRC Targets
 klayout-drc: check-pdk ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])
 	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
+	@# One KLayout process per DRC run. sak-drc.sh hands "nproc --ignore 5" to the IHP wrapper
+	@# as --mp, and run_drc.py then starts one KLayout process per rule table (37 for
+	@# ihp-sg13g2), each paying about 3 s of KLayout start-up for about 1 s of checks. On cells
+	@# this small that is much slower than one process running every table, with the same
+	@# violations. nproc honours OMP_NUM_THREADS, which is the only way to get --mp=1 through
+	@# sak-drc.sh today. It also caps the KLayout threads of the gf180mcu and sky130 decks at 1.
+	OMP_NUM_THREADS=1 sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
 .PHONY: klayout-drc
 
 magic-drc: check-pdk ## Run Magic DRC of the CELL cell (usage: make magic-drc [CELL=<cellname>])
