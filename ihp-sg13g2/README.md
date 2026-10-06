@@ -179,20 +179,20 @@ The target auto-discovers every cell from the `.gds` files in `layout/`, then ru
 make regression LAYOUT_CELLS="sg13_rhigh sg13_rppd" REGRESSION_STEPS="klayout-lvs magic-lvs klayout-pex2"
 ```
 
-Each cell prints a `PASSED`, `FAILED`, `KNOWN FAIL (ignored)` or `UNEXPECTED PASS` line, and the run ends with a summary, for example:
+Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. The last summary line lists every cell with the steps that failed it, for example:
 
 ```
 [REGRESSION] PASSED: sg13_lv_nmos_tap
 ...
-[REGRESSION] KNOWN FAIL (ignored): sg13_cmomi (magic-lvs)
+[REGRESSION] KNOWN FAIL (tool bug, ignored): sg13_cmomi (magic-lvs)
 ...
 ========================================
-[REGRESSION] SUMMARY: KNOWN FAIL cells (ignored): sg13_cmomi(magic-lvs)
+[REGRESSION] SUMMARY: KNOWN FAIL cells (tool bug, ignored): sg13_cmomi(magic-lvs)
 [REGRESSION] SUMMARY: No unexpected failures
 ========================================
 ```
 
-`make regression` exits with a non-zero status when a step fails that is not listed or a listed step passes, so it can be used directly as a CI gate.
+`make regression` exits with a non-zero status when a step fails that is not listed, or a listed step does not end the way its list says, so it can be used directly as a CI gate.
 
 The following tools and flows are checked:
 
@@ -206,11 +206,29 @@ The following tools and flows are checked:
 
 ### Known failures
 
-`KNOWN_FAILS` in this directory's `Makefile` lists the failures that are currently expected, one entry per `<cell>:<step>`, or `<cell>` for every step of that cell. Why each entry is there is written up in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+`KNOWN_FAILS` in this directory's `Makefile` lists the steps that should pass but fail because of a tool or PDK bug, one entry per `<cell>:<step>`, or `<cell>` for every step of that cell. Why each entry is there is written up in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
-- A listed step that fails is reported as `KNOWN FAIL (ignored)` and does not fail the regression.
+- A listed step that fails is reported as `KNOWN FAIL (tool bug, ignored)` and does not fail the regression.
 - A listed step that passes is reported as `UNEXPECTED PASS` and **does** fail the regression, so an entry cannot outlive the bug it stands for. Remove the entry, and its section in `KNOWN_ISSUES.md`, once that happens.
 - Any other failing step fails the regression.
+
+### Expected failures
+
+A cell can be broken on purpose, to check that a tool still catches the mistake: a metal line that is too narrow for DRC, or swapped wiring for LVS. `EXPECTED_FAILS` lists the DRC and LVS steps that have to catch such a cell, one entry per `<cell>:<step>`, or `<cell>` for every DRC and LVS step of that cell. PEX steps cannot be listed, they extract and do not judge. What is broken in each cell is written up in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
+
+- A listed step that fails with a finding (DRC violations, layout and schematic do not match) is reported as `EXPECTED FAIL (broken on purpose, caught)` and does not fail the regression.
+- A listed step that passes is reported as `FALSE PASS` and fails the regression: the tool missed the deliberate error.
+- A listed step that fails without a finding is reported as `BROKEN` and fails the regression. The check did not run to the end, for example because the schematic could not be netlisted, so it says nothing about the cell. The regression tells the two apart by the exit code of `sak-drc.sh` or `sak-lvs.sh`, which every DRC and LVS target writes to `verification/drc/<cell>.<step>.rc` or `verification/lvs/<cell>.<step>.rc`.
+
+### Known false passes
+
+When a tool misses the error in a cell that is broken on purpose because of a bug, that step goes into `KNOWN_FALSE_PASSES` instead, and the bug gets a section in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
+- A listed step that passes is reported as `KNOWN FALSE PASS (tool bug, ignored)` and does not fail the regression.
+- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it; until then, a step that catches it is reported as `EXPECTED FAIL`.
+- A listed step that fails without a finding is reported as `BROKEN`, as above.
+
+A step can be covered by one of the three lists only. The regression stops before running anything when a step is listed twice, or when a PEX step is listed under `EXPECTED_FAILS` or `KNOWN_FALSE_PASSES`.
 
 ## Supported Cells / Files
 

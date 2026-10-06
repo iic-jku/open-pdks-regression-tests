@@ -20,9 +20,15 @@ CELL ?= gf180_nfet_03v3
 # like the IHP wrappers do (libs.tech/klayout/tech/lvs/run_lvs.py:347).
 KLAYOUT_EXT_CIR = $(CELL).cir
 
-# Known failures: tolerated by regression. See ../common.mk for the entry syntax.
-# A listed step that passes is reported as UNEXPECTED PASS and fails the regression.
+# Steps of regression that do not simply pass. ../common.mk has the entry syntax and what
+# each outcome is reported as.
+#   KNOWN_FAILS         tool bug: the step fails although it should pass (KNOWN_ISSUES.md)
+#   EXPECTED_FAILS      the cell is broken on purpose, the step has to fail (EXPECTED_FAILS.md)
+#   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
+#                       (KNOWN_ISSUES.md)
 KNOWN_FAILS ?=
+EXPECTED_FAILS ?=
+KNOWN_FALSE_PASSES ?=
 
 include $(MAKEFILE_DIR)/../common.mk
 

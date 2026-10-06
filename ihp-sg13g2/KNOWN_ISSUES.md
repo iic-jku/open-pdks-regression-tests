@@ -1,6 +1,6 @@
 # Known Issues
 
-Every entry of `KNOWN_FAILS` in the [Makefile](Makefile) has a section here. Remove both once the step passes: the regression reports a listed step that passes as `UNEXPECTED PASS` and fails.
+Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
 KLayout LVS passes on every cell. Only Magic + Netgen LVS is affected.
 

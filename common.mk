@@ -19,7 +19,9 @@
 #                     to it (see "PDK selection" below), so a design can never be
 #                     silently verified against the wrong PDK.
 #   CELL              Default cell for the single-cell targets.
-#   KNOWN_FAILS       Tolerated failures, see below.
+#   KNOWN_FAILS       Steps that fail because of a tool bug, see below.
+#   EXPECTED_FAILS    Steps that have to fail, the cell is broken on purpose (see below).
+#   KNOWN_FALSE_PASSES  Steps that pass a cell broken on purpose, because of a tool bug.
 #   REGRESSION_STEPS  Steps the regression runs per cell (optional, default below).
 #   KLAYOUT_EXT_CIR   Name of the extracted netlist (optional, see below).
 #   MAGIC_EXT_SPC     Same for the Magic+Netgen flow (optional, see below).
@@ -146,15 +148,66 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 			magic-drc magic-lvs \
 			magic-pex1 magic-pex2 magic-pex3
 
-# Known failures: reported by regression, but do not make it exit non-zero.
-# Entry syntax:  <cell>            tolerate every failing step of that cell (same as <cell>:*)
-#                <cell>:<step>     tolerate only that step; list one entry per tolerated step
-# Step names:    see REGRESSION_STEPS above
-# A step listed here that PASSES is an unexpected pass (XPASS) and fails the
-# regression: the entry has to be removed from KNOWN_FAILS. For a whole-cell
-# entry (<cell> / <cell>:*) this is the case once every step of that cell passes.
-# Override with: make regression KNOWN_FAILS="<entry> <entry> ..."
+# Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
+# day; a cell that is broken on purpose is "expected" to fail for good.
+#
+#                         the right verdict is PASS     the right verdict is FAIL
+#     tool gets it right  (no entry)                    EXPECTED_FAILS
+#     tool gets it wrong  KNOWN_FAILS                   KNOWN_FALSE_PASSES
+#
+# Entry syntax, the same in all three lists:
+#   <cell>:<step>   that step only; list one entry per step
+#   <cell>          the whole cell, same as <cell>:*. In KNOWN_FAILS every step of the cell. In
+#                   EXPECTED_FAILS and KNOWN_FALSE_PASSES every DRC and LVS step: a PEX step
+#                   extracts and does not judge, it fails only when it writes nothing.
+# Step names: see REGRESSION_STEPS above. A step may be covered by one list only, and the two
+# lists for cells broken on purpose take DRC and LVS steps only.
+#
+# KNOWN_FAILS: the step should pass but fails because of a tool or PDK bug (KNOWN_ISSUES.md).
+#   fails   KNOWN FAIL, tolerated
+#   passes  UNEXPECTED PASS, fails the regression: the bug is gone, remove the entry. For a
+#           whole-cell entry this is the case once every step of the cell passes.
+# EXPECTED_FAILS: the cell is broken on purpose and the step has to catch it (EXPECTED_FAILS.md).
+#   fails with a finding     EXPECTED FAIL, fine
+#   passes                   FALSE PASS, fails the regression: the tool missed the error
+#   fails without a finding  BROKEN, fails the regression: the check did not run to the end
+# KNOWN_FALSE_PASSES: the cell is broken on purpose, but the step passes because of a tool bug
+# (KNOWN_ISSUES.md).
+#   passes                   KNOWN FALSE PASS, tolerated
+#   fails with a finding     UNEXPECTED FAIL, fails the regression: the tool catches it now, move
+#                            the entry to EXPECTED_FAILS. For a whole-cell entry a step that
+#                            catches it counts as EXPECTED FAIL until every step does.
+#   fails without a finding  BROKEN, fails the regression
+#
+# A finding or a breakdown: sak-drc.sh and sak-lvs.sh exit with 1 when the check ran and found
+# DRC violations or a mismatch, and with another code when it could not run (missing file, no
+# report, ...). make turns both into its own exit code 2, so every DRC and LVS target writes the
+# exit code of its sak script to <report dir>/<cell>.<step>.rc. A step that fails without that
+# file never reached the check, e.g. because the schematic could not be netlisted.
+#
+# Override with: make regression KNOWN_FAILS="<entry> ..." EXPECTED_FAILS="..." KNOWN_FALSE_PASSES="..."
 KNOWN_FAILS ?=
+EXPECTED_FAILS ?=
+KNOWN_FALSE_PASSES ?=
+
+# Exit code file of a DRC or LVS step of CELL, see "A finding or a breakdown" above.
+# Usage: $(call step_rc,<report dir>,<step>)
+step_rc = $(1)/$(CELL).$(2).rc
+
+# Shell helpers of the regression target.
+#   is_check <step>                        DRC or LVS step?
+#   in_list "<entries>" <cell> <step> all|checks
+#                                          is <cell>:<step> covered by the list? A whole-cell
+#                                          entry covers every step (all) or the DRC and LVS
+#                                          steps only (checks).
+#   whole_cell "<entries>" <cell>          does the list name the whole cell?
+REGRESSION_SH = \
+	is_check() { case $$1 in *-drc|*-lvs) return 0 ;; esac; return 1; }; \
+	in_list() { \
+		case " $$1 " in *" $$2:$$3 "*) return 0 ;; esac; \
+		case " $$1 " in *" $$2 "*|*" $$2:* "*) [ "$$4" = all ] || is_check "$$3" ;; *) return 1 ;; esac; \
+	}; \
+	whole_cell() { case " $$1 " in *" $$2 "*|*" $$2:* "*) return 0 ;; esac; return 1; };
 # ================================================================================================
 
 # Help Target
@@ -176,6 +229,8 @@ help: ## Show this help message
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 	@echo 'A KNOWN_FAILS step that passes is reported as UNEXPECTED PASS and fails the regression.'
+	@echo 'EXPECTED_FAILS lists DRC/LVS steps of cells broken on purpose, which have to fail with a finding (currently: $(EXPECTED_FAILS)).'
+	@echo 'KNOWN_FALSE_PASSES lists DRC/LVS steps that pass a cell broken on purpose because of a tool bug (currently: $(KNOWN_FALSE_PASSES)).'
 .PHONY: help
 # ================================================================================================
 
@@ -192,13 +247,17 @@ check-pdk:
 
 # DRC Targets
 klayout-drc: check-pdk ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])
+	@rm -f $(call step_rc,$(DRC_RPT_DIR),klayout-drc)
 	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
+	sak-drc.sh -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
+	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),klayout-drc); exit $$rc
 .PHONY: klayout-drc
 
 magic-drc: check-pdk ## Run Magic DRC of the CELL cell (usage: make magic-drc [CELL=<cellname>])
+	@rm -f $(call step_rc,$(DRC_RPT_DIR),magic-drc)
 	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -m -f "*" -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds
+	sak-drc.sh -d -m -f "*" -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
+	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),magic-drc); exit $$rc
 .PHONY: magic-drc
 # ================================================================================================
 
@@ -224,10 +283,12 @@ klayout-lvs-netlist: check-pdk ## Export CDL schematic netlist from Xschem for K
 .PHONY: klayout-lvs-netlist
 
 klayout-lvs: check-pdk ## Run KLayout LVS of the CELL cell (usage: make klayout-lvs [CELL=<cellname>])
+	@rm -f $(call step_rc,$(LVS_RPT_DIR),klayout-lvs)
 	$(MAKE) klayout-lvs-netlist CELL=$(CELL)
 	mkdir -p $(LVS_RPT_DIR)
 	mkdir -p $(NET_LAY_DIR)
-	sak-lvs.sh -d -k -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_klayout.cdl -l $(LAY_DIR)/$(CELL).gds -c $(CELL)
+	sak-lvs.sh -d -k -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_klayout.cdl -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
+	rc=$$?; echo $$rc > $(call step_rc,$(LVS_RPT_DIR),klayout-lvs); exit $$rc
 	@ext="$(LVS_RPT_DIR)/$(CELL).klayout.lvs/$(KLAYOUT_EXT_CIR)"; \
 	if [ ! -f "$$ext" ]; then \
 		echo "[ERROR] Extracted netlist <$$ext> not found. Set KLAYOUT_EXT_CIR in the PDK"; \
@@ -260,10 +321,12 @@ magic-lvs-netlist: check-pdk ## Export SPICE schematic netlist from Xschem for M
 .PHONY: magic-lvs-netlist
 
 magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make magic-lvs [CELL=<cellname>])
+	@rm -f $(call step_rc,$(LVS_RPT_DIR),magic-lvs)
 	mkdir -p $(LVS_RPT_DIR)
 	mkdir -p $(NET_LAY_DIR)
 	$(MAKE) magic-lvs-netlist CELL=$(CELL)
-	sak-lvs.sh -d -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_magic.spice -l $(LAY_DIR)/$(CELL).gds -c $(CELL)
+	sak-lvs.sh -d -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_magic.spice -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
+	rc=$$?; echo $$rc > $(call step_rc,$(LVS_RPT_DIR),magic-lvs); exit $$rc
 	@ext="$(LVS_RPT_DIR)/$(CELL).magic.lvs/$(MAGIC_EXT_SPC)"; \
 	if [ ! -f "$$ext" ]; then \
 		echo "[ERROR] Extracted netlist <$$ext> not found. Set MAGIC_EXT_SPC in the PDK"; \
@@ -326,33 +389,63 @@ magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (us
 # ================================================================================================
 
 # Regression Target
-regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."])
+regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."] [EXPECTED_FAILS="..."] [KNOWN_FALSE_PASSES="..."])
 	@if [ -z "$(strip $(LAYOUT_CELLS))" ]; then \
 		echo "[ERROR] No layouts found in $(LAY_DIR)/ - wrong working directory?"; \
 		echo "        Run the regression as: make -C <pdk-dir> regression"; \
 		exit 1; \
 	fi
 	@set -f; \
-	for kf in $(KNOWN_FAILS); do \
-		kf_cell="$${kf%%:*}"; kf_step="$${kf#*:}"; \
-		[ "$$kf_step" = "$$kf" ] && kf_step="*"; \
-		case " $(LAYOUT_CELLS) " in \
-			*" $$kf_cell "*) ;; \
-			*) echo "[REGRESSION] WARNING: stale KNOWN_FAILS entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
-		esac; \
-		[ "$$kf_step" = "*" ] && continue; \
-		case " $(REGRESSION_STEPS) " in \
-			*" $$kf_step "*) ;; \
-			*) echo "[REGRESSION] WARNING: stale KNOWN_FAILS entry '$$kf': step '$$kf_step' is not in REGRESSION_STEPS" ;; \
-		esac; \
-	done
+	$(REGRESSION_SH) \
+	check_list() { \
+		list=$$1; shift; \
+		for kf in "$$@"; do \
+			kf_cell="$${kf%%:*}"; kf_step="$${kf#*:}"; \
+			[ "$$kf_step" = "$$kf" ] && kf_step="*"; \
+			case " $(LAYOUT_CELLS) " in \
+				*" $$kf_cell "*) ;; \
+				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
+			esac; \
+			[ "$$kf_step" = "*" ] && continue; \
+			case " $(REGRESSION_STEPS) " in \
+				*" $$kf_step "*) ;; \
+				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': step '$$kf_step' is not in REGRESSION_STEPS" ;; \
+			esac; \
+			if [ "$$list" != KNOWN_FAILS ] && ! is_check "$$kf_step"; then \
+				echo "[REGRESSION] ERROR: $$list entry '$$kf': only DRC and LVS steps can catch a cell broken on purpose"; \
+				exit 1; \
+			fi; \
+		done; \
+	}; \
+	check_list KNOWN_FAILS $(KNOWN_FAILS); \
+	check_list EXPECTED_FAILS $(EXPECTED_FAILS); \
+	check_list KNOWN_FALSE_PASSES $(KNOWN_FALSE_PASSES); \
+	clash=""; \
+	for cell in $(LAYOUT_CELLS); do \
+		for step in $(REGRESSION_STEPS); do \
+			lists=""; \
+			in_list "$(KNOWN_FAILS)" $$cell $$step all && lists="$$lists KNOWN_FAILS"; \
+			in_list "$(EXPECTED_FAILS)" $$cell $$step checks && lists="$$lists EXPECTED_FAILS"; \
+			in_list "$(KNOWN_FALSE_PASSES)" $$cell $$step checks && lists="$$lists KNOWN_FALSE_PASSES"; \
+			case "$$lists" in \
+				" "*" "*) echo "[REGRESSION] ERROR: $$cell:$$step is covered by more than one list:$$lists"; clash=1 ;; \
+			esac; \
+		done; \
+	done; \
+	[ -z "$$clash" ]
 	@set -f; \
+	$(REGRESSION_SH) \
 	failed=""; \
 	known=""; \
+	expected=""; \
+	kfp=""; \
 	xpassed=""; \
+	xfailed=""; \
 	for cell in $(LAYOUT_CELLS); do \
 		echo "[REGRESSION] Running verify for: $$cell"; \
-		bad_steps=""; ok_steps=""; \
+		any_fail=""; checks_run=""; checks_passed=""; \
+		c_bad=""; c_known=""; c_xpass=""; c_expected=""; c_falsepass=""; c_kfp=""; c_xfail=""; \
+		c_broken=""; c_broken_steps=""; \
 		for step in $(REGRESSION_STEPS); do \
 			case $$step in \
 				klayout-drc)  $(MAKE) klayout-drc CELL=$$cell ;; \
@@ -367,55 +460,98 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 				magic-pex3)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=3 ;; \
 				*) echo "[REGRESSION] ERROR: unknown step '$$step' in REGRESSION_STEPS"; exit 1 ;; \
 			esac; \
-			if [ $$? -eq 0 ]; then ok_steps="$$ok_steps $$step"; else bad_steps="$$bad_steps $$step"; fi; \
-		done; \
-		cell_known=""; cell_bad=""; cell_xpass=""; \
-		for step in $$bad_steps; do \
-			case " $(KNOWN_FAILS) " in \
-				*" $$cell "*|*" $$cell:* "*|*" $$cell:$$step "*) cell_known="$$cell_known $$step" ;; \
-				*) cell_bad="$$cell_bad $$step" ;; \
+			if [ $$? -eq 0 ]; then ok=1; else ok=""; any_fail=1; fi; \
+			rc=""; \
+			case $$step in \
+				*-drc) [ -f $(DRC_RPT_DIR)/$$cell.$$step.rc ] && rc=$$(cat $(DRC_RPT_DIR)/$$cell.$$step.rc) ;; \
+				*-lvs) [ -f $(LVS_RPT_DIR)/$$cell.$$step.rc ] && rc=$$(cat $(LVS_RPT_DIR)/$$cell.$$step.rc) ;; \
 			esac; \
+			if [ -n "$$rc" ]; then why="exit $$rc"; else why="never reached the check"; fi; \
+			if is_check $$step; then checks_run=1; [ -n "$$ok" ] && checks_passed=1; fi; \
+			if in_list "$(EXPECTED_FAILS)" $$cell $$step checks; then \
+				if [ -n "$$ok" ]; then c_falsepass="$$c_falsepass $$step"; \
+				elif [ "$$rc" = 1 ]; then c_expected="$$c_expected $$step"; \
+				else c_broken="$$c_broken, $$step $$why"; c_broken_steps="$$c_broken_steps $$step"; fi; \
+			elif in_list "$(KNOWN_FALSE_PASSES)" $$cell $$step checks; then \
+				if [ -n "$$ok" ]; then c_kfp="$$c_kfp $$step"; \
+				elif [ "$$rc" != 1 ]; then c_broken="$$c_broken, $$step $$why"; c_broken_steps="$$c_broken_steps $$step"; \
+				elif whole_cell "$(KNOWN_FALSE_PASSES)" $$cell; then c_expected="$$c_expected $$step"; \
+				else c_xfail="$$c_xfail $$step"; fi; \
+			elif in_list "$(KNOWN_FAILS)" $$cell $$step all; then \
+				if [ -z "$$ok" ]; then c_known="$$c_known $$step"; \
+				else case " $(KNOWN_FAILS) " in *" $$cell:$$step "*) c_xpass="$$c_xpass $$step" ;; esac; fi; \
+			elif [ -z "$$ok" ]; then \
+				c_bad="$$c_bad $$step"; \
+			fi; \
 		done; \
-		for step in $$ok_steps; do \
-			case " $(KNOWN_FAILS) " in \
-				*" $$cell:$$step "*) cell_xpass="$$cell_xpass $$step" ;; \
-			esac; \
-		done; \
-		if [ -z "$$bad_steps" ]; then \
-			case " $(KNOWN_FAILS) " in \
-				*" $$cell "*|*" $$cell:* "*) cell_xpass="$$cell_xpass all-steps" ;; \
-			esac; \
+		if [ -z "$$any_fail" ] && whole_cell "$(KNOWN_FAILS)" $$cell; then \
+			c_xpass="$$c_xpass all-steps"; \
 		fi; \
-		if [ -n "$$cell_known" ]; then \
-			echo "[REGRESSION] KNOWN FAIL (ignored): $$cell ($${cell_known# })"; \
-			known="$$known $$cell($${cell_known# })"; \
+		if [ -n "$$checks_run" ] && [ -z "$$checks_passed$$c_broken_steps" ] && whole_cell "$(KNOWN_FALSE_PASSES)" $$cell; then \
+			c_xfail="$$c_xfail all-steps"; \
 		fi; \
-		if [ -n "$$cell_xpass" ]; then \
-			echo "[REGRESSION] UNEXPECTED PASS: $$cell ($${cell_xpass# }) - listed in KNOWN_FAILS but passed, remove the entry"; \
-			xpassed="$$xpassed $$cell($${cell_xpass# })"; \
+		if [ -n "$$c_known" ]; then \
+			echo "[REGRESSION] KNOWN FAIL (tool bug, ignored): $$cell ($${c_known# })"; \
+			known="$$known $$cell($${c_known# })"; \
 		fi; \
-		if [ -n "$$cell_bad" ]; then \
-			echo "[REGRESSION] FAILED: $$cell ($${cell_bad# })"; \
-			failed="$$failed $$cell($${cell_bad# })"; \
-		elif [ -z "$$cell_known" ] && [ -z "$$cell_xpass" ]; then \
+		if [ -n "$$c_expected" ]; then \
+			echo "[REGRESSION] EXPECTED FAIL (broken on purpose, caught): $$cell ($${c_expected# })"; \
+			expected="$$expected $$cell($${c_expected# })"; \
+		fi; \
+		if [ -n "$$c_kfp" ]; then \
+			echo "[REGRESSION] KNOWN FALSE PASS (tool bug, ignored): $$cell ($${c_kfp# })"; \
+			kfp="$$kfp $$cell($${c_kfp# })"; \
+		fi; \
+		if [ -n "$$c_xpass" ]; then \
+			echo "[REGRESSION] UNEXPECTED PASS: $$cell ($${c_xpass# }) - listed in KNOWN_FAILS but passed, remove the entry"; \
+			xpassed="$$xpassed $$cell($${c_xpass# })"; \
+		fi; \
+		if [ -n "$$c_xfail" ]; then \
+			echo "[REGRESSION] UNEXPECTED FAIL: $$cell ($${c_xfail# }) - listed in KNOWN_FALSE_PASSES but failed, move it to EXPECTED_FAILS"; \
+			xfailed="$$xfailed $$cell($${c_xfail# })"; \
+		fi; \
+		if [ -n "$$c_falsepass" ]; then \
+			echo "[REGRESSION] FALSE PASS: $$cell ($${c_falsepass# }) - broken on purpose, but the tool passed it"; \
+		fi; \
+		if [ -n "$$c_broken" ]; then \
+			echo "[REGRESSION] BROKEN: $$cell ($${c_broken#, }) - the check did not run to the end, its verdict is unknown"; \
+		fi; \
+		if [ -n "$$c_bad" ]; then \
+			echo "[REGRESSION] FAILED: $$cell ($${c_bad# })"; \
+		fi; \
+		red="$$c_bad"; \
+		for s in $$c_falsepass; do red="$$red $$s:false-pass"; done; \
+		for s in $$c_broken_steps; do red="$$red $$s:broken"; done; \
+		if [ -n "$$red" ]; then \
+			failed="$$failed $$cell($${red# })"; \
+		elif [ -z "$$c_known$$c_expected$$c_kfp$$c_xpass$$c_xfail" ]; then \
 			echo "[REGRESSION] PASSED: $$cell"; \
 		fi; \
 	done; \
 	echo ""; \
 	echo "========================================"; \
 	if [ -n "$$known" ]; then \
-		echo "[REGRESSION] SUMMARY: KNOWN FAIL cells (ignored):$$known"; \
+		echo "[REGRESSION] SUMMARY: KNOWN FAIL cells (tool bug, ignored):$$known"; \
+	fi; \
+	if [ -n "$$expected" ]; then \
+		echo "[REGRESSION] SUMMARY: EXPECTED FAIL cells (broken on purpose, caught):$$expected"; \
+	fi; \
+	if [ -n "$$kfp" ]; then \
+		echo "[REGRESSION] SUMMARY: KNOWN FALSE PASS cells (tool bug, ignored):$$kfp"; \
 	fi; \
 	if [ -n "$$xpassed" ]; then \
 		echo "[REGRESSION] SUMMARY: UNEXPECTED PASS cells:$$xpassed"; \
 	fi; \
+	if [ -n "$$xfailed" ]; then \
+		echo "[REGRESSION] SUMMARY: UNEXPECTED FAIL cells:$$xfailed"; \
+	fi; \
 	if [ -n "$$failed" ]; then \
 		echo "[REGRESSION] SUMMARY: FAILED cells:$$failed"; \
 	fi; \
-	if [ -n "$$failed" ] || [ -n "$$xpassed" ]; then \
+	if [ -n "$$failed" ] || [ -n "$$xpassed" ] || [ -n "$$xfailed" ]; then \
 		echo "========================================"; \
 		exit 1; \
-	elif [ -n "$$known" ]; then \
+	elif [ -n "$$known$$expected$$kfp" ]; then \
 		echo "[REGRESSION] SUMMARY: No unexpected failures"; \
 		echo "========================================"; \
 	else \
