@@ -111,7 +111,7 @@ Aim for a reference an order tighter than the 5 % that `check_results.py` allows
 
 Judge convergence from the raw-matrix asymmetry, which `read_kpex.py` reports weighted by magnitude and thresholded at 0.1 fF. Below about 0.2 % the answer has settled. `capsub_tm2` at 18 % is not converged and must not be quoted, which is why the report greys those rows out. The 50 x 50 um plates do not converge at `amax 0.5` in reasonable time (an hour of CPU, 6.6 GB), so the substrate rows are quoted at `amax 2` with the trend stated.
 
-kpex reports the far-field residual (`Cext_i_i`, flux leaving the simulation box) tied to VSUBS. It is a boundary artifact, not substrate capacitance, and belongs in its own column. And on a layout with devices the totals are not comparable to Magic at all: Magic excludes the device region because the compact models cover it, FasterCap treats gate and diffusion as plain conductors. Only device-less structures give an apples-to-apples capacitance comparison, which is why the bench is metal-only.
+kpex reports the far-field residual (`Cext_i_i`, flux leaving the simulation box) tied to the substrate net (VSUBS up to kpex 0.5.x, `sub!` since 0.6.1). It is a boundary artifact, not substrate capacitance, and belongs in its own column. And on a layout with devices the totals are not comparable to Magic at all: Magic excludes the device region because the compact models cover it, FasterCap treats gate and diffusion as plain conductors. Only device-less structures give an apples-to-apples capacitance comparison, which is why the bench is metal-only.
 
 ## The investigation scripts
 

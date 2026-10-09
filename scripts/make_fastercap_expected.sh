@@ -282,8 +282,8 @@ if [ -n "$CALIBRATE" ]; then
 						> "$BENCH/netlist/calibrate_${CALIBRATE}_a${amax}_t${tol}.log" 2>&1; then
 					secs=$(( $(date +%s) - t0 ))
 					# read_kpex.summary() returns (names, coupling, residual, asymmetry); the signal is
-					# the coupling that does not involve VSUBS.
-					read=$(python3 -c "import sys;sys.path.insert(0,'$BENCH/scripts');from read_kpex import summary as S;r=S('$d');c=[v for k,v in r[1].items() if 'VSUBS' not in k] if r else [];print('%.4f %.2f'%((max(c)*1e15 if c else 0.0),(r[3] if r else 0.0)))" 2>/dev/null)
+					# the coupling that does not involve the substrate (read_kpex.SUBSTRATE).
+					read=$(python3 -c "import sys;sys.path.insert(0,'$BENCH/scripts');from read_kpex import SUBSTRATE,summary as S;r=S('$d');c=[v for k,v in r[1].items() if not SUBSTRATE.intersection(k)] if r else [];print('%.4f %.2f'%((max(c)*1e15 if c else 0.0),(r[3] if r else 0.0)))" 2>/dev/null)
 					val=${read%% *}
 					asym=${read##* }
 					[ -n "$read" ] || { val="?"; asym="?"; }

@@ -4,12 +4,17 @@
 The Maxwell matrix is the honest source. For net i:
   coupling to net j = -M[i][j]
   residual to the far field = M[i][i] - sum_{j!=i} -M[i][j]
-kpex attaches that residual to VSUBS in the netlist, so the effective
-node-to-ground capacitance in the emitted netlist is coupling_to_VSUBS + residual.
+kpex attaches that residual to the substrate net in the netlist, so the effective
+node-to-ground capacitance in the emitted netlist is coupling_to_substrate + residual.
 """
 import csv
 import os
 import sys
+
+# The net kpex puts the substrate capacitances on. Up to 0.5.x it was always VSUBS, as in the
+# matrices under expected/fastercap/. Since 0.6.1 it is the substrate net of the PDK's LVS
+# deck: sky130_gnd (sky130A), sub! (ihp-sg13g2, ihp-sg13cmos5l), SUB (gf180mcuD).
+SUBSTRATE = {"VSUBS", "sky130_gnd", "sub!", "SUB"}
 
 
 def read_matrix(path):
