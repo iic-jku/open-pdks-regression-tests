@@ -663,7 +663,7 @@
   "table": "F",
   "key": "m5_plate",
   "source": "kpex25",
-  "value": 23.5703
+  "value": 20.5725
  },
  {
   "table": "F",
@@ -681,7 +681,7 @@
   "table": "F",
   "key": "m5_wire",
   "source": "kpex25",
-  "value": 4.08216
+  "value": 3.2141900000000003
  },
  {
   "table": "G",
@@ -751,6 +751,12 @@
  },
  {
   "table": "G",
+  "key": "m5_over_m4",
+  "source": "kpex25",
+  "value": 6.04284
+ },
+ {
+  "table": "G",
   "key": "m3_over_m1",
   "source": "deck",
   "value": 3.48816
@@ -778,6 +784,12 @@
   "key": "m5_over_m1",
   "source": "magic",
   "value": 1.5913900000000003
+ },
+ {
+  "table": "G",
+  "key": "m5_over_m1",
+  "source": "kpex25",
+  "value": 2.14702
  },
  {
   "table": "H",
@@ -849,7 +861,7 @@
   "table": "H",
   "key": "s1p6",
   "source": "kpex25",
-  "value": 0.654687
+  "value": 0.6546860000000001
  },
  {
   "table": "H",
