@@ -51,14 +51,9 @@ KPEX_CELLS := capsub_m1 capsub_m2 capsub_m3 capsub_m4 capsub_tm1 \
 
 # Extraction engines this bench can run on an unmodified container. The regression test asks
 # the bench for this list rather than assuming one, and calls no engine that is not in it.
-#
-# kpex is missing here, and the reason is not in the cells: the kpex wheel ships this PDK's
-# LVS deck without the 47 rule decks it includes, so create_lvsdb dies before an engine is
-# even chosen and no kpex run of any kind succeeds. Magic and the deck arithmetic are
-# unaffected. See ../../ihp-sg13g2/pex_bench/report/upstream_issues_kpex.md; put
-# "kpex25 fastercap" back, and bless the columns into expected/results.json with
-# "make pex-bench-expected", once the wheel ships the rule decks.
-PEX_ENGINES := magic
+# Up to kpex 0.4.4 this was "magic" alone: the wheel shipped this PDK's LVS deck without the
+# rule decks it includes, so no kpex run of any kind succeeded. kpex 0.4.5 ships them.
+PEX_ENGINES := magic kpex25 fastercap
 
 # kpex 2.5D cells that are expected to fail, tolerated like common.mk's KNOWN_FAILS: a listed
 # cell that fails is reported and ignored, a listed cell that passes fails the target so the

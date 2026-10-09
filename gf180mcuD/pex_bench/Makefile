@@ -56,15 +56,8 @@ PEX_ENGINES := magic kpex25 fastercap
 # kpex 2.5D cells that are expected to fail, tolerated like common.mk's KNOWN_FAILS: a listed
 # cell that fails is reported and ignored, a listed cell that passes fails the target so the
 # entry gets removed. Use it only for a defect that is understood and written down.
-# The two overlap cells that involve the top metal crash kpex with
-#   RuntimeError: KeyError: 'MetalTop' in EdgeNeighborhoodVisitor.on_edge
-# because klayout_pex_protobuf/gf180mcuD_tech.pb.json declares the computed layer metal5_con
-# with "original_layer_name": "MetalTop" while every parasitics table names that layer Metal5.
-# The sideoverlap lookup therefore misses. capsub_m5 does not crash but is wrong for the same
-# reason: the substrates table has a stray MetalTop row carrying sky130A's met5 coefficients
-# (6.32 / 38.85), so kpex returns 23.5703 fF where the deck gives 20.5722 fF, 14.6 % high.
-# That one is pinned in expected/results.json as the value kpex currently produces.
-KPEX_KNOWN_FAILS ?= overlap_m4_m5 overlap_m1_m5
+# Empty since kpex 0.5.2 fixed the MetalTop defect of the gf180mcuD tech file (see README.md).
+KPEX_KNOWN_FAILS ?=
 
 # common.mk's regression on this directory means: every layout through the three Magic modes
 REGRESSION_STEPS ?= magic-pex1 magic-pex2 magic-pex3

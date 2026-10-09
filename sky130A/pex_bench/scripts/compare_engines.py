@@ -9,8 +9,9 @@
               results shipped with the bench
 
 kpex numbers the dummy nets ($1/$2 or $2/$3, it is not stable, there is no schematic to match
-against), so nets are never looked up by name: the pair is whichever two nets are not VSUBS, and
-on capsub the plate is the larger of the two substrate couplings, the wire the smaller.
+against), so nets are never looked up by name: the pair is whichever two nets are not the
+substrate (read_kpex.SUBSTRATE: VSUBS, or the deck's substrate net since kpex 0.6.1), and on
+capsub the plate is the larger of the two substrate couplings, the wire the smaller.
 With --json <file> every compared value is written for check_results.py.
 
 SPDX-FileCopyrightText: 2026 Simon Dorrer
@@ -22,7 +23,7 @@ import os
 import re
 import sys
 
-from read_kpex import summary
+from read_kpex import SUBSTRATE, summary
 
 BENCH = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 PEX = os.path.join(BENCH, "netlist", "pex")
@@ -68,14 +69,14 @@ def kpex25(cell):
 def kpex25_pair(cell):
     """Coupling between the two signal nets, whatever kpex numbered them ($1/$2 or $2/$3)."""
     for k, v in kpex25(cell).items():
-        if "VSUBS" not in k:
+        if not SUBSTRATE.intersection(k):
             return v
     return None
 
 
 def kpex25_sub(cell, tag):
-    """Coupling to VSUBS of the plate (largest) or the wire (smallest)."""
-    vals = sorted(v for k, v in kpex25(cell).items() if "VSUBS" in k)
+    """Coupling to the substrate of the plate (largest) or the wire (smallest)."""
+    vals = sorted(v for k, v in kpex25(cell).items() if SUBSTRATE.intersection(k))
     if not vals:
         return None
     return vals[-1] if tag == "plate" else vals[0]
@@ -92,8 +93,9 @@ def fc(cell, amax):
         s = summary(d)
         if s:
             names, coup, resid, asym = s
-            to_sub = {n: coup.get(tuple(sorted(("VSUBS", n))), 0.0) for n in names if n != "VSUBS"}
-            sig = [n for n in names if n != "VSUBS"]
+            sub = next((n for n in names if n in SUBSTRATE), "VSUBS")
+            sig = [n for n in names if n != sub]
+            to_sub = {n: coup.get(tuple(sorted((sub, n))), 0.0) for n in sig}
             pair = coup.get(tuple(sorted(sig)), 0.0) if len(sig) == 2 else 0.0
             return to_sub, pair, resid, asym, amax, origin
     return None

@@ -5,12 +5,12 @@ It is the test that says whether the parasitic extractors in IIC-OSIC-TOOLS impl
 
 This is the [ihp-sg13g2 bench](../../ihp-sg13g2/pex_bench/) ported to gf180mcuD. The geometry is unchanged, the layers and every coefficient are read from this PDK. See that directory's README for the investigation that built the bench, the report on the six defects it found, and the upstream issue drafts. Those defects are properties of the tools, not of the PDK.
 
-**kpex 2.5D cannot extract this PDK's top metal.** `klayout_pex_protobuf/gf180mcuD_tech.pb.json` declares the computed layer `metal5_con` with `"original_layer_name": "MetalTop"`, while every parasitics table in the same file names that layer `Metal5`. One wrong string, two consequences:
+**Up to kpex 0.5.1, kpex 2.5D could not extract this PDK's top metal.** `klayout_pex_protobuf/gf180mcuD_tech.pb.json` declared the computed layer `metal5_con` with `"original_layer_name": "MetalTop"`, while every parasitics table in the same file names that layer `Metal5`. One wrong string, two consequences:
 
-- Any cell whose fringe extraction touches the top metal crashes: `RuntimeError: KeyError: 'MetalTop' in EdgeNeighborhoodVisitor.on_edge`. That is `overlap_m4_m5` and `overlap_m1_m5`, listed in `KPEX_KNOWN_FAILS` so the target reports them and carries on. Remove them from that list when kpex is fixed - a listed cell that passes fails the target on purpose.
-- `capsub_m5` does not crash but is silently wrong. The `substrates` table happens to carry a stray `MetalTop` row whose coefficients are **sky130A's** met5 values (6.32 aF/um^2 and 38.85 aF/um), so kpex returns 23.5703 fF where the deck gives 20.5722 fF - 14.6 % high. `expected/results.json` pins the value kpex actually produces, as the bench does for Magic's known defects, so the check notices the day it changes.
+- Any cell whose fringe extraction touches the top metal crashed: `RuntimeError: KeyError: 'MetalTop' in EdgeNeighborhoodVisitor.on_edge`. That was `overlap_m4_m5` and `overlap_m1_m5`, which sat in `KPEX_KNOWN_FAILS`.
+- `capsub_m5` did not crash but was silently wrong. The `substrates` table carried a stray `MetalTop` row whose coefficients are **sky130A's** met5 values (6.32 aF/um^2 and 38.85 aF/um), so kpex returned 23.5703 fF where the deck gives 20.5722 fF - 14.6 % high. `expected/results.json` pinned that value, so the check would notice the day it changed.
 
-Magic covers the top metal correctly, so the deck column and the Magic column are complete.
+kpex 0.5.2 fixed the tech file. Both overlap cells extract, `KPEX_KNOWN_FAILS` is empty, and `capsub_m5` now matches the deck. `expected/results.json` was re-blessed with kpex 0.6.3.
 
 Everything runs inside the IIC-OSIC-TOOLS container from this directory. `make help` lists the targets.
 
@@ -93,7 +93,7 @@ contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax`
 ## Notes for anyone extending this
 
 - Magic measures resistance between the label positions, not the wire ends. A 100 um wire with ports 0.5 um in from each end is 99 squares.
-- Read every coefficient from this PDK's own deck. Reusing another PDK's table minus a row is the one mistake that fails silently: the layer names line up, the numbers do not. The `MetalTop` row above is exactly that mistake, made in kpex's tech file.
+- Read every coefficient from this PDK's own deck. Reusing another PDK's table minus a row is the one mistake that fails silently: the layer names line up, the numbers do not. The `MetalTop` row above was exactly that mistake, made in kpex's tech file.
 - Keep via cuts inside the landing metal and on legal spacing. Cuts that fall off the metal make it look as though Magic is miscounting parallel vias when it is counting exactly what is there.
 - Structures meant not to couple must be more than `sidehalo` (8 um here) apart. The bench uses 60 um.
 - Text on the pin datatype (`34/10` for Metal1) becomes a port. The pin box is OR'ed into the metal, so keep it inside the drawn shape.
