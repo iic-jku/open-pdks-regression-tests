@@ -14,7 +14,7 @@ Files for DRC / LVS / PEX regression tests for the Open-PDKs ihp-sg13g2, ihp-sg1
 | PDK | DRC / LVS / PEX regression | PEX bench |
 |---|---|---|
 | ihp-sg13g2 | yes | yes |
-| ihp-sg13cmos5l | yes | yes, Magic only for now (see its README) |
+| ihp-sg13cmos5l | yes | yes |
 | gf180mcuD | yes | yes |
 | sky130A | coming soon | yes |
 
