@@ -17,7 +17,7 @@ Two results of this port are worth reading before trusting a number here:
 Everything runs inside the IIC-OSIC-TOOLS container from this directory. `make help` lists the targets.
 
 ```sh
-make pex-bench                  # Magic modes 1/2/3 on every layout, tables, check - no kpex here, see below
+make pex-bench                  # Magic modes 1/2/3 on every layout, kpex 2.5D on the comparison cells, tables, check
 make magic-pex CELL=cross_m1 EXT_MODE=3 MINDELAY=1      # any single cell, any setting
 make klayout-pex CELL=sidewall_m1_s0p8 KPEX_ENGINE=2.5D
 make layouts                    # regenerate layout/ from scripts/gen_*.py
@@ -49,14 +49,12 @@ Vias: `via1` m1-m2, `via2` m2-m3, `via3` m3-m4 at 9000 mOhm/cut each, `via4` m4-
 | kpex 2.5D | `kpex --2.5D` | a second implementation, reading the identical coefficients from the kpex tech protobuf |
 | FasterCap | `kpex --fastercap` | a boundary-element field solve on the kpex process stack |
 
-**Both kpex columns are empty in this PDK today, and the bench does not ask for them.** The
-kpex wheel ships the `sg13cmos5l` LVS deck without the 47 rule decks it `%include`s, so
-`create_lvsdb` fails before an engine is even chosen and no kpex run of any kind succeeds on
-an unmodified container. The bench therefore declares `PEX_ENGINES := magic` in its Makefile,
-the regression test calls no kpex engine here, and `expected/results.json` holds only the deck
-and Magic columns. Nothing is tolerated or hidden: the values are absent, not wrong. Once the
-wheel ships the rule decks, put `kpex25 fastercap` back into `PEX_ENGINES` and bless the
-columns with `make pex-bench-expected`. See `../../ihp-sg13g2/pex_bench/report/upstream_issues_kpex.md`.
+**Up to kpex 0.4.4 both kpex columns were empty in this PDK.** The kpex wheel shipped the
+`sg13cmos5l` LVS deck without the rule decks it `%include`s, so `create_lvsdb` failed before an
+engine was even chosen, and the bench declared `PEX_ENGINES := magic`. kpex 0.4.5 ships the
+complete deck. `PEX_ENGINES` lists `kpex25 fastercap` again, and `expected/results.json` holds
+the kpex 2.5D column, blessed with kpex 0.6.3. Like the Magic column it pins what the tool
+produces, so the sidewall values carry the ihp-sg13g2 coefficients described above.
 
 `make klayout-pex` with the default `KPEX_ENGINE=magic` is not a further opinion: kpex then drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
@@ -87,12 +85,12 @@ The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for
 
 - `netlist/pex/<cell>_magic_pex_<mode>.spice`, `netlist/pex/kpex/2.5D/<cell>/`, `netlist/pex/kpex/fastercap/<cell>_a<amax>/` are the run outputs (ignored by git).
 - `scripts/analyse.py` prints tables A to E (deck against Magic), `scripts/compare_engines.py` tables F to I (all engines against the field solve). Both write their values to JSON.
-- `scripts/check_results.py` compares that JSON with `expected/results.json`: deck, Magic and kpex 2.5D values to 0.05 % (this PDK currently has no kpex 2.5D values, see above), FasterCap to 5 % (the triangulation is rebuilt every run, so points scatter). FasterCap values are optional in the check, so the bench passes without a field solve.
+- `scripts/check_results.py` compares that JSON with `expected/results.json`: deck, Magic and kpex 2.5D values to 0.05 %, FasterCap to 5 % (the triangulation is rebuilt every run, so points scatter). FasterCap values are optional in the check, so the bench passes without a field solve.
 - Its exit code says what drifted, so a CI test can triage without reading the log: `0` clean, `1` a deck value moved (the hand-maintained tables were edited), `2` only tool values moved, `3` the run is incomplete or the fresh file is missing or broken, `4` usage error or the expected file is missing.
 
 `make pex-bench-expected` overwrites `expected/results.json` with a fresh run. Do that after a deliberate change (a new tool version that fixes a defect), never to make a failing check pass.
 
-Unlike the ihp-sg13g2 bench this directory ships no `expected/fastercap/` matrices, and none can be produced while kpex cannot run for this PDK: `make pex-bench FASTERCAP=1` skips the field solve and `scripts/make_fastercap_expected.sh` skips the PDK, both because `fastercap` is not in `PEX_ENGINES`.
+Unlike the ihp-sg13g2 bench this directory ships no `expected/fastercap/` matrices yet. `make pex-bench FASTERCAP=1` runs the field solve, and `scripts/make_fastercap_expected.sh` can produce the matrices.
 
 Once it is, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
 the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices

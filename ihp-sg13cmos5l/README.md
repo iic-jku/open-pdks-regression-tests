@@ -116,9 +116,6 @@ If a matching Xschem symbol (`schematic/xschem/<CELL>_pex.sym`) exists, the `.su
 
 The output is `<CELL>_klayout_pex_<EXT_MODE>.spice` for the Magic engine and `<CELL>_klayout_<engine>_pex_<EXT_MODE>.spice` for the other two.
 
-> [!WARNING]
-> `klayout-pex` does not run for this PDK on an unmodified IIC-OSIC-TOOLS image, with any engine. The kpex wheel ships the `sg13cmos5l` LVS deck without the rule decks it includes, so kpex fails while building the LVS database, before an engine is chosen. See [PEX Bench](#pex-bench) below.
-
 ```sh
 make klayout-pex
 make klayout-pex CELL=sg13_lv_nmos_tap
@@ -146,16 +143,16 @@ make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDEL
 
 ## PEX Bench
 
-[pex_bench/](pex_bench/) is a second, independent PEX test: 54 metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand (a 50 x 50 um plate, a 0.5 x 50 um wire, a plate over a plate, two wires at swept spacing, a wire with two ports, via chains, a tee and a cross). Each one is extracted with Magic in all three modes, the numbers are compared with the deck arithmetic, and the result is checked against `pex_bench/expected/results.json`. The kpex engines are not run for this PDK today, see below.
+[pex_bench/](pex_bench/) is a second, independent PEX test: 54 metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand (a 50 x 50 um plate, a 0.5 x 50 um wire, a plate over a plate, two wires at swept spacing, a wire with two ports, via chains, a tee and a cross). Each one is extracted with Magic in all three modes, the numbers are compared with the deck arithmetic, and the result is checked against `pex_bench/expected/results.json`. kpex 2.5D extracts the comparison cells as a second implementation.
 
 ```sh
-make pex-bench                      # Magic modes 1/2/3, compare, check against expected (a few minutes)
+make pex-bench                      # Magic modes 1/2/3, kpex 2.5D, compare, check against expected (a few minutes)
 make -C pex_bench help              # the finer-grained targets
 ```
 
 It is the [ihp-sg13g2 bench](../ihp-sg13g2/pex_bench/) ported to this PDK: same geometry, every layer and every coefficient read from `ihp-sg13cmos5l-extract.tech`. The thick top metal is called `tm1` here as it is there, since it is the same physical layer (GDS 126) even though this deck calls it `metal5`; the thin `m5` of ihp-sg13g2 does not exist in cmos5l. The defects the bench found in ihp-sg13g2 are properties of Magic and kpex, not of the PDK - the write-up is in [../ihp-sg13g2/pex_bench/report/pex_bench_report.html](../ihp-sg13g2/pex_bench/report/pex_bench_report.html). The lateral coupling case is even cleaner in this PDK: the deck offset of 0.003 um quantises to zero, so Magic emits exactly half the deck coefficient at all five spacings.
 
-The port also turned up two defects that are specific to this PDK, both in kpex. kpex's `ihp-sg13cmos5l_tech.pb.json` carries **ihp-sg13g2's** coefficients wherever a layer exists in both PDKs with a different value: the whole `sidewalls` block (Metal1 should be 43.268 aF with offset +0.003 um and kpex uses 28.735 / -0.057, so the error on lateral coupling grows with spacing from -5.7 % at 0.2 um to -32.3 % at 3.2 um), and in total 36 of the file's 107 coefficients - the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct. And kpex cannot run for this PDK at all on an unmodified container: its wheel ships the `sg13cmos5l` LVS deck without the 47 rule decks the deck includes, so `create_lvsdb` fails before any engine starts. The bench therefore declares `PEX_ENGINES := magic`, `make pex-bench` calls no kpex engine here, and `pex_bench/expected/results.json` holds only the deck and Magic columns. Details in [pex_bench/README.md](pex_bench/README.md).
+The port also turned up two defects that are specific to this PDK, both in kpex. kpex's `ihp-sg13cmos5l_tech.pb.json` carries **ihp-sg13g2's** coefficients wherever a layer exists in both PDKs with a different value: the whole `sidewalls` block (Metal1 should be 43.268 aF with offset +0.003 um and kpex uses 28.735 / -0.057, so the error on lateral coupling grows with spacing from -5.7 % at 0.2 um to -32.3 % at 3.2 um), and in total 36 of the file's 107 coefficients - the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct. And up to kpex 0.4.4, kpex could not run for this PDK at all: its wheel shipped the `sg13cmos5l` LVS deck without the rule decks the deck includes, so `create_lvsdb` failed before any engine started. kpex 0.4.5 ships the complete deck, and the bench runs kpex 2.5D again. Details in [pex_bench/README.md](pex_bench/README.md).
 
 ## Regression
 
