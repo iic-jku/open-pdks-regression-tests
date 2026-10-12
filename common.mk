@@ -262,7 +262,11 @@ klayout-drc: check-pdk ## Run KLayout DRC of the CELL cell (usage: make klayout-
 magic-drc: check-pdk ## Run Magic DRC of the CELL cell (usage: make magic-drc [CELL=<cellname>])
 	@rm -f $(call step_rc,$(DRC_RPT_DIR),magic-drc)
 	mkdir -p $(DRC_RPT_DIR)
-	sak-drc.sh -d -m -f "*" -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
+	@# No -f (gds flatglob) here: Magic keeps the contents of a matching cell only to paint them
+	@# into its parents, so a pattern that matches the top cell ("*") loads it empty and every
+	@# check passes. On the regression cells, hierarchical Magic DRC finds the same errors as on a
+	@# copy flattened with Magic's "flatten" command.
+	sak-drc.sh -d -m -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
 	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),magic-drc); exit $$rc
 .PHONY: magic-drc
 # ================================================================================================

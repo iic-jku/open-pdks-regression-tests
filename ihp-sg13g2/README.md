@@ -39,7 +39,7 @@ make klayout-drc CELL=sg13_lv_nmos_tap
 make klayout-drc CELL=sg13_lv_nmos_tap DRC_LEVEL=regular
 ```
 
-**Magic DRC** runs a Magic DRC with all subcells flattened (`sak-drc.sh -f "*"`):
+**Magic DRC** runs a hierarchical Magic DRC (`sak-drc.sh -m`):
 
 ```sh
 make magic-drc
