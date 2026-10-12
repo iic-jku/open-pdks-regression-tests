@@ -151,7 +151,7 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 # Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
 # day; a cell that is broken on purpose is "expected" to fail for good.
 #
-#                         the right verdict is PASS     the right verdict is FAIL
+#     the right verdict is PASS     					the right verdict is FAIL
 #     tool gets it right  (no entry)                    EXPECTED_FAILS
 #     tool gets it wrong  KNOWN_FAILS                   KNOWN_FALSE_PASSES
 #
