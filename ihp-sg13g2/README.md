@@ -237,7 +237,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Low-voltage MOS transistors**
 
 - `sg13_lv_nmos_tap` (PASS)
-- `sg13_lv_pmos_tap` (PASS)
+- `sg13_lv_pmos_tap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)
 - `sg13_lv_pmos_ring_dev` (PASS)
@@ -248,7 +248,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **High-voltage MOS transistors**
 
 - `sg13_hv_nmos_tap` (PASS)
-- `sg13_hv_pmos_tap` (PASS)
+- `sg13_hv_pmos_tap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_hv_nmos_ring_dev` (PASS)
 - `sg13_hv_nmos_ring_pcell` (PASS)
 - `sg13_hv_pmos_ring_dev` (PASS)
@@ -258,8 +258,8 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 
 **Capacitors**
 
-- `sg13_cmim` (PASS)
-- `sg13_rf_cmim` (PASS)
+- `sg13_cmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_rf_cmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_cmomi` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Resistors**
@@ -276,13 +276,14 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 
 **Isolated devices (`isolbox`)**
 
-- `sg13_dnwell_nmos` (PASS)
-- `sg13_dnwell_inv` (PASS)
+- `sg13_dnwell_nmos` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_dnwell_inv` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_dnwell_inv_nmosi_c` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_dnwell_inv` before its nmosi.c fix
 
 **Combined test cells**
 
-- `sg13_combined` (PASS)
-- `sg13_combined_wo_rfcmim` (PASS)
-- `sg13_combined_cmim_ontop` (PASS)
-- `sg13_combined_cmim_ontop_wo_rfcmim` (PASS)
-- `sg13_short1` (PASS) - LV and HV NMOS and PMOS with shorted terminals
+- `sg13_combined` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_cmim_ontop` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_short1` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - LV and HV NMOS and PMOS with shorted terminals
