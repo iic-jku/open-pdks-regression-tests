@@ -23,7 +23,7 @@ CELL ?= sg13_combined
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
 KNOWN_FAILS ?= sg13_cmomi:magic-lvs
-EXPECTED_FAILS ?=
+EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc
 KNOWN_FALSE_PASSES ?=
 
 include $(MAKEFILE_DIR)/../common.mk

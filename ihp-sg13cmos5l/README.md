@@ -236,6 +236,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Low-voltage MOS transistors**
 
 - `sg13_lv_nmos_tap` (PASS)
+- `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
 - `sg13_lv_pmos_tap` (PASS)
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)
