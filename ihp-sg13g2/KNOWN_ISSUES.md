@@ -4,11 +4,11 @@ Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile
 
 KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is a Magic issue. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
 
-## Magic + Netgen LVS fails on `sg13_cmomi`
+## Magic + Netgen LVS fails on the MOM capacitors
 
-`KNOWN_FAILS` entry: `sg13_cmomi:magic-lvs`
+`KNOWN_FAILS` entries: `sg13_cmomi:magic-lvs`, `sg13_cmomf:magic-lvs`
 
-Magic does not extract the interdigitated MOM capacitor (`cap_cmomi`) from the layout.
+Magic does not extract the MOM capacitors, neither the interdigitated `cap_cmomi` nor the fringe `cap_cmomf`: the Magic tech file has no device for them and does not read their markers (`Recog.mom` 99/39, `Recog.momf` 99/40). The layout netlist keeps the two pins but no device, while the schematic has one, and Netgen ends with `has no elements and/or nodes. Not checked.`
 
 Upstream: [magic#552](https://github.com/RTimothyEdwards/magic/issues/552)
 

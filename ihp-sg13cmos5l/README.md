@@ -266,6 +266,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Capacitors**
 
 - `sg13_cmomi` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_cmomf` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Resistors**
 
