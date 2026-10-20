@@ -23,8 +23,15 @@ CELL ?= sg13_combined
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
 KNOWN_FAILS ?= sg13_cmomi:magic-lvs
-EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc
-KNOWN_FALSE_PASSES ?=
+EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc \
+	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc \
+	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc \
+	sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc \
+	sg13_lv_nmos_tap_gat_c:magic-drc \
+	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
+	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
+	sg13_lv_nmos_tap_w_mismatch:klayout-lvs
+KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs
 
 include $(MAKEFILE_DIR)/../common.mk
 

@@ -2,7 +2,7 @@
 
 Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
-KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is a Magic issue; the one `KNOWN_FALSE_PASSES` entry is a KLayout DRC deck issue.
+KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is a Magic issue. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
 
 ## Magic + Netgen LVS fails on `sg13_cmomi`
 
@@ -36,8 +36,18 @@ The IHP rules are "NBL.d: Min. PWell width between nBuLay and NWell (different n
 
 Magic reads the NWell of the IHP `isolbox` PCell as its own type `isolbox`. The derived layers Magic uses for the nmosi rules (`style drc` in the cifout rules, starting with `pwell_in_dnwell = dnwell and-not nwell`) only count `nwell`, so the whole NWell ring around the isolated PWell is reported as missing (`N-well overlap of deep N-well < 0.62um inside (nmosi.d)`), and nmosi.b fires along the same ring. Other Magic rules do list `nwell,isolbox` together. In both cells the ring overlaps the nBuLay by 0.65 um (nmosi.d asks for 0.62), and KLayout DRC with the extra rules reports no nmosi violation.
 
-## KLayout DRC misses nmosi.c in `sg13_dnwell_inv_nmosi_c`
+## Magic DRC does not check contacts in substrate taps
 
-`KNOWN_FALSE_PASSES` entry: `sg13_dnwell_inv_nmosi_c:klayout-drc`
+`KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_cnt_c_ptap:magic-drc`
 
-The cell is broken on purpose, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md): the NWell of the PMOS is 0.30 um from a tap in the isolated PWell, nmosi.c asks for 0.39 um. KLayout misses it for two reasons. nmosi.c is one of the IHP extra rules in `sg13g2_maximal.drc`, which `klayout-drc` does not run at `DRC_LEVEL=macro`. And with the extra rules (`DRC_LEVEL=regular`) the deck measures nmosi.c only against `NWell.with_holes`, the isolation ring, not against an NWell inside it, and reports `nmosi.c: 0 error(s)`.
+Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Substrate marker, as every IHP `ptap1` PCell draws it) as its own type `ptapc` (`ptapdiffcont`), not as `psc`. The DRC rules (`libs.tech/magic/ihp-sg13g2-drc.tech`) have no rule for `ptapc` at all, neither directly nor through the aliases that contain it (`allpdiffcontlv`, `allpdiffconthv`): Cnt.a, Cnt.b and Cnt.c are never checked at a substrate tap. `sg13_lv_nmos_tap_cnt_c_ptap` has two contacts 0.04 um inside the tap Activ (Cnt.c asks for 0.07 um); KLayout reports both, Magic reports nothing. The same error at a drain contact (`sg13_lv_nmos_tap_cnt_c`) is caught by Magic.
+
+## Magic + Netgen LVS ignores device parameters
+
+`KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_w_mismatch:magic-lvs`
+
+`sak-lvs.sh` judges Magic + Netgen LVS by the line `Circuits match uniquely` alone. Netgen writes that line once the topology matches and reports wrong device parameters separately (`Property errors were found.`), so a wrong W or L passes. In `sg13_lv_nmos_tap_w_mismatch` Netgen reports `w circuit1: 1.5e-07 circuit2: 3e-07 (delta=66.7%, cutoff=1%)` and still ends with `Circuits match uniquely`. Checking for the property errors alone does not help yet: the netgen setup of the PDK (`libs.tech/netgen/ihp-sg13g2_setup.tcl`) does not delete `mm_ok`, a Monte Carlo mismatch switch that Xschem writes to every device and that the layout cannot have, so almost every cell reports property errors. Two fixes are needed: `mm_ok` in the `property ... delete` lists of the netgen setup, and a Magic LVS verdict in `sak-lvs.sh` that fails on property errors.
+
+## Not checked at `DRC_LEVEL=macro`: KLayout misses nmosi.c in `sg13_dnwell_inv_nmosi_c`
+
+No list entry. `klayout-drc` runs at `DRC_LEVEL=macro`, which leaves out the IHP extra rules in `sg13g2_maximal.drc`, and nmosi.c is one of them, so the step passes `sg13_dnwell_inv_nmosi_c` legitimately (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). With the extra rules (`DRC_LEVEL=regular`) KLayout would still miss it: the deck measures nmosi.c only against `NWell.with_holes`, the isolation ring, not against an NWell inside it, and reports `nmosi.c: 0 error(s)`. Should the regression ever run the extra rules, the step belongs in `KNOWN_FALSE_PASSES`.

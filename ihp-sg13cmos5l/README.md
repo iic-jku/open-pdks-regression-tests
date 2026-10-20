@@ -236,7 +236,14 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Low-voltage MOS transistors**
 
 - `sg13_lv_nmos_tap` (PASS)
+- `sg13_lv_nmos_tap_m1_a` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - Metal1 0.10 um wide (M1.a)
 - `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
+- `sg13_lv_nmos_tap_cnt_c` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain contact 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_cnt_c_ptap` (broken on purpose, EXPECTED FAIL: KLayout DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - substrate tap contacts 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate end cap 0.10 um (Gat.c)
+- `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain and source shorted
+- `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate not connected to its pin
+- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, KNOWN FALSE PASS: Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - schematic W 0.30 um, layout 0.15 um
 - `sg13_lv_pmos_tap` (PASS)
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)

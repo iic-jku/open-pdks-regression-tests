@@ -28,8 +28,16 @@ KNOWN_FAILS ?= sg13_cmomi:magic-lvs \
 	sg13_combined_cmim_ontop:magic-drc sg13_combined_cmim_ontop_wo_rfcmim:magic-drc \
 	sg13_hv_pmos_tap:magic-drc sg13_lv_pmos_tap:magic-drc sg13_short1:magic-drc \
 	sg13_dnwell_inv:magic-drc sg13_dnwell_nmos:magic-drc
-EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc
-KNOWN_FALSE_PASSES ?= sg13_dnwell_inv_nmosi_c:klayout-drc
+EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc \
+	sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc \
+	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc \
+	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc \
+	sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc \
+	sg13_lv_nmos_tap_gat_c:magic-drc \
+	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
+	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
+	sg13_lv_nmos_tap_w_mismatch:klayout-lvs
+KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs
 
 include $(MAKEFILE_DIR)/../common.mk
 
