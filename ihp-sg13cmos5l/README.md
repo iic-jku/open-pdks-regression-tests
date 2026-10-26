@@ -274,6 +274,13 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 - `sg13_rppd` (PASS)
 - `sg13_rsil` (PASS)
 
+**Inductors and baluns with metal resistors (`lvsres`)**
+
+The metal resistor `lvsres` comes with IHP-Open-PDK#1121, for ihp-sg13g2 only so far: this PDK has no Xschem symbol for it, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md). [../scripts/gen_lvsres_cells.py](../scripts/gen_lvsres_cells.py) generates the layouts, [FINDINGS.md](FINDINGS.md) has what drawing them takes.
+
+- `sg13_ind_lvsres` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - two-turn TopMetal1 spiral with a Metal4 underpass, an `lvsres` on each lead
+- `sg13_balun_lvsres` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - stacked transformer, TopMetal1 primary, Metal4 secondary with centre tap
+
 **Diodes & antennas**
 
 - `sg13_dantenna` (PASS)
