@@ -2,7 +2,7 @@
 
 Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
-KLayout DRC and LVS and Magic DRC pass on every cell that is not broken on purpose. Both `KNOWN_FAILS` entries are the same Magic + Netgen LVS issue. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
+KLayout DRC and Magic DRC pass on every cell that is not broken on purpose, KLayout LVS on every such cell but the two `lvsres` cells, which Xschem cannot netlist yet. The two MOM capacitor entries of `KNOWN_FAILS` are one Magic + Netgen LVS issue, the four `lvsres` entries one missing Xschem symbol. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
 
 ## Magic + Netgen LVS fails on the MOM capacitors
 
@@ -11,6 +11,14 @@ KLayout DRC and LVS and Magic DRC pass on every cell that is not broken on purpo
 Magic does not extract the MOM capacitors, neither the interdigitated `cap_cmomi` nor the fringe `cap_cmomf`: the Magic tech file has no device for them and does not read their markers (`Recog.mom` 99/39, `Recog.momf` 99/40). The layout netlist keeps the two pins but no device, while the schematic has one, and Netgen ends with `has no elements and/or nodes. Not checked.`
 
 Upstream: [magic#552](https://github.com/RTimothyEdwards/magic/issues/552)
+
+## No Xschem symbol for the metal resistor `lvsres`
+
+`KNOWN_FAILS` entries: `sg13_ind_lvsres:klayout-lvs`, `sg13_ind_lvsres:magic-lvs`, `sg13_balun_lvsres:klayout-lvs`, `sg13_balun_lvsres:magic-lvs`
+
+IHP-Open-PDK#1121 adds the metal resistor `lvsres` to ihp-sg13g2 only: the symbol `sg13g2_pr/lvsres.sym` and the PCell. This PDK has no `sg13cmos5l_pr/lvsres.sym`, so Xschem stops with `Symbol not found: sg13cmos5l_pr/lvsres.sym` and neither LVS step reaches the check. Everything else is in place: the KLayout LVS deck files that read and extract `lvsres` are links into the ihp-sg13g2 deck, and Magic extracts the TopMetal1 and Metal4 resistors as it does on ihp-sg13g2. With the link `sg13cmos5l_pr/lvsres.sym -> ../../../../ihp-sg13g2/libs.tech/xschem/sg13g2_pr/lvsres.sym` added to the PDK, the way it ships `rsil.sym` and the other shared symbols, both cells pass both LVS steps, and this PDK's versions of the three ihp-sg13g2 cells broken on purpose (`sg13_ind_lvsres_short`, `sg13_ind_lvsres_swap`, `sg13_balun_lvsres_swap`) give the same verdicts as there. They follow once the symbol exists: until then their LVS steps could not reach the check, and the regression would report them as `BROKEN`.
+
+Upstream: IHP announced the ihp-sg13cmos5l port as a separate pull request in IHP-Open-PDK#1121.
 
 ## Magic DRC does not check contacts in substrate taps
 

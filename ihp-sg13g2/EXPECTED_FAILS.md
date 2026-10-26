@@ -64,6 +64,28 @@ The gate contact with its pad, pin and label sits 0.30 um higher, and the gate p
 
 The layout is `sg13_lv_nmos_tap` unchanged, the schematic has `w=0.30u` instead of `0.15u`. KLayout LVS compares W and fails. Magic + Netgen LVS misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). Both DRC steps pass.
 
+## The `sg13_*_lvsres_*` cells: one error per coil
+
+Copies of `sg13_ind_lvsres` and `sg13_balun_lvsres` with one error each. A coil is one net from pin to pin, and only the metal resistors (`lvsres`) in its leads let LVS tell the pins apart. `sg13_ind_lvsres` is a two-turn TopMetal2 spiral with a TopMetal1 underpass and one `lvsres` on each lead, TopMetal2 on LA and TopMetal1 on LB. `sg13_balun_lvsres` is a stacked transformer: a TopMetal2 primary P1/P2 with an `lvsres` on the P1 lead, and a TopMetal1 secondary with the centre tap CT and an `lvsres` on each side of the ring, so the secondary reads S1, CT, S2 in a chain. Each copy keeps the schematic of its base cell. [../scripts/gen_lvsres_cells.py](../scripts/gen_lvsres_cells.py) generates all five layouts, and every one passes both DRC steps.
+
+## `sg13_ind_lvsres_short`: coil without metal resistors
+
+`EXPECTED_FAILS` entries: `sg13_ind_lvsres_short:klayout-lvs`, `sg13_ind_lvsres_short:magic-lvs`
+
+`sg13_ind_lvsres` without its two `lvsres`, so LA and LB are one net through the coil, which is what every RF block without metal resistors looks like to LVS. The schematic has two resistors between the pins. KLayout reports `Netlists don't match`, Netgen ends with `Top level cell failed pin matching`.
+
+## `sg13_ind_lvsres_swap`: LA and LB labels swapped
+
+`EXPECTED_FAILS` entry: `sg13_ind_lvsres_swap:klayout-lvs`
+
+The LA label sits on the underpass lead and LB on the outer lead. KLayout extracts one device class per metal (`lvsres layer=TopMetal2` and `lvsres layer=TopMetal1`), so the TopMetal2 resistor ends on LB instead of LA and the netlists do not match. Magic + Netgen LVS misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
+## `sg13_balun_lvsres_swap`: S1 and CT labels swapped
+
+`EXPECTED_FAILS` entries: `sg13_balun_lvsres_swap:klayout-lvs`, `sg13_balun_lvsres_swap:magic-lvs`
+
+The S1 label sits on the centre tap and CT on the S1 lead. The centre tap is the net between the two secondary resistors and a lead is not, so both flows see the swap: KLayout reports `Netlists don't match`, Netgen pairs S1 with CT (`**Mismatch**`) and ends with `Top level cell failed pin matching`.
+
 <!--
 Template for a new cell:
 

@@ -36,8 +36,12 @@ EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc \
 	sg13_lv_nmos_tap_gat_c:magic-drc \
 	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
 	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
-	sg13_lv_nmos_tap_w_mismatch:klayout-lvs
-KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs
+	sg13_lv_nmos_tap_w_mismatch:klayout-lvs \
+	sg13_ind_lvsres_swap:klayout-lvs \
+	sg13_ind_lvsres_short:klayout-lvs sg13_ind_lvsres_short:magic-lvs \
+	sg13_balun_lvsres_swap:klayout-lvs sg13_balun_lvsres_swap:magic-lvs
+KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs \
+	sg13_ind_lvsres_swap:magic-lvs
 
 include $(MAKEFILE_DIR)/../common.mk
 

@@ -277,6 +277,16 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 - `sg13_rppd` (PASS)
 - `sg13_rsil` (PASS)
 
+**Inductors and baluns with metal resistors (`lvsres`)**
+
+These cells need IHP-Open-PDK#1121, which brings the `lvsres` PCell and the symbol `sg13g2_pr/lvsres.sym`. On an image without it, Xschem stops with `Symbol not found: sg13g2_pr/lvsres.sym` and no LVS step of these cells reaches the check. [../scripts/gen_lvsres_cells.py](../scripts/gen_lvsres_cells.py) generates the layouts, [FINDINGS.md](FINDINGS.md) has what drawing them takes.
+
+- `sg13_ind_lvsres` (PASS) - two-turn TopMetal2 spiral with a TopMetal1 underpass, an `lvsres` on each lead
+- `sg13_ind_lvsres_short` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - no metal resistors, LA and LB shorted through the coil
+- `sg13_ind_lvsres_swap` (broken on purpose, EXPECTED FAIL: KLayout LVS, KNOWN FALSE PASS: Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - LA and LB labels swapped
+- `sg13_balun_lvsres` (PASS) - stacked transformer, TopMetal2 primary, TopMetal1 secondary with centre tap
+- `sg13_balun_lvsres_swap` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - S1 and CT labels swapped
+
 **Diodes & antennas**
 
 - `sg13_dantenna` (PASS)

@@ -2,7 +2,7 @@
 
 Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
-KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is a Magic issue. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
+KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is a Magic issue. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and two are issues of the Magic + Netgen LVS flow.
 
 ## Magic + Netgen LVS fails on the MOM capacitors
 
@@ -47,6 +47,14 @@ Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Subst
 `KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_w_mismatch:magic-lvs`
 
 `sak-lvs.sh` judges Magic + Netgen LVS by the line `Circuits match uniquely` alone. Netgen writes that line once the topology matches and reports wrong device parameters separately (`Property errors were found.`), so a wrong W or L passes. In `sg13_lv_nmos_tap_w_mismatch` Netgen reports `w circuit1: 1.5e-07 circuit2: 3e-07 (delta=66.7%, cutoff=1%)` and still ends with `Circuits match uniquely`. Checking for the property errors alone does not help yet: the netgen setup of the PDK (`libs.tech/netgen/ihp-sg13g2_setup.tcl`) does not delete `mm_ok`, a Monte Carlo mismatch switch that Xschem writes to every device and that the layout cannot have, so almost every cell reports property errors. Two fixes are needed: `mm_ok` in the `property ... delete` lists of the netgen setup, and a Magic LVS verdict in `sak-lvs.sh` that fails on property errors.
+
+The `lvsres` cells pass Magic + Netgen LVS only because of this verdict. The Xschem symbol `sg13g2_pr/lvsres.sym` writes every metal resistor as `1e-6` Ohm into the SPICE netlist, while Magic extracts the sheet resistance times L/W, so Netgen reports a property error on every `lvsres`, in `sg13_balun_lvsres` for example `value circuit1: 0.0055 circuit2: 1e-06 (delta=200%, cutoff=1%)` for 2 x 4 um of TopMetal2. A verdict that fails on property errors would fail them all, unless the symbol writes the same sheet resistance times L/W: with 0.0055 and 0.00738 Ohm written into the netlist of `sg13_ind_lvsres` by hand, Netgen ends with `Circuits match uniquely` and no property error.
+
+## Magic + Netgen LVS cannot tell the leads of a coil apart
+
+`KNOWN_FALSE_PASSES` entry: `sg13_ind_lvsres_swap:magic-lvs`
+
+Magic extracts every metal resistor as an ideal resistor without a model (`device resistor None rm6 *metal6` and its siblings in `libs.tech/magic/ihp-sg13g2-extract.tech`), so to Netgen a TopMetal1 resistor and a TopMetal2 resistor are the same device. The two `lvsres` of the inductor sit in series on the coil net, Netgen merges them into one resistor between LA and LB (`Merged 1 series devices`), and that resistor has no direction. With LA and LB swapped in `sg13_ind_lvsres_swap`, Netgen still ends with `Circuits match uniquely`. KLayout keeps one device class per metal and catches the swap. The Magic tech README (`libs.tech/magic/README.md`) says these resistors wait for an `lvsres` model, and IHP-Open-PDK#1121 adds `lvsres` on the KLayout and Xschem side only.
 
 ## Not checked at `DRC_LEVEL=macro`: KLayout misses nmosi.c in `sg13_dnwell_inv_nmosi_c`
 
