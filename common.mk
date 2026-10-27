@@ -120,6 +120,10 @@ DRC_LEVEL ?= macro
 # Override with: make <target> EV_PRECISION=<digits>
 EV_PRECISION ?= 5
 
+# Extra options for the sak-open.py file browser (e.g. --all to include build outputs)
+# Override with: make open OPEN_ARGS=<options>
+OPEN_ARGS ?=
+
 # Folder structure
 XSCHEM_SCH_DIR  := schematic/xschem
 LAY_DIR         := layout
@@ -212,7 +216,7 @@ REGRESSION_SH = \
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>] [OPEN_ARGS=<options>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -226,6 +230,7 @@ help: ## Show this help message
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
+	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 	@echo 'A KNOWN_FAILS step that passes is reported as UNEXPECTED PASS and fails the regression.'
@@ -243,6 +248,13 @@ check-pdk:
 	@$(if $(PDK_ERROR),echo '[ERROR] $(PDK_ERROR)'; echo '        $(PDK_ERROR_HINT)'; exit 1,:)
 	@$(if $(CELL),,echo '[ERROR] CELL is not set. The PDK Makefile has to define a default cell.'; exit 1)
 .PHONY: check-pdk
+# ================================================================================================
+
+# Open Target
+# The tools the file browser starts inherit the PDK selected above, not the one of the shell.
+open: check-pdk ## Open the design files of this folder in the sak-open.py file browser (needs the VNC/X11 desktop)
+	sak-open.py $(OPEN_ARGS) .
+.PHONY: open
 # ================================================================================================
 
 # DRC Targets
@@ -396,6 +408,22 @@ magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (us
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
 .PHONY: magic-pex
+# ================================================================================================
+
+# Verify Targets
+# As in the chip templates, each step runs only if the one before it passed. regression runs
+# every step and judges the outcome against the lists of the PDK Makefile.
+klayout-verify: check-pdk ## Verify CELL cell with KLayout (usage: make klayout-verify [CELL=<cellname>])
+	$(MAKE) klayout-drc CELL=$(CELL)
+	$(MAKE) klayout-lvs CELL=$(CELL)
+	$(MAKE) klayout-pex CELL=$(CELL)
+.PHONY: klayout-verify
+
+magic-verify: check-pdk ## Verify CELL cell with Magic (usage: make magic-verify [CELL=<cellname>])
+	$(MAKE) magic-drc CELL=$(CELL)
+	$(MAKE) magic-lvs CELL=$(CELL)
+	$(MAKE) magic-pex CELL=$(CELL)
+.PHONY: magic-verify
 # ================================================================================================
 
 # Regression Target
@@ -569,3 +597,10 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 		echo "========================================"; \
 	fi
 .PHONY: regression
+# ================================================================================================
+
+# Clean Target
+clean: ## Delete all generated files and folders (netlists, DRC/LVS reports)
+	rm -rf $(NET_SCH_DIR) $(NET_LAY_DIR) $(NET_PEX_DIR)
+	rm -rf $(DRC_RPT_DIR) $(LVS_RPT_DIR)
+.PHONY: clean
