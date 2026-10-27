@@ -52,6 +52,8 @@ The gate poly ends 0.10 um below the channel instead of 0.18 um (GatPoly, GatPol
 
 A Metal1 bridge joins the drain and the source pad. The layout has three nets where the schematic has four, and the D and S pins sit on one net. The bridge keeps every Metal1 rule, both DRC steps pass.
 
+The PEX steps extract the bridged layout as it is. `magic-pex3` fails on it because of a tool issue, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
 ## `sg13_lv_nmos_tap_open_g`: gate not connected to its pin
 
 `EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_open_g:klayout-lvs`, `sg13_lv_nmos_tap_open_g:magic-lvs`

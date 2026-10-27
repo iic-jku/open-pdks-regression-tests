@@ -137,6 +137,9 @@ NET_PEX_DIR     := netlist/pex
 LVS_RPT_DIR     := verification/lvs
 DRC_RPT_DIR     := verification/drc
 
+# Scripts shared by every PDK, in scripts/ next to this file.
+SCRIPTS_DIR := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))/scripts
+
 # File name the KLayout LVS wrapper writes the extracted netlist to, inside its run dir.
 # The PDK wrappers disagree: ihp-sg13g2 and ihp-sg13cmos5l write <cell>_extracted.cir
 # (run_lvs.py:605), gf180mcuD writes <cell>.cir (run_lvs.py:347).
@@ -167,7 +170,8 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 #   <cell>:<step>   that step only; list one entry per step
 #   <cell>          the whole cell, same as <cell>:*. In KNOWN_FAILS every step of the cell. In
 #                   EXPECTED_FAILS and KNOWN_FALSE_PASSES every DRC and LVS step: a PEX step
-#                   extracts and does not judge, it fails only when it writes nothing.
+#                   checks the extraction, not the cell. It fails when it writes no netlist,
+#                   or one with a port that no element connects to (scripts/check_pex_ports.py).
 # Step names: see REGRESSION_STEPS above. A step may be covered by one list only, and the two
 # lists for cells broken on purpose take DRC and LVS steps only.
 #
@@ -405,8 +409,9 @@ klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (u
 		find $(NET_PEX_DIR)/$(CELL)__$(CELL) -type d \( -name FasterCap_Input_Files -o -name Geometries \) -prune -exec rm -rf {} + 2>/dev/null; \
 	else \
 		rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL); \
-	fi
-	rm -f $(CELL).nodes $(CELL).sim
+	fi; \
+	rm -f $(CELL).nodes $(CELL).sim; \
+	python3 $(SCRIPTS_DIR)/check_pex_ports.py $$OUT
 .PHONY: klayout-pex
 
 magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (usage: make magic-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>])
@@ -414,6 +419,7 @@ magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (us
 	sak-pex.sh -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
+	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 .PHONY: magic-pex
 # ================================================================================================
 

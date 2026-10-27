@@ -106,7 +106,7 @@ The `EXT_MODE` parameter selects the extraction mode:
 
 The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets it directly via the `sak-pex.sh` option `-n <CELL>_pex`, while `klayout-pex` renames the kpex output to `<CELL>_pex`.
 
-If a matching Xschem symbol (`schematic/xschem/<CELL>_pex.sym`) exists, the `.subckt` pin order in the extracted SPICE file is automatically reordered to match the symbol's pin positions. This ensures the PEX netlist can be used directly with the corresponding Xschem symbol for simulation regardless of the selected `EXT_MODE`.
+After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. The extracted values themselves are checked by the PEX bench.
 
 **KLayout PEX** uses `kpex`. The `KPEX_ENGINE` parameter selects its engine:
 
@@ -202,7 +202,7 @@ The following tools and flows are checked:
 | KLayout LVS (`sak-lvs.sh -k` → `run_lvs.py`) | `klayout-lvs` |
 | Magic DRC (`sak-drc.sh -m`) | `magic-drc` |
 | Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
-| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
+| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC), then the port check (`scripts/check_pex_ports.py`) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
 
 ### Known failures
 
@@ -214,7 +214,7 @@ The following tools and flows are checked:
 
 ### Expected failures
 
-A cell can be broken on purpose, to check that a tool still catches the mistake: a metal line that is too narrow for DRC, or swapped wiring for LVS. `EXPECTED_FAILS` lists the DRC and LVS steps that have to catch such a cell, one entry per `<cell>:<step>`, or `<cell>` for every DRC and LVS step of that cell. PEX steps cannot be listed, they extract and do not judge. What is broken in each cell is written up in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
+A cell can be broken on purpose, to check that a tool still catches the mistake: a metal line that is too narrow for DRC, or swapped wiring for LVS. `EXPECTED_FAILS` lists the DRC and LVS steps that have to catch such a cell, one entry per `<cell>:<step>`, or `<cell>` for every DRC and LVS step of that cell. PEX steps cannot be listed, they check that the extraction gives a usable netlist, not the cell. What is broken in each cell is written up in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 
 - A listed step that fails with a finding (DRC violations, layout and schematic do not match) is reported as `EXPECTED FAIL (broken on purpose, caught)` and does not fail the regression.
 - A listed step that passes is reported as `FALSE PASS` and fails the regression: the tool missed the deliberate error.
