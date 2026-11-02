@@ -155,9 +155,12 @@ LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 # Steps executed by regression for every cell, in this order.
 # Each name must have a matching branch in the case statement of the regression target.
 # Override with: make regression REGRESSION_STEPS="<step> <step> ..."
+# klayout-pex1 is left out: kpex has no C-decoupled mode, falls back to C-coupled and would
+# repeat klayout-pex2.
 REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 			magic-drc magic-lvs \
-			magic-pex1 magic-pex2 magic-pex3
+			magic-pex1 magic-pex2 magic-pex3 \
+			klayout-pex2 klayout-pex3
 
 # Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
 # day; a cell that is broken on purpose is "expected" to fail for good.

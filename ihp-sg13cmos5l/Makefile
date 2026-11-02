@@ -23,7 +23,7 @@ CELL ?= sg13_combined
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
 KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs \
-	sg13_lv_nmos_tap_short_ds:magic-pex3
+	sg13_lv_nmos_tap_short_ds:magic-pex3 sg13_lv_nmos_tap_short_ds:klayout-pex3
 EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc \
 	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc \
 	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc \

@@ -172,8 +172,10 @@ The target auto-discovers every cell from the `.gds` files in `layout/`, then ru
 - `magic-pex1` (C-decoupled)
 - `magic-pex2` (C-coupled)
 - `magic-pex3` (full-RC)
+- `klayout-pex2` (C-coupled)
+- `klayout-pex3` (full-RC)
 
-`klayout-pex1`, `klayout-pex2` and `klayout-pex3` exist as steps but are not in the default list. Pass them to include kpex, and `LAYOUT_CELLS` to restrict the run to some cells:
+`klayout-pex1` exists as a step but is not in the default list: kpex has no C-decoupled mode and falls back to C-coupled, so it would repeat `klayout-pex2`. `REGRESSION_STEPS` picks the steps, and `LAYOUT_CELLS` restricts the run to some cells:
 
 ```sh
 make regression LAYOUT_CELLS="sg13_rhigh sg13_rppd" REGRESSION_STEPS="klayout-lvs magic-lvs klayout-pex2"
