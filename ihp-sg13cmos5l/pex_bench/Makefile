@@ -60,9 +60,14 @@ PEX_ENGINES := magic kpex25 fastercap
 # entry gets removed. Use it only for a defect that is understood and written down.
 KPEX_KNOWN_FAILS ?=
 
-# common.mk's regression on this directory means: every layout through the three Magic modes
+# common.mk's regression on this directory means: every layout through the three Magic modes.
+# pex-bench-magic tolerates the same KNOWN_FAILS, with the entry syntax of common.mk.
 REGRESSION_STEPS ?= magic-pex1 magic-pex2 magic-pex3
-KNOWN_FAILS ?=
+# Full-RC extracts no resistor on the vc_* chain of the top via, so l and u share one node and
+# port l is connected to nothing (README, "Outputs and the check"). Table E reads vp_* there.
+KNOWN_FAILS ?= \
+	vc_m4_tm1_n1:magic-pex3 vc_m4_tm1_n2:magic-pex3 vc_m4_tm1_n3:magic-pex3 \
+	vc_m4_tm1_n4:magic-pex3 vc_m4_tm1_n8:magic-pex3
 
 include $(MAKEFILE_DIR)/../../common.mk
 
@@ -97,13 +102,36 @@ layouts-check: ## Assert the generators reproduce layout/ byte for byte (usage: 
 .PHONY: layouts-check
 
 pex-bench-magic: check-pdk ## Extract every layout with Magic in modes 1, 2 and 3 (usage: make pex-bench-magic)
-	@fails=; \
+	@set -f; \
+	$(REGRESSION_SH) \
+	for kf in $(KNOWN_FAILS); do \
+		kf_cell="$${kf%%:*}"; kf_step="$${kf#*:}"; \
+		[ "$$kf_step" = "$$kf" ] && kf_step="*"; \
+		case " $(LAYOUT_CELLS) " in *" $$kf_cell "*) ;; \
+			*) echo "[MAGIC] WARNING: stale KNOWN_FAILS entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
+		esac; \
+		[ "$$kf_step" = "*" ] || case " $(REGRESSION_STEPS) " in *" $$kf_step "*) ;; \
+			*) echo "[MAGIC] WARNING: stale KNOWN_FAILS entry '$$kf': step '$$kf_step' is not in REGRESSION_STEPS" ;; \
+		esac; \
+	done; \
+	fails=; known=; xpass=; \
 	for cell in $(LAYOUT_CELLS); do \
+		any_fail=; \
 		for mode in 1 2 3; do \
-			$(MAKE) --no-print-directory magic-pex CELL=$$cell EXT_MODE=$$mode > /dev/null || { echo "[MAGIC] FAILED $$cell mode $$mode"; fails="$$fails $$cell:$$mode"; }; \
+			step=magic-pex$$mode; \
+			if $(MAKE) --no-print-directory magic-pex CELL=$$cell EXT_MODE=$$mode > /dev/null; then \
+				case " $(KNOWN_FAILS) " in *" $$cell:$$step "*) xpass="$$xpass $$cell:$$step" ;; esac; \
+			elif in_list "$(KNOWN_FAILS)" $$cell $$step all; then \
+				any_fail=1; echo "[MAGIC] KNOWN FAIL (ignored) $$cell mode $$mode"; known="$$known $$cell:$$step"; \
+			else \
+				any_fail=1; echo "[MAGIC] FAILED $$cell mode $$mode"; fails="$$fails $$cell:$$mode"; \
+			fi; \
 		done; \
+		if [ -z "$$any_fail" ] && whole_cell "$(KNOWN_FAILS)" $$cell; then xpass="$$xpass $$cell"; fi; \
 		echo "[MAGIC] $$cell: modes 1 2 3"; \
 	done; \
+	[ -z "$$known" ] || echo "[MAGIC] known fails:$$known"; \
+	[ -z "$$xpass" ] || { echo "[MAGIC] UNEXPECTED PASS:$$xpass - listed in KNOWN_FAILS but passed, remove the entry"; exit 1; }; \
 	[ -z "$$fails" ] || { echo "[MAGIC] failed:$$fails"; exit 1; }
 .PHONY: pex-bench-magic
 

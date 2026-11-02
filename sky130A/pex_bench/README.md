@@ -51,6 +51,8 @@ Repeating the same structure with a narrow, resistive arm shows the contact valu
 
 So all five contact resistances in this PDK are correct, `via3`'s value is additionally covered by the m2-m3 row (both are 3410 mOhm), and only `via4`'s 380 mOhm has no row in table E. The probe cells are deliberately not part of the bench: giving one PDK a different via-chain geometry would cost the property that makes the four benches comparable.
 
+The mode 3 netlists of these chains also fail `scripts/check_pex_ports.py`, which `magic-pex` in `common.mk` runs after every extraction: without a resistor `l` and `u` share one node, the netlist still declares both, and port `l` is connected to nothing. The ten steps are in `KNOWN_FAILS` in the Makefile, so `pex-bench-magic` reports them and goes on, and fails as soon as one of them passes.
+
 ## What is compared
 
 | Column | How it is produced | What it is |
