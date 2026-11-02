@@ -616,7 +616,10 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 # ================================================================================================
 
 # Clean Target
-clean: ## Delete all generated files and folders (netlists, DRC/LVS reports)
+clean: ## Delete all generated files and folders (netlists, DRC/LVS reports, Xschem simulations folder)
 	rm -rf $(NET_SCH_DIR) $(NET_LAY_DIR) $(NET_PEX_DIR)
 	rm -rf $(DRC_RPT_DIR) $(LVS_RPT_DIR)
+	@# Netlists of the Xschem GUI (make open) land in schematic/xschem/simulations. The leading ./
+	@# keeps the path inside the design directory if XSCHEM_SCH_DIR is overridden empty.
+	rm -rf ./$(XSCHEM_SCH_DIR)/simulations
 .PHONY: clean
