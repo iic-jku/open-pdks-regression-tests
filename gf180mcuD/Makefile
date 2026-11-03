@@ -14,7 +14,7 @@ EXPECTED_PDK := gf180mcuD
 
 # Cell name for the single-cell targets (default: top-level cell)
 # Override with: make <target> CELL=<cellname>
-CELL ?= gf180_nfet_03v3
+CELL ?= gf180_nfet_03v3_tap
 
 # The gf180mcuD KLayout LVS wrapper writes <cell>.cir, not <cell>_extracted.cir
 # like the IHP wrappers do (libs.tech/klayout/tech/lvs/run_lvs.py:347).
