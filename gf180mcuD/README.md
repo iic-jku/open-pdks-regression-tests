@@ -186,7 +186,7 @@ A step can be covered by one of the three lists only. The regression stops befor
 
 Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image; `KNOWN_FAILS` in the `Makefile` is the reference.
 
-The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs from its fixed layouts. Where a PCell draws something that fails DRC or LVS, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why. MOS cells come as `_tap` (the PCell's butted bulk tie plus a Metal1 strap, bulk on the source, pins D/S/G) and `_ring` (the device without bulk option inside a drawn guard ring, pins D/S/G/B).
+The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs from its fixed layouts. Where a PCell draws something that breaks a rule of the GF180MCU design manual, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why. Where a layout follows the rules and a tool still fails on it, the cell is left as drawn and the step is a `KNOWN_FAILS` entry. MOS cells come as `_tap` (the PCell's butted bulk tie plus a Metal1 strap, bulk on the source, pins D/S/G) and `_ring` (the device without bulk option inside a drawn guard ring, pins D/S/G/B).
 
 **MOS transistors**
 
@@ -225,7 +225,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_npolyf_u`, `gf180_npolyf_s`, `gf180_ppolyf_u`, `gf180_ppolyf_s` (PASS)
 - `gf180_ppolyf_u_1k`, `gf180_ppolyf_u_1k_6p0` (PASS)
 - `gf180_rm1` (KNOWN FAIL: Magic + Netgen LVS, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_rm2`, `gf180_rm3` (PASS)
+- `gf180_rm2`, `gf180_rm3` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Diodes**
 

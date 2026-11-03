@@ -33,6 +33,7 @@ KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt
 	gf180_diode_nw2ps_03v3:magic-lvs gf180_diode_nw2ps_06v0:magic-lvs \
 	gf180_diode_dw2ps:magic-lvs gf180_diode_pw2dw:magic-lvs gf180_sc_diode:magic-lvs \
 	gf180_nplus_s:magic-lvs gf180_pplus_s:magic-lvs gf180_nwell:magic-lvs gf180_rm1:magic-lvs \
+	gf180_rm2:magic-lvs gf180_rm3:magic-lvs \
 	gf180_pnp_05p00x00p42:magic-lvs gf180_pnp_05p00x05p00:magic-lvs gf180_pnp_10p00x10p00:magic-lvs \
 	gf180_cap_nmos_03v3:magic-drc gf180_cap_nmos_03v3_nofmt:magic-drc gf180_cap_nmos_06v0:magic-drc \
 	gf180_cap_pmos_03v3:magic-drc gf180_cap_pmos_06v0:magic-drc \

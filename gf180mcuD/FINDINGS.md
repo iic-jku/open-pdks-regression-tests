@@ -70,9 +70,9 @@ At the default `wa = la = 0.36` the `diode_nd2ps` and `diode_pd2nw` PCells draw 
 
 ## Metal resistors
 
-The `metal_resistor` PCell draws the `Metal<n>_Res` marker (110/11 to 110/13) but no `RES_MK` (110/5). KLayout needs only the former (`rm1_res = metal1.and(metal1_res)`), Magic both: its GDS import builds `rm1`..`rm3` as `MET<n> and RESDEF and MET<n>RES`, and `RESDEF` only receives 110/5, since the specific datatypes 110/11..15 are mapped to `MET<n>RES` first. Magic writes `RES_MK` itself for every metal resistor.
+The `metal_resistor` PCell draws the `Metal<n>_Res` marker (110/11 to 110/13) but no `RES_MK` (110/5). The design manual asks for both: "Metal resistor should draw Metal1_Res to Metal5_Res for LVS purpose" (section 4.1, note 11), and "RES_MK layer is necessary for all resistors" (section 13.0 a, so that no dummy COMP is generated under them). The `gf180_rm*` cells add `RES_MK` over the marker in the top cell; the PCell stays as it is.
 
-Magic evaluates these import rules within each cell, so `RES_MK` in the top cell does nothing for the metal in the PCell subcell. The cells flatten the PCell and add `RES_MK` over the marker.
+KLayout needs only `Metal<n>_Res` (`rm1_res = metal1.and(metal1_res)`), Magic both: its GDS import builds `rm1`..`rm3` as `MET<n> and RESDEF and MET<n>RES`, and `RESDEF` only receives 110/5, since the specific datatypes 110/11..15 are mapped to `MET<n>RES` first. Magic writes `RES_MK` itself for every metal resistor. It evaluates these import rules within each cell, though, so `RES_MK` in the top cell does nothing for the metal in the PCell, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 The PCell also widens `w_res` to the minimum width of the metal (0.28 um on Metal2 and Metal3) without reporting it in its parameters. Take W and L from the drawn marker.
 

@@ -66,9 +66,19 @@ KLayout LVS extracts all three and passes.
 
 `KNOWN_FAILS` entry: `gf180_rm1:magic-lvs`
 
-The GDS layer map of the Magic tech file reads `Metal1_Res` (110/11) into the wrong CIF layer: `calma MET2RES 110 11` (line 2610), followed by `calma MET2RES 110 12`. `MET1RES` never gets any data, so `layer rm1 MET1 and RESDEF and MET1RES` (line 2308) is always empty and `layer m1 MET1,MET1TXT and-not MET1RES` keeps the whole resistor as Metal1. The two ends are one net and Netgen reports `(no matching pin)` for `R0`. Magic's own GDS output writes `rm1` as 110/11 (`layer MET1RES rm1`, `calma 110 11`, line 1134), so a layout written by Magic does not survive a round trip either. With line 2610 changed to `calma MET1RES 110 11` in a copy of the tech file, the resistor body of this cell imports as `rmetal1` instead of `metal1`.
+The GDS layer map of the Magic tech file reads `Metal1_Res` (110/11) into the wrong CIF layer: `calma MET2RES 110 11` (line 2610), followed by `calma MET2RES 110 12`. `MET1RES` never gets any data, so `layer rm1 MET1 and RESDEF and MET1RES` (line 2308) is always empty and `layer m1 MET1,MET1TXT and-not MET1RES` keeps the whole resistor as Metal1. The two ends are one net and Netgen reports `(no matching pin)` for `R0`. Magic's own GDS output writes `rm1` as 110/11 (`layer MET1RES rm1`, `calma 110 11`, line 1134), so a layout written by Magic does not survive a round trip either. With line 2610 changed to `calma MET1RES 110 11` in a copy of the tech file, the resistor body of a flattened copy of this cell imports as `rmetal1` instead of `metal1`. In the cell itself `RES_MK` is drawn in the top cell, which Magic does not see either, see the next section.
 
-`gf180_rm2` and `gf180_rm3` pass. KLayout LVS passes on all three.
+KLayout LVS passes on all three metal resistors.
+
+## Magic + Netgen LVS fails on `gf180_rm2` and `gf180_rm3`
+
+`KNOWN_FAILS` entries: `gf180_rm2:magic-lvs`, `gf180_rm3:magic-lvs`
+
+The cells are the `metal_resistor` PCell plus `RES_MK` (110/5) over its `Metal<n>_Res` marker, drawn in the top cell (see [FINDINGS.md](FINDINGS.md), "Metal resistors"). Magic applies the rules of its GDS import within each cell: `layer rm2 MET2 and RESDEF and MET2RES` (lines 2327-2329, `rm3` alike at line 2342) needs `RESDEF`, which only 110/5 feeds (`calma RESDEF 110 *`, line 2654), and in the PCell there is none. So no resistor is built, while `layer m2 MET2,MET2TXT and-not MET2RES` (lines 2331-2332) still takes the marked part out of the metal. The extracted cell has the pins R0 and R1 and nothing between them, and Netgen reports `has no elements and/or nodes. Not checked.`
+
+The same layout flattened, with `RES_MK` and the metal in one cell, passes Magic + Netgen LVS (tested outside the regression). KLayout LVS passes on both.
+
+The PEX steps pass, but on a wrong netlist: in all three modes R0 and R1 are two nets with a capacitance each and no resistor (`C0 R1 VSUBS`, `C1 R0 VSUBS`). `scripts/check_pex_ports.py` finds an element on every port and has nothing to report.
 
 ## Magic + Netgen LVS fails on `gf180_pnp_05p00x00p42`, `gf180_pnp_05p00x05p00` and `gf180_pnp_10p00x10p00`
 
