@@ -5,8 +5,6 @@ It is the test that says whether the parasitic extractors in IIC-OSIC-TOOLS impl
 
 This is the [ihp-sg13g2 bench](../../ihp-sg13g2/pex_bench/) ported to sky130A. The geometry is unchanged, the layers and every coefficient are read from this PDK. See that directory's README for the investigation that built the bench, the report on the six defects it found, and the upstream issue drafts. Those defects are properties of the tools, not of the PDK.
 
-Unlike the other three directories in this repository, `sky130A/` has no DRC/LVS regression yet (`coming soon.txt`) and therefore no PDK-level Makefile. This bench is self-contained: it includes `../../common.mk` itself, so run it from here.
-
 ## The metal stack
 
 Six conductors. This is the only one of the four PDKs whose stack starts below Metal1: `li1`, the local interconnect, is a conductor in its own right, with a sheet resistance two orders of magnitude above the metals (12.8 Ohm/square against 0.125 for met1). The bench covers it like any other layer, so `res_li1` comes out at 1.27 kOhm where the metals are single-digit ohms.
