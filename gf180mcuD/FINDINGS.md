@@ -22,7 +22,7 @@ The `Bulk Tie` of the `gf180mcu` `nfet`/`pfet` PCells is butted against the sour
 
 ## Guard Ring option of the gdsfactory PCells
 
-`bulk = "Guard Ring"` of the `gf180mcu` `nfet` draws the ring COMP, implant and contacts but no Metal1, and the device inside violates 11 rule classes (33 errors: `CO.6`, `CO.10`, `DF.3b`, `NP.3d/3e`, `NP.5a/5b`, `PL.6`, `PP.3d/3e`, `PP.12`). Magic DRC fails it too, with nine rule classes of its own (61 markers, among them `PL.6`, `PL.4` and `CO.4`).
+`bulk = "Guard Ring"` of the `gf180mcu` `nfet` draws the ring COMP, implant and contacts but no Metal1, and the device inside violates 11 rule classes (33 errors: `CO.6`, `CO.10`, `DF.3b`, `NP.3d/3e`, `NP.5a/5b`, `PL.6`, `PP.3d/3e`, `PP.12`). Magic DRC fails it too, with nine rule classes of its own (61 markers, among them `PL.6`, `PL.4` and `CO.4`). `CO.6` of the nfet with guard ring is reported in [gf180mcu_fd_pr#2](https://github.com/fossi-foundation/globalfoundries-pdk-libs-gf180mcu_fd_pr/issues/2#issuecomment-2980213618).
 
 **Work-around:** The `_ring` cells use the device without bulk option and draw the guard ring themselves (ring width 0.36 um, COMP space 0.32 um at 3.3 V and 0.36 um at 5/6 V, 0.48/0.52 um above and below the gate, implant enclosure 0.16 um, Nwell enclosure 0.12/0.16 um, Dualgate enclosure 0.24 um; the dimensions of the DRC-clean `gf180mcu_klayoutapi` ring).
 
@@ -97,6 +97,8 @@ A BJT under the top plate (`FuseTop`, 75/0) is not extracted by KLayout LVS, whi
 `macro` leaves out the density and antenna rules, but the dummy COMP rules run. `DCF.1a` reports an area of 20 um or more without COMP, such as a large MIM capacitor beside the devices. Areas under NDMY (111/5), `RES_MK`, Pad or `IND_MK` are exempt.
 
 **Work-around:** `gf180_combined` covers its MIM with NDMY. Magic DRC, both LVS steps and all PEX steps give the same results with it as without.
+
+Upstream moved DCF.1a to the density deck in [gf180mcu_fd_pv#41](https://github.com/fossi-foundation/globalfoundries-pdk-libs-gf180mcu_fd_pv/pull/41) (2026-10-17), after the `gf180mcu_fd_pv` version of this image (`035e6d1`).
 
 ## Full-RC PEX of devices in a deep Nwell
 

@@ -12,7 +12,7 @@ KLayout DRC passes on every cell that is not broken on purpose. Every `magic-drc
 
 The `Bulk Tie` option of the `gf180mcu` `nfet` PCell butts the P+ tie against the source. COMP is silicided, so source and bulk are one net, and the schematic says so (bulk tied to the source, pins D, S and G). The cell leaves out the Metal1 strap between the source contact and the tie contact that `gf180_nfet_03v3_tap` has, so the butted junction is the only connection.
 
-Magic + Netgen LVS joins the two and passes. The KLayout deck does not: it derives `nsd` and `ptap` as separate layers and connects each of them only to `contact` (`rule_decks/general_connections.lvs`), never to each other. The extracted transistor then has its bulk on `SUB` instead of on the source, and the netlists do not match.
+Magic + Netgen LVS joins the two and passes: its tech file connects butted N+ and P+ diffusion since [open_pdks#492](https://github.com/RTimothyEdwards/open_pdks/issues/492). The KLayout deck does not: it derives `nsd` and `ptap` as separate layers and connects each of them only to `contact` (`rule_decks/general_connections.lvs`), never to each other. The extracted transistor then has its bulk on `SUB` instead of on the source, and the netlists do not match.
 
 The cell exists to show this. Once the deck connects butted diffusions, the step passes and the entry has to go.
 
@@ -90,6 +90,8 @@ The same layout flattened, with `RES_MK` and the metal in one cell, passes Magic
 
 The PEX steps pass, but on a wrong netlist: in all three modes R0 and R1 are two nets with a capacitance each and no resistor (`C0 R1 VSUBS`, `C1 R0 VSUBS`). `scripts/check_pex_ports.py` finds an element on every port, and `scripts/check_pex_modes.py` finds the full-RC netlist connected like the C-coupled one, so neither has anything to report.
 
+Upstream: [magic#465](https://github.com/RTimothyEdwards/magic/issues/465) reports the same for a MOSFET whose poly sits in the parent cell. The answer there: Magic builds devices with boolean rules on the layers of one cell, so all layers that define a device must be in the same cell, which is "in the fundamental nature of magic's database". The PCell drawing `RES_MK` itself would avoid it.
+
 ## Magic + Netgen LVS fails on `gf180_pnp_05p00x00p42`, `gf180_pnp_05p00x05p00` and `gf180_pnp_10p00x10p00`
 
 `KNOWN_FAILS` entries: `gf180_pnp_05p00x00p42:magic-lvs`, `gf180_pnp_05p00x05p00:magic-lvs`, `gf180_pnp_10p00x10p00:magic-lvs`
@@ -107,6 +109,8 @@ After the GDS import that terminal has zero area and perimeter: the `.ext` recor
 
 `gf180_pnp_10p00x00p42` passes only because it is the first line. KLayout LVS passes on all four.
 
+Upstream: [open_pdks#543](https://github.com/RTimothyEdwards/open_pdks/issues/543), fixed by [open_pdks#559](https://github.com/RTimothyEdwards/open_pdks/pull/559) and [open_pdks#561](https://github.com/RTimothyEdwards/open_pdks/pull/561) on 2026-10-20: the device lines now select by the emitter area `a1`. The PDK of this image (open_pdks `1689ac3`, 2026-08-27) is older.
+
 ## KLayout LVS, Magic + Netgen LVS and Magic DRC fail on `gf180_sc_diode`
 
 `KNOWN_FAILS` entries: `gf180_sc_diode:klayout-lvs`, `gf180_sc_diode:magic-lvs`, `gf180_sc_diode:magic-drc`
@@ -117,6 +121,8 @@ The cell is kept as a finding: the `gf180mcu` `sc_diode` PCell, the KLayout deck
 - **Magic** builds `schottky` as `SCHOTTKY and DIFF` without implants, then `grow 140` / `shrink 140` (`libs.tech/magic/gf180mcuD.tech`, line 1598), which closes exactly the 0.28 um gaps. It extracts three diodes: `D0 A C sc_diode area=0.18p` and two more, `area=0.28p` each, whose anodes are the gaps, on nets of their own.
 
 The PDK has neither a Magic generator nor an LVS test case for this device.
+
+Upstream: the open draft [gf180mcu_fd_pv#37](https://github.com/fossi-foundation/globalfoundries-pdk-libs-gf180mcu_fd_pv/pull/37) changes the KLayout extraction: the COMP without Nplus under the marker becomes the P terminal and, inside a DNWELL, the DNWELL the N terminal. Not tested on this cell.
 
 KLayout DRC passes the cell, Magic DRC does not. It reports `Both LV and MV devices cannot be in the same deep N-well (DN.11)` over the whole DNWELL, although the cell has one device and no Dualgate, and `Diffusion spacing < 0.28um (DF.3a)` in a band 0.10 um wide at x = 1.04 to 1.14 um. That band lies inside the anode COMP (x = 0.64 to 1.26 um), where the layout has no diffusion edge. Why Magic reports either is not known.
 
@@ -154,7 +160,9 @@ The NPN cells are the fixed layouts of the PDK. Magic reports `P-well must surro
 
 `KNOWN_FAILS` entries: `gf180_pnp_05p00x00p42:magic-drc`, `gf180_pnp_05p00x05p00:magic-drc`, `gf180_pnp_10p00x00p42:magic-drc`, `gf180_pnp_10p00x10p00:magic-drc`
 
-The PNP cells are the fixed layouts of the PDK. Magic reports `P-diffusion and N-ohmic must be over N-well or deep N-well` five times in each (`cifmaxwidth missing_nwell 0`, lines 2799-2800). In all four the P+ emitter and the N+ base ring lie entirely inside the NWELL. KLayout DRC passes them. Why Magic does not see the NWELL there is not known.
+The PNP cells are the fixed layouts of the PDK. Magic reports `P-diffusion and N-ohmic must be over N-well or deep N-well` five times in each (`cifmaxwidth missing_nwell 0`, lines 2799-2800). In all four the P+ emitter and the N+ base ring lie entirely inside the NWELL. KLayout DRC passes them.
+
+Upstream: [open_pdks#560](https://github.com/RTimothyEdwards/open_pdks/issues/560), fixed by [open_pdks#559](https://github.com/RTimothyEdwards/open_pdks/pull/559) on 2026-10-20, which takes the PNP out of the check (`templayer missing_nwell ...` / `and-not dnwell,nwell,pnp`). The PDK of this image is older.
 
 ## Magic DRC reports errors in some PCells only below the top cell
 
