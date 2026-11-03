@@ -162,7 +162,7 @@ Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (se
 - A listed step that passes is reported as `UNEXPECTED PASS` and **does** fail the regression, so an entry cannot outlive the bug it stands for. Remove the entry, and its section in `KNOWN_ISSUES.md`, once that happens.
 - Any other failing step fails the regression.
 
-Some cells exist to show a tool defect and would be wrong the other way round: `gf180_nfet_03v3_tap_nostrap`, `gf180_cap_nmos_03v3_nofmt`, `gf180_nfet_03v3_mintap` and `gf180_nfet_03v3_ring_cogap` are drawn so that one flow must fail until it is fixed.
+Some cells exist to show a tool defect and would be wrong the other way round: `gf180_nfet_03v3_tap_nostrap`, `gf180_nfet_03v3_tap_poly2pin`, `gf180_cap_nmos_03v3_nofmt`, `gf180_nfet_03v3_mintap` and `gf180_nfet_03v3_ring_cogap` are drawn so that one flow must fail until it is fixed.
 
 ### Expected failures
 
@@ -198,6 +198,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_pfet_05v0_tap`, `gf180_pfet_05v0_ring` (PASS)
 - `gf180_pfet_06v0_tap`, `gf180_pfet_06v0_ring` (PASS)
 - `gf180_nfet_03v3_tap_nostrap` (KNOWN FAIL: KLayout LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - butted bulk tie without the Metal1 strap
+- `gf180_nfet_03v3_tap_poly2pin` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - gate pin on Poly2_Label instead of Metal1
 - `gf180_nfet_03v3_mintap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - one tap as small as the rules allow instead of the guard ring
 - `gf180_nfet_03v3_ring_cogap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - guard ring contacts 0.29 um apart at the corners
 - `gf180_nfet_06v0_nvt_ring_nat` (broken on purpose, EXPECTED FAIL: KLayout DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - NAT over the guard ring (NAT.6)

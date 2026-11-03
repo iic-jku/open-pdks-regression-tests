@@ -16,6 +16,16 @@ Magic + Netgen LVS joins the two and passes. The KLayout deck does not: it deriv
 
 The cell exists to show this. Once the deck connects butted diffusions, the step passes and the entry has to go.
 
+## Magic + Netgen LVS fails on `gf180_nfet_03v3_tap_poly2pin`
+
+`KNOWN_FAILS` entry: `gf180_nfet_03v3_tap_poly2pin:magic-lvs`
+
+The cell is `gf180_nfet_03v3_tap` with the gate pin as a text on `Poly2_Label` (30/10) over the gate poly, instead of on `Metal1_Label`. The label layers of the design manual are meant for this (section 4.1, note 6), and KLayout LVS passes the cell. Magic's GDS import reads 30/10 into `POLYTXT` (line 2600) and keeps it with `labels POLYTXT text` (line 2025), while it reads the metal label layers as ports (`labels MET1TXT port`, line 2315). The gate net is named G but is no port, and Netgen reports `(no pin, node is G)` and `Top level cell failed pin matching.`
+
+The PEX steps pass, but on netlists without the gate: all five write `.subckt gf180_nfet_03v3_tap_poly2pin_pex D S`. `scripts/check_pex_ports.py` checks the ports a netlist declares, not the ones it should have.
+
+`gf180_nfet_03v3_tap`, the same cell with the gate pin on Metal1, passes every step.
+
 ## Magic + Netgen LVS fails on `gf180_cap_pmos_03v3_b` and `gf180_cap_pmos_06v0_b`
 
 `KNOWN_FAILS` entries: `gf180_cap_pmos_03v3_b:magic-lvs`, `gf180_cap_pmos_06v0_b:magic-lvs`

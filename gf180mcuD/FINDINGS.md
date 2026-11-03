@@ -32,7 +32,7 @@ Around the native `nfet_06v0_nvt` the ring has to stay 0.3 um outside the NAT la
 
 Magic reads `Poly2_Label` (30/10) as plain text, not as a port (`labels POLYTXT text` in the tech file, while the metal label layers are `port`). A gate pin on Poly2 is fine for KLayout LVS but Magic + Netgen LVS then reports `(no pin, node is G)`.
 
-**Work-around:** Put pins on a metal label layer.
+The cells here put every pin on a metal label layer. `gf180_nfet_03v3_tap_poly2pin` keeps the gate pin on Poly2 to show the issue, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 ## Passive symbols and the KLayout deck
 

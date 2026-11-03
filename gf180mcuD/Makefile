@@ -29,7 +29,7 @@ KLAYOUT_EXT_CIR = $(CELL).cir
 KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt:klayout-lvs \
 	gf180_diode_dw2ps:klayout-lvs gf180_diode_pw2dw:klayout-lvs gf180_sc_diode:klayout-lvs \
 	gf180_combined_cmim_ontop:klayout-lvs \
-	gf180_cap_pmos_03v3_b:magic-lvs gf180_cap_pmos_06v0_b:magic-lvs \
+	gf180_cap_pmos_03v3_b:magic-lvs gf180_cap_pmos_06v0_b:magic-lvs gf180_nfet_03v3_tap_poly2pin:magic-lvs \
 	gf180_diode_nw2ps_03v3:magic-lvs gf180_diode_nw2ps_06v0:magic-lvs \
 	gf180_diode_dw2ps:magic-lvs gf180_diode_pw2dw:magic-lvs gf180_sc_diode:magic-lvs \
 	gf180_nplus_s:magic-lvs gf180_pplus_s:magic-lvs gf180_nwell:magic-lvs gf180_rm1:magic-lvs \
