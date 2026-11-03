@@ -98,7 +98,7 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets
 
 If a matching Xschem symbol (`schematic/xschem/<CELL>_pex.sym`) exists, the `.subckt` pin order in the extracted SPICE file is automatically reordered to match the symbol's pin positions.
 
-After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. It does not check what the port is connected to: [FINDINGS.md](FINDINGS.md) ("Full-RC PEX of devices in a deep Nwell") has two cells whose full-RC netlist shorts two pins and passes.
+After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
 
 **KLayout PEX** uses `kpex`. The `KPEX_ENGINE` parameter selects its engine: `magic` (default, kpex drives Magic), `2.5D` (kpex's own analytical engine) or `fastercap` (a FasterCap field solve, capacitance only). See [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md) for what each engine is and for `KPEX_AMAX` / `KPEX_TOL`. For this PDK the 2.5D engine cannot extract the top metal, see [pex_bench/README.md](pex_bench/README.md).
 
@@ -239,7 +239,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 **Bipolar transistors**
 
 - `gf180_npn_00p54x02p00`, `gf180_npn_00p54x08p00`, `gf180_npn_00p54x16p00`, `gf180_npn_05p00x05p00` (KNOWN FAIL: Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_npn_00p54x04p00`, `gf180_npn_10p00x10p00` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `gf180_npn_00p54x04p00`, `gf180_npn_10p00x10p00` (KNOWN FAIL: Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_pnp_10p00x00p42` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_pnp_05p00x00p42`, `gf180_pnp_05p00x05p00`, `gf180_pnp_10p00x10p00` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
@@ -247,8 +247,8 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 
 **Combined test cells**
 
-- `gf180_combined` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 15 of the cells above as instances and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
-- `gf180_combined_cmim_ontop` (KNOWN FAIL: KLayout LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - the same with the MIM capacitor over all devices, after `sg13_combined_cmim_ontop`
+- `gf180_combined` (KNOWN FAIL: Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 15 of the cells above as instances and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
+- `gf180_combined_cmim_ontop` (KNOWN FAIL: KLayout LVS, Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - the same with the MIM capacitor over all devices, after `sg13_combined_cmim_ontop`
 - `gf180_short1` (PASS) - 3.3 V and 6 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell

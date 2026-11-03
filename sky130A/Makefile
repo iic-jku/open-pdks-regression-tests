@@ -36,7 +36,8 @@ KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt
 	sky130_cap_var_lvt:magic-lvs sky130_cap_var_hvt:magic-lvs sky130_cap_var_hvt_varac5:magic-lvs \
 	sky130_res_high_po_0p35:magic-drc sky130_res_high_po_0p69:magic-drc \
 	sky130_res_xhigh_po_0p35:magic-drc sky130_res_xhigh_po_0p69:magic-drc sky130_combined:magic-drc \
-	sky130_pfet_g5v0d16v0:magic-drc
+	sky130_pfet_g5v0d16v0:magic-drc \
+	sky130_short1:magic-pex3 sky130_short1:klayout-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3
 EXPECTED_FAILS ?= sky130_nfet_05v0_nvt_tap_hvdifftap16:magic-drc sky130_diode_pd2nw_05v5_psd8:magic-drc
 KNOWN_FALSE_PASSES ?= sky130_nfet_05v0_nvt_tap_hvdifftap16:klayout-drc sky130_diode_pd2nw_05v5_psd8:klayout-drc \
 	sky130_cap_var_hvt_varac5:klayout-drc sky130_cap_var_hvt_varac5:magic-drc \

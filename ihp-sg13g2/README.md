@@ -106,7 +106,7 @@ The `EXT_MODE` parameter selects the extraction mode:
 
 The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets it directly via the `sak-pex.sh` option `-n <CELL>_pex`, while `klayout-pex` renames the kpex output to `<CELL>_pex`.
 
-After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. The extracted values themselves are checked by the PEX bench.
+After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare. The extracted values themselves are checked by the PEX bench.
 
 **KLayout PEX** uses `kpex`. The `KPEX_ENGINE` parameter selects its engine:
 
@@ -204,7 +204,7 @@ The following tools and flows are checked:
 | KLayout LVS (`sak-lvs.sh -k` → `run_lvs.py`) | `klayout-lvs` |
 | Magic DRC (`sak-drc.sh -m`) | `magic-drc` |
 | Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
-| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC), then the port check (`scripts/check_pex_ports.py`) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
+| Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC), then the port check (`scripts/check_pex_ports.py`, for full-RC also `scripts/check_pex_modes.py`) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
 
 ### Known failures
 

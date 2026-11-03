@@ -100,9 +100,9 @@ A BJT under the top plate (`FuseTop`, 75/0) is not extracted by KLayout LVS, whi
 
 ## Full-RC PEX of devices in a deep Nwell
 
-`magic-pex3` and `klayout-pex3` (kpex driving Magic) join a P-well isolated in a DNWELL to the substrate: the LVPWELL of the `gf180_dnwell_*` NMOS and the base of every NPN, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md). The port check catches it where a pin is left without an element. On `gf180_npn_00p54x04p00` and `gf180_npn_10p00x10p00` it does not: their full-RC netlist puts the substrate terminal on `VSUBS`, which is no port, and keeps resistor fragments of a few Ohm between B and S (`X0 C B E VSUBS npn_00p54x04p00` with `R0 B S 1.97113`). Every port has an element, so the step passes with a netlist that shorts base and substrate.
+`magic-pex3` and `klayout-pex3` (kpex driving Magic) join a P-well isolated in a DNWELL to the substrate: the LVPWELL of the `gf180_dnwell_*` NMOS and the base of every NPN, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md). The port check catches it where a pin is left without an element. On `gf180_npn_00p54x04p00` and `gf180_npn_10p00x10p00` it does not: their full-RC netlist puts the substrate terminal on `VSUBS`, which is no port, and keeps resistor fragments of a few Ohm between B and S (`X0 C B E VSUBS npn_00p54x04p00` with `R0 B S 1.97113`). Every port has an element, so the port check passes a netlist that shorts base and substrate. `scripts/check_pex_modes.py` compares the device terminals of the full-RC netlist with the C-coupled one (`EXT_MODE=2`) and fails the step.
 
-**Work-around:** Check the device lines of a full-RC netlist of such a cell against the C-coupled one (`EXT_MODE=2`) before simulating it.
+**Work-around:** Simulate such a cell with the C-coupled netlist, or check the full-RC one with `scripts/check_pex_modes.py` first.
 
 ## Variant D stack
 

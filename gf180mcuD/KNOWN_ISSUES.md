@@ -22,7 +22,7 @@ The cell exists to show this. Once the deck connects butted diffusions, the step
 
 The cell is `gf180_nfet_03v3_tap` with the gate pin as a text on `Poly2_Label` (30/10) over the gate poly, instead of on `Metal1_Label`. The label layers of the design manual are meant for this (section 4.1, note 6), and KLayout LVS passes the cell. Magic's GDS import reads 30/10 into `POLYTXT` (line 2600) and keeps it with `labels POLYTXT text` (line 2025), while it reads the metal label layers as ports (`labels MET1TXT port`, line 2315). The gate net is named G but is no port, and Netgen reports `(no pin, node is G)` and `Top level cell failed pin matching.`
 
-The PEX steps pass, but on netlists without the gate: all five write `.subckt gf180_nfet_03v3_tap_poly2pin_pex D S`. `scripts/check_pex_ports.py` checks the ports a netlist declares, not the ones it should have.
+The PEX steps pass, but on netlists without the gate: all five write `.subckt gf180_nfet_03v3_tap_poly2pin_pex D S`. `scripts/check_pex_ports.py` checks the ports a netlist declares, not the ones it should have, and `scripts/check_pex_modes.py` compares two netlists that both lack G.
 
 `gf180_nfet_03v3_tap`, the same cell with the gate pin on Metal1, passes every step.
 
@@ -88,7 +88,7 @@ The cells are the `metal_resistor` PCell plus `RES_MK` (110/5) over its `Metal<n
 
 The same layout flattened, with `RES_MK` and the metal in one cell, passes Magic + Netgen LVS (tested outside the regression). KLayout LVS passes on both.
 
-The PEX steps pass, but on a wrong netlist: in all three modes R0 and R1 are two nets with a capacitance each and no resistor (`C0 R1 VSUBS`, `C1 R0 VSUBS`). `scripts/check_pex_ports.py` finds an element on every port and has nothing to report.
+The PEX steps pass, but on a wrong netlist: in all three modes R0 and R1 are two nets with a capacitance each and no resistor (`C0 R1 VSUBS`, `C1 R0 VSUBS`). `scripts/check_pex_ports.py` finds an element on every port, and `scripts/check_pex_modes.py` finds the full-RC netlist connected like the C-coupled one, so neither has anything to report.
 
 ## Magic + Netgen LVS fails on `gf180_pnp_05p00x00p42`, `gf180_pnp_05p00x05p00` and `gf180_pnp_10p00x10p00`
 
@@ -181,11 +181,13 @@ These are the four resistors Magic does not extract (see the Magic + Netgen LVS 
 
 ## Magic full-RC PEX joins a P-well inside a deep Nwell to the substrate
 
-`KNOWN_FAILS` entries: `gf180_dnwell_nmos:magic-pex3`, `gf180_dnwell_nmos:klayout-pex3`, `gf180_dnwell_inv:magic-pex3`, `gf180_dnwell_inv:klayout-pex3`, `gf180_npn_00p54x02p00:magic-pex3`, `gf180_npn_00p54x02p00:klayout-pex3`, `gf180_npn_00p54x08p00:magic-pex3`, `gf180_npn_00p54x08p00:klayout-pex3`, `gf180_npn_00p54x16p00:magic-pex3`, `gf180_npn_00p54x16p00:klayout-pex3`, `gf180_npn_05p00x05p00:magic-pex3`, `gf180_npn_05p00x05p00:klayout-pex3`
+`KNOWN_FAILS` entries: `gf180_dnwell_nmos:magic-pex3`, `gf180_dnwell_nmos:klayout-pex3`, `gf180_dnwell_inv:magic-pex3`, `gf180_dnwell_inv:klayout-pex3`, `gf180_npn_00p54x02p00:magic-pex3`, `gf180_npn_00p54x02p00:klayout-pex3`, `gf180_npn_00p54x08p00:magic-pex3`, `gf180_npn_00p54x08p00:klayout-pex3`, `gf180_npn_00p54x16p00:magic-pex3`, `gf180_npn_00p54x16p00:klayout-pex3`, `gf180_npn_05p00x05p00:magic-pex3`, `gf180_npn_05p00x05p00:klayout-pex3`, `gf180_npn_00p54x04p00:magic-pex3`, `gf180_npn_00p54x04p00:klayout-pex3`, `gf180_npn_10p00x10p00:magic-pex3`, `gf180_npn_10p00x10p00:klayout-pex3`, `gf180_combined:magic-pex3`, `gf180_combined:klayout-pex3`, `gf180_combined_cmim_ontop:magic-pex3`, `gf180_combined_cmim_ontop:klayout-pex3`
 
 In these cells a P-well lies isolated inside a DNWELL: the LVPWELL of the NMOS in the `gf180_dnwell_*` cells, tied to its source S, and the base of the NPN. `magic-pex2` keeps it on its own net, `X0 S G D S nfet_03v3` in `gf180_dnwell_nmos` and `X0 C B E S npn_00p54x02p00`. Full-RC extraction (`magic-pex3`) joins it to the substrate: `X0 VSS G D VSS nfet_03v3`, and `X0 C S E VSUBS npn_00p54x02p00`, with the base on the substrate pin S and the substrate terminal on `VSUBS`, which is no port. The pin of the isolated net (S or B) is left without an element, and `scripts/check_pex_ports.py` fails the step. `klayout-pex3` writes the same netlists. The result is the same in three runs.
 
-`gf180_npn_00p54x04p00` and `gf180_npn_10p00x10p00` get the same short and still pass: there the full-RC netlist keeps resistor fragments between B and S (`X0 C B E VSUBS npn_00p54x04p00` and `R0 B S 1.97113`), so every port has an element and the port check has nothing to report. The two cells have no entry, since the step passes; see [FINDINGS.md](FINDINGS.md).
+`gf180_npn_00p54x04p00` and `gf180_npn_10p00x10p00` get the same short, but there the full-RC netlist keeps resistor fragments between B and S (`X0 C B E VSUBS npn_00p54x04p00` and `R0 B S 1.97113`), so every port has an element and the port check has nothing to report. `scripts/check_pex_modes.py`, which compares the full-RC netlist with the C-coupled one, fails both steps: `ports B, S are one net through resistors`.
+
+In `gf180_combined` and `gf180_combined_cmim_ontop` seven device terminals share an internal net, the node `w_616_616#` of the C-coupled netlist (the base of the NPN, a source/drain terminal of `nfet_03v3`, `nfet_05v0`, `nfet_06v0_nvt` and `pfet_05v0`, and one terminal of each of the two diodes). In the full-RC netlist of `magic-pex3` and `klayout-pex3` this net reaches VSS through resistors. Every port keeps an element, so only `scripts/check_pex_modes.py` reports it. Both cells contain `gf180_dnwell_nmos` and `gf180_npn_00p54x02p00`; whether the short runs through one of their isolated P-wells is not tested.
 
 ## Magic DRC does not check NAT.6
 

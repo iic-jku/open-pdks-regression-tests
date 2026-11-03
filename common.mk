@@ -174,7 +174,9 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 #   <cell>          the whole cell, same as <cell>:*. In KNOWN_FAILS every step of the cell. In
 #                   EXPECTED_FAILS and KNOWN_FALSE_PASSES every DRC and LVS step: a PEX step
 #                   checks the extraction, not the cell. It fails when it writes no netlist,
-#                   or one with a port that no element connects to (scripts/check_pex_ports.py).
+#                   or one with a port that no element connects to (scripts/check_pex_ports.py),
+#                   or a full-RC netlist that connects devices or ports otherwise than the
+#                   C-coupled netlist of the cell (scripts/check_pex_modes.py).
 # Step names: see REGRESSION_STEPS above. A step may be covered by one list only, and the two
 # lists for cells broken on purpose take DRC and LVS steps only.
 #
@@ -414,7 +416,10 @@ klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (u
 		rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL); \
 	fi; \
 	rm -f $(CELL).nodes $(CELL).sim; \
-	python3 $(SCRIPTS_DIR)/check_pex_ports.py $$OUT
+	python3 $(SCRIPTS_DIR)/check_pex_ports.py $$OUT && \
+	if [ "$(EXT_MODE)" = "3" ] && [ "$(KPEX_ENGINE)" != "fastercap" ]; then \
+		python3 $(SCRIPTS_DIR)/check_pex_modes.py --layout $(LAY_DIR)/$(CELL).gds $$OUT $${OUT%_3.spice}_2.spice; \
+	fi
 .PHONY: klayout-pex
 
 magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (usage: make magic-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>])
@@ -423,6 +428,12 @@ magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (us
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
 	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
+	@# full-RC only: compare the connections with the C-coupled netlist of the same cell, which
+	@# regression extracts first (magic-pex2 runs before magic-pex3)
+	@if [ "$(EXT_MODE)" = "3" ]; then \
+		python3 $(SCRIPTS_DIR)/check_pex_modes.py --layout $(LAY_DIR)/$(CELL).gds \
+			$(NET_PEX_DIR)/$(CELL)_magic_pex_3.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_2.spice; \
+	fi
 .PHONY: magic-pex
 # ================================================================================================
 

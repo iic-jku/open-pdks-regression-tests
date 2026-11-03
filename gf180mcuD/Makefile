@@ -51,7 +51,11 @@ KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt
 	gf180_npn_00p54x02p00:magic-pex3 gf180_npn_00p54x02p00:klayout-pex3 \
 	gf180_npn_00p54x08p00:magic-pex3 gf180_npn_00p54x08p00:klayout-pex3 \
 	gf180_npn_00p54x16p00:magic-pex3 gf180_npn_00p54x16p00:klayout-pex3 \
-	gf180_npn_05p00x05p00:magic-pex3 gf180_npn_05p00x05p00:klayout-pex3
+	gf180_npn_05p00x05p00:magic-pex3 gf180_npn_05p00x05p00:klayout-pex3 \
+	gf180_npn_00p54x04p00:magic-pex3 gf180_npn_00p54x04p00:klayout-pex3 \
+	gf180_npn_10p00x10p00:magic-pex3 gf180_npn_10p00x10p00:klayout-pex3 \
+	gf180_combined:magic-pex3 gf180_combined:klayout-pex3 \
+	gf180_combined_cmim_ontop:magic-pex3 gf180_combined_cmim_ontop:klayout-pex3
 EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc
 KNOWN_FALSE_PASSES ?= gf180_nfet_06v0_nvt_ring_nat:magic-drc \
 	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc

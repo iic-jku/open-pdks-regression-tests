@@ -98,11 +98,13 @@ Magic checks `varac.5` on the layer `var_poly_no_nwell`, which it builds from `v
 
 Magic's GDS import ignores the drawn NPC (`ignore NPC`, line 2356), and Magic writes NPC itself, 0.1 um around every poly contact, when it writes GDS (lines 1126-1135). It has no rule on NPC, so it cannot report the 0.06 um NPC of `sky130_nfet_01v8_tap_licon15` (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)).
 
-## Not caught: full-RC PEX leaves device terminals unconnected
+## Full-RC PEX leaves device terminals unconnected
 
-No list entry: the steps pass. Full-RC extraction (`magic-pex3`, and `klayout-pex3` with kpex driving Magic) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
+`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_short1:klayout-pex3`, `sky130_photodiode:magic-pex3`, `sky130_photodiode:klayout-pex3`
+
+Full-RC extraction (`magic-pex3`, and `klayout-pex3` with kpex driving Magic) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
 
 - `sky130_short1`: the sources of both NMOS are nodes of their own, `X0 VDD VDD VDD.t10 VDD.t9 sky130_fd_pr__nfet_g5v0d10v5 ... as=0 ps=0` and `X1 VDD VDD VDD.t1 VDD.t0 sky130_fd_pr__nfet_01v8 ...`, and `VDD.t10` and `VDD.t1` appear in no other element. In the C-coupled netlist the sources are on `VDD`. The single `_tap` cells of the same transistors do not show it.
 - `sky130_photodiode`: the anode of the extracted diode is the node `w_n338_n339#` (`D0 w_n338_n339# C ...`), which no resistor connects to the pin A; the C-coupled netlist has `D0 A C`.
 
-Why is not known. `scripts/check_pex_ports.py` checks that every port reaches an element, which still holds, so the steps pass; a simulation of these netlists would leave the terminals floating. Comparing the device terminals of the full-RC netlist with the C-coupled one finds both cells, and no other cell that has a full-RC netlist.
+Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element; `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here.

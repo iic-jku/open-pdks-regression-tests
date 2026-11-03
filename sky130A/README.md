@@ -83,7 +83,7 @@ Runs parasitic extraction on the GDS layout in `layout/`. The extracted SPICE ne
 
 The `EXT_MODE` parameter selects the extraction mode: `1` = C-decoupled (default), `2` = C-coupled, `3` = full-RC. For `klayout-pex`, `EXT_MODE=1` is not yet supported by kpex and falls back to `EXT_MODE=2` with a warning.
 
-After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. It does not check what the port is connected to.
+After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
 
 **KLayout PEX** uses `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_ENGINE`, `KPEX_AMAX`, `KPEX_TOL` and the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md).
 
@@ -185,7 +185,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 - `sky130_diode_pd2nw_05v5`, `_11v0` (PASS)
 - `sky130_diode_pd2nw_05v5_lvt`, `sky130_diode_pd2nw_05v5_hvt` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS)
 - `sky130_diode_pd2nw_05v5_psd8` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC) - PSDM of the PCell over the cathode ring (`n/psd.8`)
-- `sky130_photodiode` (KNOWN FAIL: KLayout DRC, Magic DRC, Magic + Netgen LVS)
+- `sky130_photodiode` (KNOWN FAIL: KLayout DRC, Magic DRC, Magic + Netgen LVS, full-RC PEX)
 
 **Bipolar transistors**
 
@@ -197,7 +197,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Combined test cells**
 
 - `sky130_combined` (KNOWN FAIL: Magic DRC) - 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (PASS, although full-RC PEX leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_short1` (KNOWN FAIL: full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell
 
