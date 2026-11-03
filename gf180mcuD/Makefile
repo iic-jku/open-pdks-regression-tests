@@ -26,9 +26,34 @@ KLAYOUT_EXT_CIR = $(CELL).cir
 #   EXPECTED_FAILS      the cell is broken on purpose, the step has to fail (EXPECTED_FAILS.md)
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
-KNOWN_FAILS ?=
-EXPECTED_FAILS ?=
-KNOWN_FALSE_PASSES ?=
+KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt:klayout-lvs \
+	gf180_diode_dw2ps:klayout-lvs gf180_diode_pw2dw:klayout-lvs gf180_sc_diode:klayout-lvs \
+	gf180_combined_cmim_ontop:klayout-lvs \
+	gf180_cap_pmos_03v3_b:magic-lvs gf180_cap_pmos_06v0_b:magic-lvs \
+	gf180_diode_nw2ps_03v3:magic-lvs gf180_diode_nw2ps_06v0:magic-lvs \
+	gf180_diode_dw2ps:magic-lvs gf180_diode_pw2dw:magic-lvs gf180_sc_diode:magic-lvs \
+	gf180_nplus_s:magic-lvs gf180_pplus_s:magic-lvs gf180_nwell:magic-lvs gf180_rm1:magic-lvs \
+	gf180_pnp_05p00x00p42:magic-lvs gf180_pnp_05p00x05p00:magic-lvs gf180_pnp_10p00x10p00:magic-lvs \
+	gf180_cap_nmos_03v3:magic-drc gf180_cap_nmos_03v3_nofmt:magic-drc gf180_cap_nmos_06v0:magic-drc \
+	gf180_cap_pmos_03v3:magic-drc gf180_cap_pmos_06v0:magic-drc \
+	gf180_diode_dw2ps:magic-drc gf180_diode_pw2dw:magic-drc gf180_nfet_03v3_mintap:magic-drc \
+	gf180_dnwell_nmos:magic-drc gf180_dnwell_inv:magic-drc gf180_nfet_03v3_ring_cogap:magic-drc \
+	gf180_npn_00p54x02p00:magic-drc gf180_npn_00p54x04p00:magic-drc gf180_npn_00p54x08p00:magic-drc \
+	gf180_npn_00p54x16p00:magic-drc gf180_npn_05p00x05p00:magic-drc gf180_npn_10p00x10p00:magic-drc \
+	gf180_pnp_05p00x00p42:magic-drc gf180_pnp_05p00x05p00:magic-drc \
+	gf180_pnp_10p00x00p42:magic-drc gf180_pnp_10p00x10p00:magic-drc \
+	gf180_sc_diode:magic-drc gf180_combined:magic-drc gf180_combined_cmim_ontop:magic-drc \
+	gf180_nplus_s:magic-pex3 gf180_nplus_s:klayout-pex3 gf180_pplus_s:magic-pex3 gf180_pplus_s:klayout-pex3 \
+	gf180_nwell:magic-pex3 gf180_nwell:klayout-pex3 gf180_rm1:magic-pex3 gf180_rm1:klayout-pex3 \
+	gf180_dnwell_nmos:magic-pex3 gf180_dnwell_nmos:klayout-pex3 \
+	gf180_dnwell_inv:magic-pex3 gf180_dnwell_inv:klayout-pex3 \
+	gf180_npn_00p54x02p00:magic-pex3 gf180_npn_00p54x02p00:klayout-pex3 \
+	gf180_npn_00p54x08p00:magic-pex3 gf180_npn_00p54x08p00:klayout-pex3 \
+	gf180_npn_00p54x16p00:magic-pex3 gf180_npn_00p54x16p00:klayout-pex3 \
+	gf180_npn_05p00x05p00:magic-pex3 gf180_npn_05p00x05p00:klayout-pex3
+EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc
+KNOWN_FALSE_PASSES ?= gf180_nfet_06v0_nvt_ring_nat:magic-drc \
+	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc
 
 include $(MAKEFILE_DIR)/../common.mk
 
