@@ -128,6 +128,7 @@ The `scripts/try_*.sh` and `scripts/kpex_*.sh` files are the sweeps that found a
 | `try_hier.sh` | the standard cell with the 200 um gate wire, hierarchy on and off |
 | `try_kpexrecipe.sh` | Magic's full-RC driven by kpex's recipe instead of sak-pex's |
 | `kpex_conv.sh`, `kpex_sw.sh`, `kpex_ref.sh`, `kpex_run.sh` | the FasterCap convergence study and the two-triangulation bench |
+| `sidewall2d.py` | whether a sidewall coefficient is a faithful fit: a 2D field solve of two parallel wires on the SG13G2 stack (numpy and scipy). `sidewall2d.py metal1 0.5 0.8` gives one coupling in aF/um, `sidewall2d.py metal1 fit` runs capiche's own sweep and fit. It agrees with the FasterCap column within 2.5 % and refits the coefficients of IHP-GmbH/IHP-Open-PDK#1328 within 2.5 % on Metal1 to Metal5 |
 | `reverify.sh` | every number the report leans on, re-extracted into clean directories with the expected value beside it |
 | `prune.sh` | drop FasterCap input meshes and geometries, keep the result matrices |
 
