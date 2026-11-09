@@ -23,6 +23,9 @@ CELL ?= sg13_combined
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
 KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs \
+	sg13_schottky_nbl1:magic-lvs sg13_rf_cmim:magic-lvs \
+	sg13_combined:magic-lvs sg13_combined_wo_rfcmim:magic-lvs \
+	sg13_combined_cmim_ontop:magic-lvs sg13_combined_cmim_ontop_wo_rfcmim:magic-lvs \
 	sg13_cmim:magic-drc sg13_rf_cmim:magic-drc \
 	sg13_combined:magic-drc sg13_combined_wo_rfcmim:magic-drc \
 	sg13_combined_cmim_ontop:magic-drc sg13_combined_cmim_ontop_wo_rfcmim:magic-drc \
@@ -37,8 +40,8 @@ EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc \
 	sg13_lv_nmos_tap_gat_c:magic-drc \
 	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
 	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
-	sg13_lv_nmos_tap_w_mismatch:klayout-lvs
-KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs
+	sg13_lv_nmos_tap_w_mismatch:klayout-lvs sg13_lv_nmos_tap_w_mismatch:magic-lvs
+KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc
 
 include $(MAKEFILE_DIR)/../common.mk
 

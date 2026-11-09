@@ -62,9 +62,9 @@ The gate contact with its pad, pin and label sits 0.30 um higher, and the gate p
 
 ## `sg13_lv_nmos_tap_w_mismatch`: W in the schematic differs from the layout
 
-`EXPECTED_FAILS` entry: `sg13_lv_nmos_tap_w_mismatch:klayout-lvs`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_w_mismatch:klayout-lvs`, `sg13_lv_nmos_tap_w_mismatch:magic-lvs`
 
-The layout is `sg13_lv_nmos_tap` unchanged, the schematic has `w=0.30u` instead of `0.15u`. KLayout LVS compares W and fails. Magic + Netgen LVS misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). Both DRC steps pass.
+The layout is `sg13_lv_nmos_tap` unchanged, the schematic has `w=0.30u` instead of `0.15u`. KLayout LVS compares W and fails. Netgen matches the topology (`Final result: Circuits match uniquely.`) and reports the parameter separately, `w circuit1: 1.5e-07   circuit2: 3e-07   (delta=66.7%, cutoff=1%)` and `Property errors were found.`, and `sak-lvs.sh` fails the step on that. Both DRC steps pass.
 
 <!--
 Template for a new cell:

@@ -245,7 +245,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 - `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate end cap 0.10 um (Gat.c)
 - `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain and source shorted
 - `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate not connected to its pin
-- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, KNOWN FALSE PASS: Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - schematic W 0.30 um, layout 0.15 um
+- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - schematic W 0.30 um, layout 0.15 um
 - `sg13_lv_pmos_tap` (PASS)
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)

@@ -2,7 +2,7 @@
 
 Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
-KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is an issue of Magic or of a Magic flow. Of the `KNOWN_FALSE_PASSES` entries one is a Magic issue and one an issue of the Magic + Netgen LVS flow.
+KLayout DRC and LVS pass on every cell that is not broken on purpose. Every `KNOWN_FAILS` entry is an issue of Magic or of a Magic flow. The `KNOWN_FALSE_PASSES` entry is a Magic issue.
 
 ## Magic + Netgen LVS fails on the MOM capacitors
 
@@ -42,11 +42,17 @@ Magic reads the NWell of the IHP `isolbox` PCell as its own type `isolbox`. The 
 
 Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Substrate marker, as every IHP `ptap1` PCell draws it) as its own type `ptapc` (`ptapdiffcont`), not as `psc`. The DRC rules (`libs.tech/magic/ihp-sg13g2-drc.tech`) have no rule for `ptapc` at all, neither directly nor through the aliases that contain it (`allpdiffcontlv`, `allpdiffconthv`): Cnt.a, Cnt.b and Cnt.c are never checked at a substrate tap. `sg13_lv_nmos_tap_cnt_c_ptap` has two contacts 0.04 um inside the tap Activ (Cnt.c asks for 0.07 um); KLayout reports both, Magic reports nothing. The same error at a drain contact (`sg13_lv_nmos_tap_cnt_c`) is caught by Magic.
 
-## Magic + Netgen LVS ignores device parameters
+## Magic + Netgen LVS: the Schottky diode has no parameter in common
 
-`KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_w_mismatch:magic-lvs`
+`KNOWN_FAILS` entries: `sg13_schottky_nbl1:magic-lvs`, `sg13_combined:magic-lvs`, `sg13_combined_wo_rfcmim:magic-lvs`, `sg13_combined_cmim_ontop:magic-lvs`, `sg13_combined_cmim_ontop_wo_rfcmim:magic-lvs`
 
-`sak-lvs.sh` judges Magic + Netgen LVS by the line `Circuits match uniquely` alone. Netgen writes that line once the topology matches and reports wrong device parameters separately (`Property errors were found.`), so a wrong W or L passes. In `sg13_lv_nmos_tap_w_mismatch` Netgen reports `w circuit1: 1.5e-07 circuit2: 3e-07 (delta=66.7%, cutoff=1%)` and still ends with `Circuits match uniquely`. Checking for the property errors alone does not help yet: the netgen setup of the PDK (`libs.tech/netgen/ihp-sg13g2_setup.tcl`) does not delete `mm_ok`, a Monte Carlo mismatch switch that Xschem writes to every device and that the layout cannot have, so almost every cell reports property errors. Two fixes are needed: `mm_ok` in the `property ... delete` lists of the netgen setup, and a Magic LVS verdict in `sak-lvs.sh` that fails on property errors.
+Xschem writes the diode as `XD1 A C B schottky_nbl1 Nx=1 Ny=1`, Magic extracts it as `X0 A C B schottky_nbl1 l=1.2u w=2.655u` (`device subcircuit schottky_nbl1 ... w=w l=l` in `libs.tech/magic/ihp-sg13g2-extract.tech`). The netgen setup (`libs.tech/netgen/ihp-sg13g2_setup.tcl`) has property rules for a device named `schottky` only, none for `schottky_nbl1`, so nothing translates or deletes the parameters. The topology matches (`Final result: Circuits match uniquely.`), but Netgen reports `Property w in circuit1 has no matching property in circuit2`, the same for `l`, `Nx` and `Ny` the other way round, and `Property errors were found.`, and `sak-lvs.sh` fails the step on that. The four combined cells contain the diode.
+
+## Magic + Netgen LVS: `wfeed` of the RF MIM capacitor is compared
+
+`KNOWN_FAILS` entries: `sg13_rf_cmim:magic-lvs`, and together with the Schottky diode above `sg13_combined:magic-lvs`, `sg13_combined_cmim_ontop:magic-lvs`
+
+Xschem writes `XC1 C0 C1 CX cap_rfcmim w=10.0e-6 l=10.0e-6 wfeed=5.0e-6 m=1`, Magic extracts `X0 C0 C1 CX cap_rfcmim l=10u w=10u`. The netgen setup derives area and perimeter of `cap_rfcmim` from `w` and `l` and deletes `ic w l`, but not `wfeed`, which the layout extraction does not have. Netgen reports `Property wfeed in circuit2 has no matching property in circuit1` and `Property errors were found.`, and `sak-lvs.sh` fails the step on that.
 
 ## Magic full-RC PEX keeps a second pin name as a port with nothing attached
 

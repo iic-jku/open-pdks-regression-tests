@@ -31,8 +31,8 @@ EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-
 	sg13_lv_nmos_tap_gat_c:magic-drc \
 	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
 	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
-	sg13_lv_nmos_tap_w_mismatch:klayout-lvs
-KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc sg13_lv_nmos_tap_w_mismatch:magic-lvs
+	sg13_lv_nmos_tap_w_mismatch:klayout-lvs sg13_lv_nmos_tap_w_mismatch:magic-lvs
+KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc
 
 include $(MAKEFILE_DIR)/../common.mk
 
