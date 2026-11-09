@@ -120,6 +120,10 @@ DRC_LEVEL ?= macro
 # Override with: make <target> SAK_DRC=<path to sak-drc.sh>
 SAK_DRC ?= sak-drc.sh
 
+# sak-lvs.sh to run, e.g. a newer one than the image ships (default: the one on PATH)
+# Override with: make <target> SAK_LVS=<path to sak-lvs.sh>
+SAK_LVS ?= sak-lvs.sh
+
 # Floating-point precision (significant digits) for Xschem's ev function
 # Override with: make <target> EV_PRECISION=<digits>
 EV_PRECISION ?= 5
@@ -229,7 +233,7 @@ REGRESSION_SH = \
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [OPEN_ARGS=<options>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [SAK_LVS=<path>] [OPEN_ARGS=<options>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -243,6 +247,7 @@ help: ## Show this help message
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
 	@echo 'SAK_DRC defaults to sak-drc.sh on PATH. Point it at another sak-drc.sh to test that one, regression passes it on to every step.'
+	@echo 'SAK_LVS defaults to sak-lvs.sh on PATH. Point it at another sak-lvs.sh to test that one, regression passes it on to every step.'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
@@ -325,7 +330,7 @@ klayout-lvs: check-pdk ## Run KLayout LVS of the CELL cell (usage: make klayout-
 	$(MAKE) klayout-lvs-netlist CELL=$(CELL)
 	mkdir -p $(LVS_RPT_DIR)
 	mkdir -p $(NET_LAY_DIR)
-	sak-lvs.sh -d -k -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_klayout.cdl -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
+	$(SAK_LVS) -d -k -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_klayout.cdl -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
 	rc=$$?; echo $$rc > $(call step_rc,$(LVS_RPT_DIR),klayout-lvs); exit $$rc
 	@ext="$(LVS_RPT_DIR)/$(CELL).klayout.lvs/$(KLAYOUT_EXT_CIR)"; \
 	if [ ! -f "$$ext" ]; then \
@@ -374,7 +379,7 @@ magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make mag
 	mkdir -p $(LVS_RPT_DIR)
 	mkdir -p $(NET_LAY_DIR)
 	$(MAKE) magic-lvs-netlist CELL=$(CELL)
-	sak-lvs.sh -d -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_magic.spice -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
+	$(SAK_LVS) -d -w $(LVS_RPT_DIR) -s $(NET_SCH_DIR)/$(CELL)_magic.spice -l $(LAY_DIR)/$(CELL).gds -c $(CELL); \
 	rc=$$?; echo $$rc > $(call step_rc,$(LVS_RPT_DIR),magic-lvs); exit $$rc
 	@ext="$(LVS_RPT_DIR)/$(CELL).magic.lvs/$(MAGIC_EXT_SPC)"; \
 	if [ ! -f "$$ext" ]; then \
