@@ -170,7 +170,7 @@ Upstream: [open_pdks#560](https://github.com/RTimothyEdwards/open_pdks/issues/56
 
 `KNOWN_FAILS` entries: `gf180_combined:magic-drc`, `gf180_combined_cmim_ontop:magic-drc` (both cells also contain an NPN, a deep Nwell cell and a MOS capacitor of the sections above)
 
-Not classified yet. The combined cells place single cells of this directory as instances, so their PCells sit two levels below the top cell. There Magic reports errors that it does not report on the single cell, where the PCell is a direct child of the top cell:
+The combined cells place single cells of this directory as instances, so their PCells sit two levels below the top cell. There Magic reports errors that it does not report on the single cell, where the PCell is a direct child of the top cell:
 
 | PCell | Magic DRC markers in the combined cells |
 | --- | --- |
@@ -181,7 +181,14 @@ Not classified yet. The combined cells place single cells of this directory as i
 | `cap_nmos_03v3` | `CO.1 + 2 * CO.6` 2 |
 | `dnwell_nmos` | `CO.1 + 2 * CO.6` 5 more than in the single cell |
 
-The single cell is the odd case: the PCell loaded on its own as the top cell gets the same markers (12 for `diode_nd2ps_03v3`), and so do the single cell placed one level deeper and a copy flattened with KLayout, all without any wiring. A synthetic Metal1 width error is reported at every depth, so Magic does check the lower levels. KLayout DRC passes all of these. Whether the markers are real errors is open. If they are, Magic DRC passes the single cells falsely; the implant markers may be the issue of the PP.8a/NP.8a section above, which measuring the drawn implant would settle.
+The single cell is the odd case: the PCell loaded on its own as the top cell gets the same markers (12 for `diode_nd2ps_03v3`), and so do the single cell placed one level deeper and a copy flattened with KLayout, all without any wiring. A synthetic Metal1 width error is reported at every depth, so Magic does check the lower levels. KLayout DRC passes all of these. None of the markers is a real error, measured on the drawn geometry of `gf180_combined` against the rule texts of the KLayout deck and the GF180MCU design manual:
+
+- `CO.4` and `P-diffusion and N-ohmic must be over N-well or deep N-well` at the P+ tap of `diode_nd2ps_03v3`: the COMP overlaps the contact by 0.07 um (CO.4: 0.07 um). The tap is a substrate tap in LVPWELL, no rule asks for an Nwell there.
+- `PP.8a`, `NP.8a`: the drawn implant of every reported tap has 0.60 to 0.76 um^2 (0.35 um^2), see the PP.8a/NP.8a section above.
+- `CO.1 + 2 * CO.6`: in `dnwell_nmos` at the ring corners, contacts 0.29 um apart (CO.2a: 0.25 um), see "Magic DRC merges contacts up to 0.29 um apart"; in `cap_nmos_03v3` at a single contact of 0.22 x 0.22 um (CO.1: 0.22 um).
+- `PRES/LRES/HRES.7` at `ppolyf_u_1k`: the contacts are 0.25 um from the salicide block. The design manual has `HRES.8` "Space from salicide block to contact on Poly2 resistor" 0.22 um, without Min or Max, and section 3.7 says "All dimensions in this document are considered minimum unless otherwise stated." Magic checks the contact for an exact position, for HRES, LRES and PRES alike: `res_cont_space_min` and `res_cont_space_max` (lines 1431-1455) want it within 0.22 to 0.44 um of the salicide block, and the marker covers the 0.03 um beyond. The `ppolyf_u` and `npolyf_u` PCells put their contacts at exactly 0.22 um, the `ppolyf_u_high_Rs` PCell at 0.25 um.
+
+Why Magic reports them only below the top cell is not known.
 
 ## Magic full-RC PEX keeps the second pin of a resistor it does not extract
 
