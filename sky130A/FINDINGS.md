@@ -35,7 +35,7 @@ The `sky130_fd_pr` MOS symbols write their CDL line as a subcircuit call with W 
 XM1 D G S S sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1
 ```
 
-The `sky130.lvs` deck reads such lines as devices only with `-rd convert_subckts=true` (`wants_subcircuit` in `SubcircuitModelsReader`); otherwise they stay calls of an empty subcircuit. And it only matches the micrometer values with `-rd scale=true` (`device_scaling(1000000)`). `sak-lvs.sh` passes neither switch, and the PDK's `run_lvs.py` has no option for `convert_subckts` at all. With both switches the MOS cells here pass KLayout LVS; with only one of them they do not. `klayout-lvs` is therefore not among the regression steps of this directory, see the [Makefile](Makefile).
+The `sky130.lvs` deck reads such lines as devices only with `-rd convert_subckts=true` (`wants_subcircuit` in `SubcircuitModelsReader`); otherwise they stay calls of an empty subcircuit. And it only matches the micrometer values with `-rd scale=true` (`device_scaling(1000000)`). The PDK's `run_lvs.py` has no option for `convert_subckts` at all; `sak-lvs.sh` runs the deck directly and has to pass both. With both switches the MOS cells here pass KLayout LVS; with only one of them they do not. What the deck still gets wrong with both switches set is in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), in the `klayout-lvs` sections.
 
 ## Bulk tie is butted against the source
 
@@ -60,18 +60,6 @@ The `guard_ring_gen` PCell does not place its ring around the origin. The `_ring
 `guard_ring_gen` draws the tap ring only. Around a PMOS the cells widen the PCell's Nwell over the N+ ring, 0.18 um beyond the tap (`difftap.10`), 0.33 um for `pfet_g5v0d10v5` (`hvdifftap.19`), and keep the widened Nwell inside HVI with the enclosure the PCell uses (`hvnwell.9`). Around an MV NMOS the cells widen HVI over the ring, 0.18 um beyond the tap (`hvdifftap.22`); without that the ring lies 0.025 um outside the HVI edge, where `hvdifftap.23` asks for 0.18 um.
 
 The added Nwell and HVI are drawn in the top cell, the ring is in the PCell. Magic evaluates its GDS import within each cell and does not combine the two, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
-
-## KLayout LVS findings behind the two switches
-
-What the `sky130.lvs` deck does with the cells here once `convert_subckts=true` and `scale=true` are set:
-
-- **Diode parameters.** The `diode.sym` symbol writes `area=` and `perim=`; the deck's reader only knows `A` and `P` and reads the schematic diode as `A=0 P=0`. With the CDL rewritten to `A=0.2025 P=1.8` all eight diode cells match.
-- **Diode polarity.** The deck extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: their `tA`/`tC` terminal layers are swapped against `diode_pw2nd_05v5` (lines 2145-2157), and the extracted line reads `XD$1 C A`. In a single-diode cell this cannot be seen, since the comparison is free to swap the two top-level pins: a schematic with the diode deliberately reversed matches as well.
-- **MIM capacitors.** The deck extracts the two MIM options as `sky130_fd_pr__model__cap_mim` and `sky130_fd_pr__model__cap_mim_m4`, while the models and symbols are `cap_mim_m3_1` and `cap_mim_m3_2`, so the device classes never match.
-- **Isolated P-well.** `ptap_conn` (line 1158) excludes taps in Nwell but not in DNWELL, and `connect_global(ptap_conn, substrate_name)` (line 1862) joins every P tap to the substrate. The two ends of `sky130_res_iso_pw` sit on P taps inside DNWELL and are extracted as one net, `XR$1 R0|R1 R0|R1 B`. In `sky130_dnwell_nmos` and `sky130_dnwell_inv` the isolated P-well, which is the NMOS bulk and source, comes out as `S|VSS`, one net with the substrate ring. KLayout still reports these two cells as matching, since the schematic VSS pin connects to no device and drops out of the comparison: a pass for a layout the deck has shorted. Magic extracts the isolation correctly.
-- **Three-terminal capacitors.** The reader turns an `X` line into a device by handing it on as a `C` element (`el = name[0]`, then `super`), past its own branch for three-terminal VPP capacitors, which only runs for lines that already start with `C` (line 358). The standard `C` element takes two nodes, so the schematic `cap_var_*` and `cap_vpp_*` instances, which have three, never become devices, while the layout side extracts them.
-- **16 V MOS.** The deck has no extraction for `nfet_g5v0d16v0` and `pfet_g5v0d16v0` (the name does not occur in `sky130.lvs`), so KLayout extracts no device from these cells.
-- **`npn_11v0`.** The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115) aborts on KLayout 0.30.12 with `There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region`, and no report is written.
 
 ## PCells widen length and width silently
 
