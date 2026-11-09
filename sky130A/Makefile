@@ -37,18 +37,24 @@ KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt
 	sky130_res_high_po_0p35:magic-drc sky130_res_high_po_0p69:magic-drc \
 	sky130_res_xhigh_po_0p35:magic-drc sky130_res_xhigh_po_0p69:magic-drc sky130_combined:magic-drc \
 	sky130_pfet_g5v0d16v0:magic-drc \
-	sky130_short1:magic-pex3 sky130_short1:klayout-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3
+	sky130_short1:magic-pex3 sky130_short1:klayout-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3 \
+	sky130_combined:magic-lvs \
+	sky130_diode_pd2nw_05v5:klayout-lvs sky130_diode_pd2nw_05v5_lvt:klayout-lvs sky130_diode_pd2nw_05v5_hvt:klayout-lvs \
+	sky130_diode_pd2nw_05v5_psd8:klayout-lvs sky130_diode_pd2nw_11v0:klayout-lvs \
+	sky130_diode_pw2nd_05v5:klayout-lvs sky130_diode_pw2nd_05v5_lvt:klayout-lvs sky130_diode_pw2nd_05v5_nvt:klayout-lvs \
+	sky130_diode_pw2nd_11v0:klayout-lvs \
+	sky130_cap_mim_m3_1:klayout-lvs sky130_cap_mim_m3_2:klayout-lvs \
+	sky130_cap_var_lvt:klayout-lvs sky130_cap_var_hvt:klayout-lvs sky130_cap_var_hvt_varac5:klayout-lvs \
+	sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5:klayout-lvs sky130_cap_vpp_11p5x11p7_m1m2_noshield:klayout-lvs \
+	sky130_cap_vpp_08p6x07p8_m1m2_shieldl1:klayout-lvs sky130_cap_vpp_04p4x04p6_m1m2_shieldl1:klayout-lvs \
+	sky130_res_iso_pw:klayout-lvs sky130_npn_11v0_W1p00L1p00:klayout-lvs \
+	sky130_nfet_g5v0d16v0:klayout-lvs sky130_pfet_g5v0d16v0:klayout-lvs sky130_combined:klayout-lvs
 EXPECTED_FAILS ?= sky130_nfet_05v0_nvt_tap_hvdifftap16:magic-drc sky130_diode_pd2nw_05v5_psd8:magic-drc
 KNOWN_FALSE_PASSES ?= sky130_nfet_05v0_nvt_tap_hvdifftap16:klayout-drc sky130_diode_pd2nw_05v5_psd8:klayout-drc \
 	sky130_cap_var_hvt_varac5:klayout-drc sky130_cap_var_hvt_varac5:magic-drc \
 	sky130_nfet_01v8_tap_licon15:klayout-drc sky130_nfet_01v8_tap_licon15:magic-drc
 
 include $(MAKEFILE_DIR)/../common.mk
-
-# KLayout LVS is left out of regression: the sky130.lvs deck needs two switches for the Xschem
-# netlists that sak-lvs.sh does not pass, so it fails on every cell (README.md, FINDINGS.md).
-# make klayout-lvs still runs it on one cell.
-REGRESSION_STEPS := $(filter-out klayout-lvs,$(REGRESSION_STEPS))
 
 # PEX bench: dummy metal layouts with hand-computable parasitics, extracted with Magic and the
 # kpex engines and checked against expected values. Everything else lives in pex_bench/Makefile.
