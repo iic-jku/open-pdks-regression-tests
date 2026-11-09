@@ -230,8 +230,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 
 **Diodes**
 
-- `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0` (PASS, with a Netgen property error on the area that `sak-lvs.sh` does not count, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0` (PASS, with the same property error)
+- `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0` (schematic with the PCell parameters, smaller than the drawn diode: EXPECTED FAIL: Magic + Netgen LVS, KNOWN FALSE PASS: KLayout LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md))
 - `gf180_diode_nw2ps_03v3`, `gf180_diode_nw2ps_06v0` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_diode_pw2dw`, `gf180_diode_dw2ps` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - kept as a finding, the PCell and both decks disagree on the device
@@ -247,7 +246,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 
 **Combined test cells**
 
-- `gf180_combined` (KNOWN FAIL: Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 15 of the cells above as instances and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
+- `gf180_combined` (KNOWN FAIL: Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 15 of the cells above as instances (the two diodes with `la = 0.565`, see [FINDINGS.md](FINDINGS.md)) and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
 - `gf180_combined_cmim_ontop` (KNOWN FAIL: KLayout LVS, Magic DRC, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - the same with the MIM capacitor over all devices, after `sg13_combined_cmim_ontop`
 - `gf180_short1` (PASS) - 3.3 V and 6 V NMOS and PMOS with every terminal on VDD
 

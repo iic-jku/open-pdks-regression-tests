@@ -64,9 +64,9 @@ The deep Nwell diodes `diode_pw2dw` and `diode_dw2ps` are only extracted under `
 
 ## Small diodes are larger than their parameters
 
-At the default `wa = la = 0.36` the `diode_nd2ps` and `diode_pd2nw` PCells draw the diode COMP 0.36 x 0.565 um, 0.2034 um^2, which is the smallest area of 0.36 um width that meets `DF.9`. A schematic with the PCell parameters (`area='0.36u * 0.36u '`, 0.1296 um^2) is 36 % smaller than the layout. Both extractors read the drawn area (`A=0.2034P P=1.85U`). Only Netgen reports the difference, as a property error that `sak-lvs.sh` does not count, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md). The `gf180_diode_nd2ps_*` and `gf180_diode_pd2nw_*` cells keep the PCell parameters in their schematics and show the mismatch.
+At the default `wa = la = 0.36` the `diode_nd2ps` and `diode_pd2nw` PCells draw the diode COMP 0.36 x 0.565 um, 0.2034 um^2, which is the smallest area of 0.36 um width that meets `DF.9`. A schematic with the PCell parameters (`area='0.36u * 0.36u '`, 0.1296 um^2) is 36 % smaller than the layout. Both extractors read the drawn area (`A=0.2034P P=1.85U`). Only Netgen reports the difference, as a property error; the KLayout deck does not compare diode areas (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). The `gf180_diode_nd2ps_*` and `gf180_diode_pd2nw_*` cells keep the PCell parameters in their schematics and show the mismatch (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)).
 
-**Work-around:** Take `area` and `pj` from the drawn COMP.
+**Work-around:** Set `la = 0.565`: the PCell then draws the same 0.36 x 0.565 um COMP as at the default, and the parameters say so. `gf180_combined` and `gf180_combined_cmim_ontop` place the two diodes that way.
 
 ## Metal resistors
 
