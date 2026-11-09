@@ -203,13 +203,13 @@ spiceprefix=X
 C {gf180mcu_fd_pr/diode_nd2ps_03v3.sym} 1200 60 2 0 {name=D1
 model=diode_nd2ps_03v3
 r_w=0.36u
-r_l=0.36u
+r_l=0.565u
 m=1
 }
 C {gf180mcu_fd_pr/diode_pd2nw_03v3.sym} 980 -260 2 0 {name=D2
 model=diode_pd2nw_03v3
 r_w=0.36u
-r_l=0.36u
+r_l=0.565u
 m=1
 }
 C {gf180mcu_fd_pr/ppolyf_u.sym} 680 -90 2 0 {name=R1

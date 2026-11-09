@@ -16,6 +16,12 @@ No `EXPECTED_FAILS` entry: both DRC steps miss the error and are `KNOWN_FALSE_PA
 
 A 5 x 5 um `cap_mim` (MIM option B on Metal5) whose bottom plate, Metal4, runs out in a Metal4 tab 1.2 um wide past the left edge of the top plate. A Via3 1.5 um outside the top plate connects the tab down to a Metal3 pad with the pin C1. MIMTM.10 allows the bottom plate to be connected only through the via above it, Via4, and forbids any Via3 touching it. `gf180_combined` and `gf180_combined_cmim_ontop` connect their MIM bottom plate the legal way, from the same kind of tab through Via4 up to Metal5. The circuit is right, both LVS steps pass.
 
+## `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0`: diode area of the PCell parameters
+
+`EXPECTED_FAILS` entries: `gf180_diode_nd2ps_03v3:magic-lvs`, `gf180_diode_nd2ps_06v0:magic-lvs`, `gf180_diode_pd2nw_03v3:magic-lvs`, `gf180_diode_pd2nw_06v0:magic-lvs`
+
+The layout is the PCell at its default `wa = la = 0.36`, which draws the diode COMP 0.36 x 0.565 um, 0.2034 um^2, to meet `DF.9` (see [FINDINGS.md](FINDINGS.md), "Small diodes are larger than their parameters"). The schematic keeps the PCell parameters, `area='0.36u * 0.36u '`, 0.1296 um^2. The GDS does not change when the PCell is fixed, so the cells stay a mismatch that LVS has to catch. Netgen reports `area circuit1: 2.034e-13   circuit2: 1.296e-13   (delta=44.3%, cutoff=2%)` and `Property errors were found.`, and `sak-lvs.sh` fails the step on that. KLayout LVS misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). Both DRC steps pass.
+
 <!--
 Template for a new cell:
 

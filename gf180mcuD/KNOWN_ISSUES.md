@@ -4,6 +4,8 @@ Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile
 
 Observed on the IIC-OSIC-TOOLS nightly image of 2026-10-22 (digest `sha256:4d34e47a6121`) with KLayout 0.30.12, Magic 8.3.685 and Netgen 1.5.325, PDK open_pdks `1689ac3`. Line numbers refer to the files of that PDK version: the Magic tech file `libs.tech/magic/gf180mcuD.tech` and the KLayout rule decks under `libs.tech/klayout/tech/`.
 
+The LVS entries are for a `sak-lvs.sh` that fails Magic + Netgen LVS on property errors. With the `sak-lvs.sh` of the image above, `magic-lvs` of the four small diode cells in [EXPECTED_FAILS.md](EXPECTED_FAILS.md) is a `FALSE PASS`.
+
 KLayout DRC passes on every cell that is not broken on purpose. Every `magic-drc` entry is a cell it passes and Magic does not.
 
 ## KLayout LVS fails on `gf180_nfet_03v3_tap_nostrap`
@@ -214,6 +216,8 @@ MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-
 
 `gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). Both DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times; the same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
 
-## Not caught: Magic + Netgen LVS passes the small diodes with the wrong area
+## KLayout LVS does not compare the diode area
 
-No list entry. At the PCell default `wa = la = 0.36` the `gf180mcu` diode PCells draw the diode COMP 0.36 x 0.565 um (see [FINDINGS.md](FINDINGS.md)). In `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3` and `gf180_diode_pd2nw_06v0` both extractors read `A=0.2034P P=1.85U`, while the schematic has `area='0.36u * 0.36u '`, 0.1296 um^2. Netgen reports `area circuit1: 2.034e-13   circuit2: 1.296e-13   (delta=44.3%, cutoff=2%)` and `Property errors were found.`, and still ends with `Circuits match uniquely`, which is all `sak-lvs.sh` checks (see `sg13_lv_nmos_tap_w_mismatch` in [../ihp-sg13g2/KNOWN_ISSUES.md](../ihp-sg13g2/KNOWN_ISSUES.md)). The KLayout deck does not compare the diode area. Both LVS steps pass, so a `KNOWN_FAILS` entry would be an `UNEXPECTED PASS`. Once `sak-lvs.sh` fails on property errors, `magic-lvs` fails on these four cells, and they need an entry or a schematic with the drawn area.
+`KNOWN_FALSE_PASSES` entries: `gf180_diode_nd2ps_03v3:klayout-lvs`, `gf180_diode_nd2ps_06v0:klayout-lvs`, `gf180_diode_pd2nw_03v3:klayout-lvs`, `gf180_diode_pd2nw_06v0:klayout-lvs`
+
+The four small diode cells have a schematic area 36 % smaller than the drawn diode (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)), and Magic + Netgen LVS catches it. KLayout LVS passes them. The deck's reader turns the schematic line `D1 A C diode_nd2ps_03v3 area='0.36u * 0.36u ' pj='2*0.36u + 2*0.36u '` into a diode with `A=0 P=0`, the extraction has `A=0.2034 P=1.85`, and the comparison still matches, so area and perimeter of the diode are not compared. The deck (`gf180mcu.lvs` and its `rule_decks`) has no `tolerance` statement for any device.
