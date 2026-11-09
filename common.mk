@@ -356,6 +356,17 @@ magic-lvs-netlist: check-pdk ## Export SPICE schematic netlist from Xschem for M
 		echo "        Check the symbol library paths in $(XSCHEM_SCH_DIR)/xschemrc."; \
 		exit 1; \
 	fi
+	@# The IHP xschem symbols write the Monte Carlo mismatch switch mm_ok=1 into this SPICE netlist,
+	@# and the IHP netgen setups compare it as a device property, so Magic+Netgen reports property
+	@# errors on almost every IHP cell (IHP-Open-PDK #1327). The CDL netlist (lvs_netlist 1) has no
+	@# mm_ok, but Magic+Netgen cannot use it: it has M elements where Magic extracts subcircuit
+	@# calls (IHP-Open-PDK #1008). mm_ok does not describe the layout, so it is removed here. The
+	@# other PDKs write no mm_ok, their netlists stay unchanged.
+	@n=$$(grep -o '[[:space:]]mm_ok=[^[:space:]]*' $(NET_SCH_DIR)/$(CELL)_magic.spice | wc -l); \
+	if [ "$$n" -gt 0 ]; then \
+		sed -i 's/[[:space:]]mm_ok=[^[:space:]]*//g' $(NET_SCH_DIR)/$(CELL)_magic.spice; \
+		echo "[INFO] Removed $$n mm_ok parameter(s) from $(CELL)_magic.spice, the IHP netgen setups compare them as properties."; \
+	fi
 .PHONY: magic-lvs-netlist
 
 magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make magic-lvs [CELL=<cellname>])
