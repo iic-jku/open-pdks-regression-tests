@@ -124,6 +124,8 @@ The cell is kept as a finding: the `gf180mcu` `sc_diode` PCell, the KLayout deck
 
 The PDK has neither a Magic generator nor an LVS test case for this device.
 
+The layout meets the Schottky rules SK.1 to SK.17 of the [design manual, section 10.14](https://gf180mcu-pdk.readthedocs.io/en/latest/physical_verification/design_manual/drm_10_14.html), measured on the drawn geometry. The anode is 0.62 um wide (SK.16, minimum and maximum 0.62 um) and 0.28 um from each cathode COMP (SK.5, minimum and maximum 0.28 um). DNWELL encloses the anode by 1.40 um (SK.9, minimum 1.4 um), and the marker is 3.7 um from the nearest PCOMP (SK.10, minimum 0.8 um). The manual also defines the device: for LVS, the diode area is the COMP under the marker without N+ and P+ implant. The PCell and the schematic follow that definition and both extractions do not, so the three steps stay in `KNOWN_FAILS`.
+
 Upstream: the open draft [gf180mcu_fd_pv#37](https://github.com/fossi-foundation/globalfoundries-pdk-libs-gf180mcu_fd_pv/pull/37) changes the KLayout extraction: the COMP without Nplus under the marker becomes the P terminal and, inside a DNWELL, the DNWELL the N terminal. Not tested on this cell.
 
 KLayout DRC passes the cell, Magic DRC does not. It reports `Both LV and MV devices cannot be in the same deep N-well (DN.11)` over the whole DNWELL, although the cell has one device and no Dualgate, and `Diffusion spacing < 0.28um (DF.3a)` in a band 0.10 um wide at x = 1.04 to 1.14 um. That band lies inside the anode COMP (x = 0.64 to 1.26 um), where the layout has no diffusion edge. Why Magic reports either is not known.
