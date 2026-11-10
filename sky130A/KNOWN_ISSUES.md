@@ -55,6 +55,8 @@ The cell is the PDK's own fixed photodiode, placed by the `photodiode` PCell: a 
 
 `make magic-pex EXT_MODE=3` on the PDK's fixed 3.4 x 3.4 um PNP ends in a segmentation fault of Magic during the resistance extraction (`Processing cell sky130_pnp_05v5_W3p40L3p40_pex for resistance extraction.`, `Extracting C`, `Segmentation fault (core dumped)`), and no netlist is written. `klayout-pex3`, kpex driving Magic in RC mode, fails the same way: `MAGIC failed with status code -11`. The C-decoupled and C-coupled extractions pass, and so does the full-RC extraction of the 0.68 x 0.68 um PNP.
 
+The crash is in Magic's resistance extraction. The core dump of Magic 8.3.685 (IIC-OSIC-TOOLS 2026.10), with the frame addresses resolved by `addr2line` on `tclmagic.so`, ends in `ResAddTerminalPlumbing`, called from `ResAddDevPlumbing`, `ResExtractNet`, `ResProcessNode`, `ResCheckExtNodes` and `ExtResisForDef`. The IIC-OSIC-TOOLS nightly of 2026-10-22 crashes on the same cell. The open Magic issues on `extresist` crashes name other functions: [magic#353](https://github.com/RTimothyEdwards/magic/issues/353) `ResNewSDDevice`, [magic#573](https://github.com/RTimothyEdwards/magic/issues/573) `ResScrunchNet`.
+
 ## Magic does not combine the top cell with a PCell below it
 
 `KNOWN_FAILS` entries: `sky130_pfet_01v8_ring_pcell:magic-drc`, `sky130_pfet_01v8_ring_pcell:magic-lvs`, `sky130_pfet_01v8_lvt_ring_pcell:magic-drc`, `sky130_pfet_01v8_lvt_ring_pcell:magic-lvs`, `sky130_pfet_01v8_hvt_ring_pcell:magic-drc`, `sky130_pfet_01v8_hvt_ring_pcell:magic-lvs`, `sky130_pfet_g5v0d10v5_ring_pcell:magic-drc`, `sky130_pfet_g5v0d10v5_ring_pcell:magic-lvs`, `sky130_cap_var_lvt:magic-lvs`, `sky130_cap_var_hvt:magic-lvs`, `sky130_cap_var_hvt_varac5:magic-lvs`
