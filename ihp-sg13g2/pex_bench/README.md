@@ -123,7 +123,7 @@ The `scripts/try_*.sh` and `scripts/kpex_*.sh` files are the sweeps that found a
 | `try_res.sh`, `try_res2.sh`, `try_res3.sh` | which extresist setting lets a resistor through, on 2-port, 3-port and branched nets |
 | `try_tee.sh` | which knob turns a correct star into a 2-resistor chain (`MINDELAY`) |
 | `try_dbl.sh` | which setting makes the coupling cap also appear lumped to substrate |
-| `try_sw.sh` | whether `sidewall` and `defaultsidewall` give the same answer (they do, both half) |
+| `try_sw.sh` | whether `sidewall` and `defaultsidewall` give the same answer (they do; both half from Magic 8.3.679 to 8.3.692) |
 | `try_ext2spice.sh` | which `ext2spice` option makes magic-pex and klayout-pex disagree (`hierarchy on`) |
 | `try_hier.sh` | the standard cell with the 200 um gate wire, hierarchy on and off |
 | `try_kpexrecipe.sh` | Magic's full-RC driven by kpex's recipe instead of sak-pex's |

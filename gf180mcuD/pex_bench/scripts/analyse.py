@@ -41,7 +41,6 @@ RVIA = {("m1", "m2"): 4500, ("m2", "m3"): 4500, ("m3", "m4"): 4500, ("m4", "m5")
 # no vp counterpart and gen_via3.py has none either.
 VIA_CELL = {("m1", "m2"): "vc", ("m2", "m3"): "vc", ("m3", "m4"): "vc", ("m4", "m5"): "vc"}
 SIDEWALL_M1 = (40.512, -0.053)
-LAMBDA = 0.05          # Magic grid; the sidewall offset is quantised to it
 SPACINGS = ((0.2, "0p2"), (0.4, "0p4"), (0.8, "0p8"), (1.6, "1p6"), (3.2, "3p2"))
 
 ROWS = []   # (table, key, source, value) for --json
@@ -107,21 +106,20 @@ print()
 print("=" * 70)
 print("C  Lateral sidewall coupling, M1, W=0.5 um, L=50 um       [fF]")
 print("   tech line: defaultsidewall allm1 metal1 %s %s" % SIDEWALL_M1)
-print("%-10s %12s %12s %12s %10s" % ("spacing", "k*L/(s+off)", "half of it", "Magic", "Magic/half"))
+print("%-10s %12s %12s %10s" % ("spacing", "k*L/(s+off)", "Magic", "Magic/deck"))
 print("-" * 70)
+# Magic 8.3.679 to 8.3.692 emitted half of this, with the offset quantised to whole lambda;
+# 8.3.693 emits the full value with the exact offset again (magic#557).
 k, off = SIDEWALL_M1
-off_q = round(off / LAMBDA) * LAMBDA   # -0.053 rounds to -0.05 here
 for s, tag in SPACINGS:
     got = caps(magic("sidewall_m1_s" + tag, 2)).get(("a", "b"))
     full = k * 50.0 / (s + off) * 1e-3
-    half = (k / 2.0) * 50.0 / (s + off_q) * 1e-3
     ROWS.append(("C", "s" + tag, "deck", full))
     if got is None:
-        print("%-10.2f %12.4f %12.4f %12s %10s" % (s, full, half, "-", "-"))
+        print("%-10.2f %12.4f %12s %10s" % (s, full, "-", "-"))
         continue
     ROWS.append(("C", "s" + tag, "magic", got * 1e15))
-    print("%-10.2f %12.4f %12.4f %12.4f %9.4f" % (s, full, half, got * 1e15, got * 1e15 / half))
-
+    print("%-10.2f %12.4f %12.4f %9.4f" % (s, full, got * 1e15, got * 1e15 / full))
 print()
 print("=" * 70)
 print("D  Sheet resistance, 1 um wide wire, ports 99 um apart    [Ohm]")

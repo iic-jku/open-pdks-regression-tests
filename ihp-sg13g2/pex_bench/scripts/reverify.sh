@@ -5,8 +5,8 @@ rm -rf runs/rv && mkdir -p runs/rv
 show() { printf '%-42s %s\n' "$1" "$(grep -hE '^[RC]' "$2" | tr '\n' ' ')"; }
 
 sak-pex.sh -m 2 -w runs/rv/a layout/capsub_m1.gds >/dev/null 2>&1;       show "A capsub_m1 mode2 (expect 95.4545 / 4.87346)" runs/rv/a/capsub_m1.pex.spice
-sak-pex.sh -m 2 -w runs/rv/b layout/sidewall_m1_s0p2.gds >/dev/null 2>&1; show "F sidewall s0p2 mode2 (expect a-b 4.78917)" runs/rv/b/sidewall_m1_s0p2.pex.spice
-sak-pex.sh -m 2 -w runs/rv/c layout/sidewall_m1_s0p8.gds >/dev/null 2>&1; show "F sidewall s0p8 mode2 (expect a-b 0.95783)" runs/rv/c/sidewall_m1_s0p8.pex.spice
+sak-pex.sh -m 2 -w runs/rv/b layout/sidewall_m1_s0p2.gds >/dev/null 2>&1; show "F sidewall s0p2 mode2 (expect a-b 10.0472, Magic >= 8.3.693)" runs/rv/b/sidewall_m1_s0p2.pex.spice
+sak-pex.sh -m 2 -w runs/rv/c layout/sidewall_m1_s0p8.gds >/dev/null 2>&1; show "F sidewall s0p8 mode2 (expect a-b 1.93371, Magic >= 8.3.693)" runs/rv/c/sidewall_m1_s0p8.pex.spice
 sak-pex.sh -m 2 -w runs/rv/d layout/overlap_m1_tm1.gds >/dev/null 2>&1;   show "G overlap_m1_tm1 mode2 (expect 1.60235/0.79572)" runs/rv/d/overlap_m1_tm1.pex.spice
 sak-pex.sh -m 3 -t 0 -r 0 -y 0 -w runs/rv/e layout/cross_m1.gds >/dev/null 2>&1;        show "D2 cross open gates (expect 4 R, star)" runs/rv/e/cross_m1.pex.spice
 sak-pex.sh -m 3 -w runs/rv/f layout/cross_m1.gds >/dev/null 2>&1;                       show "D2 cross shipped defaults (expect 2 R, e absent)" runs/rv/f/cross_m1.pex.spice

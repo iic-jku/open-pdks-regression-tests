@@ -201,7 +201,7 @@
   "table": "C",
   "key": "s0p2",
   "source": "magic",
-  "value": 6.752
+  "value": 13.779600000000002
  },
  {
   "table": "C",
@@ -213,7 +213,7 @@
   "table": "C",
   "key": "s0p4",
   "source": "magic",
-  "value": 2.8937100000000004
+  "value": 5.837460000000001
  },
  {
   "table": "C",
@@ -225,7 +225,7 @@
   "table": "C",
   "key": "s0p8",
   "source": "magic",
-  "value": 1.3504000000000003
+  "value": 2.71165
  },
  {
   "table": "C",
@@ -237,7 +237,7 @@
   "table": "C",
   "key": "s1p6",
   "source": "magic",
-  "value": 0.6534200000000001
+  "value": 1.30937
  },
  {
   "table": "C",
@@ -249,7 +249,7 @@
   "table": "C",
   "key": "s3p2",
   "source": "magic",
-  "value": 0.32152
+  "value": 0.6436600000000001
  },
  {
   "table": "D",
@@ -801,7 +801,7 @@
   "table": "H",
   "key": "s0p2",
   "source": "magic",
-  "value": 6.752
+  "value": 13.779600000000002
  },
  {
   "table": "H",
@@ -819,7 +819,7 @@
   "table": "H",
   "key": "s0p4",
   "source": "magic",
-  "value": 2.8937100000000004
+  "value": 5.837460000000001
  },
  {
   "table": "H",
@@ -837,7 +837,7 @@
   "table": "H",
   "key": "s0p8",
   "source": "magic",
-  "value": 1.3504000000000003
+  "value": 2.71165
  },
  {
   "table": "H",
@@ -855,13 +855,13 @@
   "table": "H",
   "key": "s1p6",
   "source": "magic",
-  "value": 0.6534200000000001
+  "value": 1.30937
  },
  {
   "table": "H",
   "key": "s1p6",
   "source": "kpex25",
-  "value": 0.6546860000000001
+  "value": 0.654686
  },
  {
   "table": "H",
@@ -873,12 +873,12 @@
   "table": "H",
   "key": "s3p2",
   "source": "magic",
-  "value": 0.32152
+  "value": 0.6436600000000001
  },
  {
   "table": "H",
   "key": "s3p2",
   "source": "kpex25",
-  "value": 0.32183
+  "value": 0.32183000000000006
  }
 ]
