@@ -152,6 +152,12 @@ The target auto-discovers every cell from the `.gds` files in `layout/`, then ru
 make regression LAYOUT_CELLS="gf180_rm1 gf180_rm2" REGRESSION_STEPS="klayout-lvs magic-lvs klayout-pex2"
 ```
 
+`STEPS` runs only the default steps that match, `%` matches any text. List entries of the steps left out are not reported as stale. Both LVS steps:
+
+```sh
+make regression STEPS=%-lvs
+```
+
 Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. `make regression` exits with a non-zero status when a step fails that is not listed, or a listed step does not end the way its list says, so it can be used directly as a CI gate.
 
 ### Known failures

@@ -166,6 +166,21 @@ REGRESSION_STEPS ?= klayout-drc klayout-lvs \
 			magic-pex1 magic-pex2 magic-pex3 \
 			klayout-pex2 klayout-pex3
 
+# Every step the regression target knows. The lists below may name any of them, also a step
+# that REGRESSION_STEPS leaves out.
+ALL_STEPS := klayout-drc klayout-lvs klayout-pex1 klayout-pex2 klayout-pex3 \
+			magic-drc magic-lvs magic-pex1 magic-pex2 magic-pex3
+
+# Run only some of REGRESSION_STEPS. Each word is a step or a make pattern, % matches any text:
+#   make regression STEPS=%-lvs          klayout-lvs and magic-lvs
+#   make regression STEPS="magic-%"      every Magic step
+# List entries for the steps left out are not reported as stale.
+STEPS ?=
+ifneq ($(strip $(STEPS)),)
+STEPS_UNKNOWN := $(foreach s,$(STEPS),$(if $(filter $(s),$(ALL_STEPS)),,$(s)))
+override REGRESSION_STEPS := $(filter $(STEPS),$(REGRESSION_STEPS))
+endif
+
 # Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
 # day; a cell that is broken on purpose is "expected" to fail for good.
 #
@@ -251,6 +266,7 @@ help: ## Show this help message
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
+	@echo 'STEPS runs only the matching REGRESSION_STEPS, % matches any text (e.g. STEPS=%-lvs for both LVS steps).'
 	@echo 'KNOWN_FAILS tolerates failures in regression as "<cell>" (all steps) or "<cell>:<step>" (currently: $(KNOWN_FAILS)).'
 	@echo 'A KNOWN_FAILS step that passes is reported as UNEXPECTED PASS and fails the regression.'
 	@echo 'EXPECTED_FAILS lists DRC/LVS steps of cells broken on purpose, which have to fail with a finding (currently: $(EXPECTED_FAILS)).'
@@ -463,10 +479,18 @@ magic-verify: check-pdk ## Verify CELL cell with Magic (usage: make magic-verify
 # ================================================================================================
 
 # Regression Target
-regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [KNOWN_FAILS="<cell>[:<step>] ..."] [EXPECTED_FAILS="..."] [KNOWN_FALSE_PASSES="..."])
+regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY_DIR)/ (usage: make regression [STEPS="<step or pattern> ..."] [KNOWN_FAILS="<cell>[:<step>] ..."] [EXPECTED_FAILS="..."] [KNOWN_FALSE_PASSES="..."])
 	@if [ -z "$(strip $(LAYOUT_CELLS))" ]; then \
 		echo "[ERROR] No layouts found in $(LAY_DIR)/ - wrong working directory?"; \
 		echo "        Run the regression as: make -C <pdk-dir> regression"; \
+		exit 1; \
+	fi
+	@if [ -n "$(strip $(STEPS_UNKNOWN))" ]; then \
+		echo "[ERROR] STEPS=\"$(STEPS)\": '$(strip $(STEPS_UNKNOWN))' matches no step. Steps: $(ALL_STEPS)"; \
+		exit 1; \
+	fi
+	@if [ -z "$(strip $(REGRESSION_STEPS))" ]; then \
+		echo "[ERROR] No step to run: STEPS=\"$(STEPS)\" matches none of the regression steps."; \
 		exit 1; \
 	fi
 	@set -f; \
@@ -481,9 +505,9 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
 			esac; \
 			[ "$$kf_step" = "*" ] && continue; \
-			case " $(REGRESSION_STEPS) " in \
+			case " $(ALL_STEPS) " in \
 				*" $$kf_step "*) ;; \
-				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': step '$$kf_step' is not in REGRESSION_STEPS" ;; \
+				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': there is no step '$$kf_step'" ;; \
 			esac; \
 			if [ "$$list" != KNOWN_FAILS ] && ! is_check "$$kf_step"; then \
 				echo "[REGRESSION] ERROR: $$list entry '$$kf': only DRC and LVS steps can catch a cell broken on purpose"; \

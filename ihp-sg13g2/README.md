@@ -181,6 +181,12 @@ The target auto-discovers every cell from the `.gds` files in `layout/`, then ru
 make regression LAYOUT_CELLS="sg13_rhigh sg13_rppd" REGRESSION_STEPS="klayout-lvs magic-lvs klayout-pex2"
 ```
 
+`STEPS` runs only the default steps that match, `%` matches any text. List entries of the steps left out are not reported as stale. Both LVS steps:
+
+```sh
+make regression STEPS=%-lvs
+```
+
 Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. The last summary line lists every cell with the steps that failed it, for example:
 
 ```
