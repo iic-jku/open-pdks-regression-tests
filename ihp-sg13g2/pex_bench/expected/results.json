@@ -273,7 +273,7 @@
   "table": "C",
   "key": "s0p2",
   "source": "magic",
-  "value": 4.78917
+  "value": 10.047200000000002
  },
  {
   "table": "C",
@@ -285,7 +285,7 @@
   "table": "C",
   "key": "s0p4",
   "source": "magic",
-  "value": 2.0525000000000007
+  "value": 4.188780000000001
  },
  {
   "table": "C",
@@ -297,7 +297,7 @@
   "table": "C",
   "key": "s0p8",
   "source": "magic",
-  "value": 0.9578300000000001
+  "value": 1.93371
  },
  {
   "table": "C",
@@ -309,7 +309,7 @@
   "table": "C",
   "key": "s1p6",
   "source": "magic",
-  "value": 0.46347
+  "value": 0.93114
  },
  {
   "table": "C",
@@ -321,7 +321,7 @@
   "table": "C",
   "key": "s3p2",
   "source": "magic",
-  "value": 0.22806000000000004
+  "value": 0.45713
  },
  {
   "table": "D",
@@ -1137,7 +1137,7 @@
   "table": "H",
   "key": "s0p2",
   "source": "magic",
-  "value": 4.78917
+  "value": 10.047200000000002
  },
  {
   "table": "H",
@@ -1161,7 +1161,7 @@
   "table": "H",
   "key": "s0p4",
   "source": "magic",
-  "value": 2.0525000000000007
+  "value": 4.188780000000001
  },
  {
   "table": "H",
@@ -1185,7 +1185,7 @@
   "table": "H",
   "key": "s0p8",
   "source": "magic",
-  "value": 0.9578300000000001
+  "value": 1.93371
  },
  {
   "table": "H",
@@ -1209,7 +1209,7 @@
   "table": "H",
   "key": "s1p6",
   "source": "magic",
-  "value": 0.46347
+  "value": 0.93114
  },
  {
   "table": "H",
@@ -1233,7 +1233,7 @@
   "table": "H",
   "key": "s3p2",
   "source": "magic",
-  "value": 0.22806000000000004
+  "value": 0.45713
  },
  {
   "table": "H",

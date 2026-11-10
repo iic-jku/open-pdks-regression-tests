@@ -95,20 +95,20 @@ print()
 print("=" * 70)
 print("C  Lateral sidewall coupling, M1, W=0.5 um, L=50 um       [fF]")
 print("   tech line: defaultsidewall allm1 metal1 %s %s" % SIDEWALL_M1)
-print("%-10s %12s %12s %12s %10s" % ("spacing", "k*L/(s+off)", "half of it", "Magic", "Magic/half"))
+print("%-10s %12s %12s %10s" % ("spacing", "k*L/(s+off)", "Magic", "Magic/deck"))
 print("-" * 70)
+# Magic 8.3.679 to 8.3.692 emitted half of this, with the offset quantised to whole lambda;
+# 8.3.693 emits the full value with the exact offset again (magic#557).
 k, off = SIDEWALL_M1
 for s, tag in SPACINGS:
     got = caps(magic("sidewall_m1_s" + tag, 2)).get(("a", "b"))
     full = k * 50.0 / (s + off) * 1e-3
-    half = (k / 2.0) * 50.0 / (s - 0.05) * 1e-3   # Magic quantises the offset to whole lambda
     ROWS.append(("C", "s" + tag, "deck", full))
     if got is None:
-        print("%-10.2f %12.4f %12.4f %12s %10s" % (s, full, half, "-", "-"))
+        print("%-10.2f %12.4f %12s %10s" % (s, full, "-", "-"))
         continue
     ROWS.append(("C", "s" + tag, "magic", got * 1e15))
-    print("%-10.2f %12.4f %12.4f %12.4f %9.4f" % (s, full, half, got * 1e15, got * 1e15 / half))
-
+    print("%-10.2f %12.4f %12.4f %9.4f" % (s, full, got * 1e15, got * 1e15 / full))
 print()
 print("=" * 70)
 print("D  Sheet resistance, 1 um wide wire, ports 99 um apart    [Ohm]")

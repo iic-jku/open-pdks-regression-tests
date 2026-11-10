@@ -174,7 +174,7 @@ for (lo, up), ov, sov in OVER:
 print()
 print(sep)
 print("H  Lateral sidewall coupling, Metal1, W = 0.5 um, L = 50 um                [fF]")
-print("   deck formula: k*L/(s+off), k = %s aF, off = %s um. Magic emits half, offset quantised." % (SW_K, SW_OFF))
+print("   deck formula: k*L/(s+off), k = %s aF, off = %s um. Magic emits it in full (8.3.693), kpex 2.5D half (0.4.3)." % (SW_K, SW_OFF))
 print("%-9s %9s %9s %9s %9s %8s %8s %6s %7s %s" % (
     "spacing", "deck", "Magic", "kpex 2.5D", "FasterCap", "Magic/FC", "2.5D/FC", "amax", "asym", "from"))
 print("-" * 108)
