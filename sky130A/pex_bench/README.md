@@ -34,22 +34,11 @@ There is one via family per level, so as in gf180mcuD there is no `vp_*` chain a
 
 Note that `cifinput` grows the via layers before forming the contact: `VIA3` by 60 nm per side and `VIA4` by 190 nm, so a drawn 0.8 um `via4` becomes 1.18 um inside Magic. Anything narrower than that will not form a contact even though the drawn cut looks legal.
 
-## Table E is incomplete, and the reason is not the deck
+## Table E and the via3 and via4 chains
 
-Magic emits no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting - swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing. The other three levels are exact to 0.00 %. `analyse.py` skips a level whose `n=1` cell has no resistor, since it needs that value as the metal baseline, so table E covers li1-m1, m1-m2 and m2-m3 only.
+Up to Magic 8.3.691, full-RC extraction emitted no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting - swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing - so table E covered li1-m1, m1-m2 and m2-m3 only. The deck was not the cause: the same structure with a narrow, resistive arm came out right, 8.0635 Ohm for one `via3` (1 um wide, 49.5 um per arm; deck 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063) and 2.26195 Ohm for one `via4` (2 um wide; deck 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261). The defect was reported in [magic#568](https://github.com/RTimothyEdwards/magic/issues/568) and fixed in 8.3.692. Since then table E covers all five levels, `via4`'s 380 mOhm included, and every row matches the deck to 0.001 %.
 
-The cause is the magnitude, not the contact. With a 16 um wide arm the m3-m4 chain is only 3.70 Ohm end to end (0.145 + 3.41 + 0.145) and the m4-m5 chain 0.62 Ohm, against 3.94 Ohm for m2-m3, which does come through. Magic appears to apply a coarse end-to-end floor somewhere between those two figures that no documented setting lifts.
-
-Repeating the same structure with a narrow, resistive arm shows the contact values themselves are right:
-
-| probe | arm | measured | deck arithmetic |
-|---|---|---|---|
-| m3-m4, one `via3` | 1 um wide, 49.5 um per arm | 8.0635 Ohm | 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063 |
-| m4-m5, one `via4` | 2 um wide, 49.5 um per arm | 2.26195 Ohm | 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261 |
-
-So all five contact resistances in this PDK are correct, `via3`'s value is additionally covered by the m2-m3 row (both are 3410 mOhm), and only `via4`'s 380 mOhm has no row in table E. The probe cells are deliberately not part of the bench: giving one PDK a different via-chain geometry would cost the property that makes the four benches comparable.
-
-The mode 3 netlists of these chains also fail `scripts/check_pex_ports.py`, which `magic-pex` in `common.mk` runs after every extraction: without a resistor `l` and `u` share one node, the netlist still declares both, and port `l` is connected to nothing. The ten steps are in `KNOWN_FAILS` in the Makefile, so `pex-bench-magic` reports them and goes on, and fails as soon as one of them passes.
+Until then the mode 3 netlists of these ten chains also failed `scripts/check_pex_ports.py`, which `magic-pex` in `common.mk` runs after every extraction: without a resistor `l` and `u` shared one node, the netlist still declared both, and port `l` was connected to nothing. The ten steps were in `KNOWN_FAILS` in the Makefile up to that fix.
 
 ## What is compared
 

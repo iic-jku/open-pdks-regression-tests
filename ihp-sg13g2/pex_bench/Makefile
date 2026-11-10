@@ -60,12 +60,7 @@ KPEX_KNOWN_FAILS ?=
 # common.mk's regression on this directory means: every layout through the three Magic modes.
 # pex-bench-magic tolerates the same KNOWN_FAILS, with the entry syntax of common.mk.
 REGRESSION_STEPS ?= magic-pex1 magic-pex2 magic-pex3
-# Full-RC extracts no resistor on the vc_* chains of the two top vias, so l and u share one node
-# and port l is connected to nothing (README, "Outputs and the check"). Table E reads vp_* there.
-KNOWN_FAILS ?= \
-	vc_m5_tm1_n1:magic-pex3 vc_m5_tm1_n2:magic-pex3 vc_m5_tm1_n3:magic-pex3 \
-	vc_m5_tm1_n4:magic-pex3 vc_m5_tm1_n8:magic-pex3 vc_tm1_tm2_n1:magic-pex3 \
-	vc_tm1_tm2_n2:magic-pex3 vc_tm1_tm2_n3:magic-pex3 vc_tm1_tm2_n4:magic-pex3
+KNOWN_FAILS ?=
 
 include $(MAKEFILE_DIR)/../../common.mk
 
