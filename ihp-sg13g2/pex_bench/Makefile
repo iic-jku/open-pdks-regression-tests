@@ -224,7 +224,7 @@ pex-bench-defects: check-pdk ## Reproduce the six defects of the report on their
 	@sak-pex.sh -m 2 -w $(RUN_DIR)/d3 $(LAY_DIR)/sidewall_m1_s0p2.gds > /dev/null 2>&1; grep -h '^C' $(RUN_DIR)/d3/sidewall_m1_s0p2.pex.spice | sed 's/^/  mode 2: /'
 	@echo "=== 4  ext2spice hierarchy on moves a gate net's wire capacitance onto its neighbours ==="
 	@sh $(SCRIPTS)/try_hier.sh | grep -E '^---|VSS'
-	@echo "=== 5  lateral coupling: Magic emitted half the deck coefficient from 8.3.679 to 8.3.692, kpex 2.5D does since 0.4.3 ==="
+	@echo "=== 5  lateral coupling: Magic emitted half the deck coefficient from 8.3.679 to 8.3.692, kpex 2.5D from 0.4.3 to 0.8.1 ==="
 	@sh $(SCRIPTS)/try_sw.sh | grep -E 'default_28|explicit_swapped|formula'
 	@echo "=== 6  the halo split: shielded-plate coupling sent to the substrate ==="
 	@sak-pex.sh -m 2 -w $(RUN_DIR)/d6 $(LAY_DIR)/overlap_m1_tm1.gds > /dev/null 2>&1; grep -h '^C' $(RUN_DIR)/d6/overlap_m1_tm1.pex.spice | sed 's/^/  Magic:     /'

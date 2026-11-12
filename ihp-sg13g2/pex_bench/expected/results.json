@@ -615,7 +615,7 @@
   "table": "F",
   "key": "m1_plate",
   "source": "kpex25",
-  "value": 95.4546
+  "value": 95.45440000000002
  },
  {
   "table": "F",
@@ -639,7 +639,7 @@
   "table": "F",
   "key": "m1_wire",
   "source": "kpex25",
-  "value": 4.87352
+  "value": 4.873420000000001
  },
  {
   "table": "F",
@@ -663,7 +663,7 @@
   "table": "F",
   "key": "m2_plate",
   "source": "kpex25",
-  "value": 52.4097
+  "value": 52.4169
  },
  {
   "table": "F",
@@ -687,7 +687,7 @@
   "table": "F",
   "key": "m2_wire",
   "source": "kpex25",
-  "value": 3.9692100000000003
+  "value": 3.97284
  },
  {
   "table": "F",
@@ -711,7 +711,7 @@
   "table": "F",
   "key": "m3_plate",
   "source": "kpex25",
-  "value": 36.2555
+  "value": 36.26830000000001
  },
  {
   "table": "F",
@@ -735,7 +735,7 @@
   "table": "F",
   "key": "m3_wire",
   "source": "kpex25",
-  "value": 3.46655
+  "value": 3.47302
  },
  {
   "table": "F",
@@ -759,7 +759,7 @@
   "table": "F",
   "key": "m4_plate",
   "source": "kpex25",
-  "value": 28.1868
+  "value": 28.228800000000003
  },
  {
   "table": "F",
@@ -783,7 +783,7 @@
   "table": "F",
   "key": "m4_wire",
   "source": "kpex25",
-  "value": 3.16126
+  "value": 3.1824700000000004
  },
  {
   "table": "F",
@@ -807,7 +807,7 @@
   "table": "F",
   "key": "m5_plate",
   "source": "kpex25",
-  "value": 23.345600000000005
+  "value": 23.397400000000005
  },
  {
   "table": "F",
@@ -831,7 +831,7 @@
   "table": "F",
   "key": "m5_wire",
   "source": "kpex25",
-  "value": 2.95883
+  "value": 2.98499
  },
  {
   "table": "F",
@@ -855,7 +855,7 @@
   "table": "F",
   "key": "tm1_plate",
   "source": "kpex25",
-  "value": 21.599400000000003
+  "value": 21.7338
  },
  {
   "table": "F",
@@ -879,7 +879,7 @@
   "table": "F",
   "key": "tm1_wire",
   "source": "kpex25",
-  "value": 3.91723
+  "value": 3.9851100000000006
  },
  {
   "table": "F",
@@ -903,7 +903,7 @@
   "table": "F",
   "key": "tm2_plate",
   "source": "kpex25",
-  "value": 14.3178
+  "value": 14.957100000000002
  },
  {
   "table": "F",
@@ -927,7 +927,7 @@
   "table": "F",
   "key": "tm2_wire",
   "source": "kpex25",
-  "value": 3.22984
+  "value": 3.55267
  },
  {
   "table": "F",
@@ -951,7 +951,7 @@
   "table": "G",
   "key": "m2_over_m1",
   "source": "kpex25",
-  "value": 8.70425
+  "value": 8.70441
  },
  {
   "table": "G",
@@ -975,7 +975,7 @@
   "table": "G",
   "key": "m3_over_m2",
   "source": "kpex25",
-  "value": 8.70401
+  "value": 8.70441
  },
  {
   "table": "G",
@@ -999,7 +999,7 @@
   "table": "G",
   "key": "m4_over_m3",
   "source": "kpex25",
-  "value": 8.70401
+  "value": 8.70425
  },
  {
   "table": "G",
@@ -1023,7 +1023,7 @@
   "table": "G",
   "key": "m5_over_m4",
   "source": "kpex25",
-  "value": 8.703210000000002
+  "value": 8.70401
  },
  {
   "table": "G",
@@ -1047,7 +1047,7 @@
   "table": "G",
   "key": "tm1_over_m5",
   "source": "kpex25",
-  "value": 6.905230000000001
+  "value": 6.92123
  },
  {
   "table": "G",
@@ -1071,7 +1071,7 @@
   "table": "G",
   "key": "tm2_over_tm1",
   "source": "kpex25",
-  "value": 3.08606
+  "value": 3.3328800000000003
  },
  {
   "table": "G",
@@ -1095,7 +1095,7 @@
   "table": "G",
   "key": "m3_over_m1",
   "source": "kpex25",
-  "value": 3.7926300000000004
+  "value": 3.7941100000000003
  },
  {
   "table": "G",
@@ -1119,7 +1119,7 @@
   "table": "G",
   "key": "tm1_over_m1",
   "source": "kpex25",
-  "value": 2.31775
+  "value": 2.36211
  },
  {
   "table": "G",
@@ -1143,7 +1143,7 @@
   "table": "H",
   "key": "s0p2",
   "source": "kpex25",
-  "value": 5.023600000000001
+  "value": 5.87771
  },
  {
   "table": "H",
@@ -1167,7 +1167,7 @@
   "table": "H",
   "key": "s0p4",
   "source": "kpex25",
-  "value": 2.0943900000000006
+  "value": 3.1502300000000005
  },
  {
   "table": "H",
@@ -1191,7 +1191,7 @@
   "table": "H",
   "key": "s0p8",
   "source": "kpex25",
-  "value": 0.9668570000000001
+  "value": 1.6338700000000002
  },
  {
   "table": "H",
@@ -1215,7 +1215,7 @@
   "table": "H",
   "key": "s1p6",
   "source": "kpex25",
-  "value": 0.46557
+  "value": 0.8324650000000001
  },
  {
   "table": "H",
@@ -1239,7 +1239,7 @@
   "table": "H",
   "key": "s3p2",
   "source": "kpex25",
-  "value": 0.22856300000000002
+  "value": 0.420226
  },
  {
   "table": "H",

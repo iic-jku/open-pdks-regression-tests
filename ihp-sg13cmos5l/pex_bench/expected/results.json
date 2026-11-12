@@ -519,7 +519,7 @@
   "table": "F",
   "key": "m1_plate",
   "source": "kpex25",
-  "value": 95.4546
+  "value": 95.44740000000002
  },
  {
   "table": "F",
@@ -537,7 +537,7 @@
   "table": "F",
   "key": "m1_wire",
   "source": "kpex25",
-  "value": 4.87352
+  "value": 4.86989
  },
  {
   "table": "F",
@@ -555,7 +555,7 @@
   "table": "F",
   "key": "m2_plate",
   "source": "kpex25",
-  "value": 52.4097
+  "value": 52.3995
  },
  {
   "table": "F",
@@ -573,7 +573,7 @@
   "table": "F",
   "key": "m2_wire",
   "source": "kpex25",
-  "value": 3.9692100000000003
+  "value": 3.96406
  },
  {
   "table": "F",
@@ -591,7 +591,7 @@
   "table": "F",
   "key": "m3_plate",
   "source": "kpex25",
-  "value": 36.2555
+  "value": 36.237100000000005
  },
  {
   "table": "F",
@@ -609,7 +609,7 @@
   "table": "F",
   "key": "m3_wire",
   "source": "kpex25",
-  "value": 3.46655
+  "value": 3.4572600000000007
  },
  {
   "table": "F",
@@ -627,7 +627,7 @@
   "table": "F",
   "key": "m4_plate",
   "source": "kpex25",
-  "value": 28.1868
+  "value": 28.1776
  },
  {
   "table": "F",
@@ -645,7 +645,7 @@
   "table": "F",
   "key": "m4_wire",
   "source": "kpex25",
-  "value": 3.16126
+  "value": 3.15662
  },
  {
   "table": "F",
@@ -663,7 +663,7 @@
   "table": "F",
   "key": "tm1_plate",
   "source": "kpex25",
-  "value": 23.7232
+  "value": 24.612800000000004
  },
  {
   "table": "F",
@@ -681,7 +681,7 @@
   "table": "F",
   "key": "tm1_wire",
   "source": "kpex25",
-  "value": 3.6556700000000006
+  "value": 4.10495
  },
  {
   "table": "G",
@@ -699,7 +699,7 @@
   "table": "G",
   "key": "m2_over_m1",
   "source": "kpex25",
-  "value": 8.70425
+  "value": 8.70305
  },
  {
   "table": "G",
@@ -717,7 +717,7 @@
   "table": "G",
   "key": "m3_over_m2",
   "source": "kpex25",
-  "value": 8.70401
+  "value": 8.70245
  },
  {
   "table": "G",
@@ -735,7 +735,7 @@
   "table": "G",
   "key": "m4_over_m3",
   "source": "kpex25",
-  "value": 8.70401
+  "value": 8.70125
  },
  {
   "table": "G",
@@ -753,7 +753,7 @@
   "table": "G",
   "key": "tm1_over_m4",
   "source": "kpex25",
-  "value": 6.48002
+  "value": 6.89963
  },
  {
   "table": "G",
@@ -771,7 +771,7 @@
   "table": "G",
   "key": "m3_over_m1",
   "source": "kpex25",
-  "value": 3.7926300000000004
+  "value": 3.7900700000000005
  },
  {
   "table": "G",
@@ -789,7 +789,7 @@
   "table": "G",
   "key": "tm1_over_m1",
   "source": "kpex25",
-  "value": 2.4173600000000004
+  "value": 2.6242000000000005
  },
  {
   "table": "H",
@@ -807,7 +807,7 @@
   "table": "H",
   "key": "s0p2",
   "source": "kpex25",
-  "value": 5.023600000000001
+  "value": 5.89134
  },
  {
   "table": "H",
@@ -825,7 +825,7 @@
   "table": "H",
   "key": "s0p4",
   "source": "kpex25",
-  "value": 2.0943900000000006
+  "value": 3.1575400000000005
  },
  {
   "table": "H",
@@ -843,7 +843,7 @@
   "table": "H",
   "key": "s0p8",
   "source": "kpex25",
-  "value": 0.9668570000000001
+  "value": 1.63767
  },
  {
   "table": "H",
@@ -861,7 +861,7 @@
   "table": "H",
   "key": "s1p6",
   "source": "kpex25",
-  "value": 0.46557
+  "value": 0.8343960000000001
  },
  {
   "table": "H",
@@ -879,6 +879,6 @@
   "table": "H",
   "key": "s3p2",
   "source": "kpex25",
-  "value": 0.22856300000000002
+  "value": 0.42120100000000005
  }
 ]
