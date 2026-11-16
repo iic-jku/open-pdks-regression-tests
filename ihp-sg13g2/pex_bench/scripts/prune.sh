@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Drop the bulky FasterCap intermediates and keep what the numbers are read from:
 # the result matrices, the emitted netlists and the run logs.
 cd "$(dirname "$0")/.." || exit 1

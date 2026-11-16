@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Find which extresist setting makes the coupling cap also appear lumped to substrate.
 cd "$(dirname "$0")/.." || exit 1
 mkdir -p runs/try8

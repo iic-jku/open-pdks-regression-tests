@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Does the explicit "sidewall" keyword give the same answer as "defaultsidewall"?
 # Both are written with the same coefficient; Magic halves the parsed value on the
 # assumption that each edge pair is visited twice.

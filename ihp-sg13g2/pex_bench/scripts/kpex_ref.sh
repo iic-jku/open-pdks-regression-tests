@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Convergence points for the structures whose amax=50 to amax=2 step was still large.
 cd "$(dirname "$0")/.." || exit 1
 for job in "capsub_m1 0.5" "capsub_m2 0.5" "overlap_m1_m2 0.5" "capsub_m1 0.2"; do
