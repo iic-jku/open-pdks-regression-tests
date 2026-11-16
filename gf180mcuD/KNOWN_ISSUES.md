@@ -192,12 +192,6 @@ The single cell is the odd case: the PCell loaded on its own as the top cell get
 
 Why Magic reports them only below the top cell is not known.
 
-## Magic full-RC PEX keeps the second pin of a resistor it does not extract
-
-`KNOWN_FAILS` entries: `gf180_nplus_s:magic-pex3`, `gf180_nplus_s:klayout-pex3`, `gf180_pplus_s:magic-pex3`, `gf180_pplus_s:klayout-pex3`, `gf180_nwell:magic-pex3`, `gf180_nwell:klayout-pex3`, `gf180_rm1:magic-pex3`, `gf180_rm1:klayout-pex3`
-
-These are the four resistors Magic does not extract (see the Magic + Netgen LVS sections above): the body imports as plain diffusion, Nwell or Metal1, so both ends are one net that carries the pin names R0 and R1. `magic-pex1`, `magic-pex2` and `klayout-pex2` keep one name, their netlist starts with `.subckt gf180_nplus_s_pex B R1`. Full-RC extraction (`magic-pex3`) lists `B R0 R1` with nothing on R0, and `scripts/check_pex_ports.py` fails the step on the dangling port. `klayout-pex3`, kpex driving Magic in RC mode, writes the same header. It is the issue of `sg13_lv_nmos_tap_short_ds` in [../ihp-sg13g2/KNOWN_ISSUES.md](../ihp-sg13g2/KNOWN_ISSUES.md), and the entries go once Magic extracts these resistors.
-
 ## Magic full-RC PEX joins a P-well inside a deep Nwell to the substrate
 
 `KNOWN_FAILS` entries: `gf180_dnwell_nmos:magic-pex3`, `gf180_dnwell_nmos:klayout-pex3`, `gf180_dnwell_inv:magic-pex3`, `gf180_dnwell_inv:klayout-pex3`, `gf180_npn_00p54x02p00:magic-pex3`, `gf180_npn_00p54x02p00:klayout-pex3`, `gf180_npn_00p54x08p00:magic-pex3`, `gf180_npn_00p54x08p00:klayout-pex3`, `gf180_npn_00p54x16p00:magic-pex3`, `gf180_npn_00p54x16p00:klayout-pex3`, `gf180_npn_05p00x05p00:magic-pex3`, `gf180_npn_05p00x05p00:klayout-pex3`, `gf180_npn_00p54x04p00:magic-pex3`, `gf180_npn_00p54x04p00:klayout-pex3`, `gf180_npn_10p00x10p00:magic-pex3`, `gf180_npn_10p00x10p00:klayout-pex3`, `gf180_combined:magic-pex3`, `gf180_combined:klayout-pex3`, `gf180_combined_cmim_ontop:magic-pex3`, `gf180_combined_cmim_ontop:klayout-pex3`

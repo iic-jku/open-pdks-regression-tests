@@ -44,8 +44,6 @@ KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt
 	gf180_pnp_05p00x00p42:magic-drc gf180_pnp_05p00x05p00:magic-drc \
 	gf180_pnp_10p00x00p42:magic-drc gf180_pnp_10p00x10p00:magic-drc \
 	gf180_sc_diode:magic-drc gf180_combined:magic-drc gf180_combined_cmim_ontop:magic-drc \
-	gf180_nplus_s:magic-pex3 gf180_nplus_s:klayout-pex3 gf180_pplus_s:magic-pex3 gf180_pplus_s:klayout-pex3 \
-	gf180_nwell:magic-pex3 gf180_nwell:klayout-pex3 gf180_rm1:magic-pex3 gf180_rm1:klayout-pex3 \
 	gf180_dnwell_nmos:magic-pex3 gf180_dnwell_nmos:klayout-pex3 \
 	gf180_dnwell_inv:magic-pex3 gf180_dnwell_inv:klayout-pex3 \
 	gf180_npn_00p54x02p00:magic-pex3 gf180_npn_00p54x02p00:klayout-pex3 \

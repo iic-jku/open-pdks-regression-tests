@@ -227,11 +227,11 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 **Resistors**
 
 - `gf180_nplus_u`, `gf180_pplus_u` (PASS)
-- `gf180_nplus_s`, `gf180_pplus_s` (KNOWN FAIL: Magic + Netgen LVS, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_nwell` (KNOWN FAIL: Magic + Netgen LVS, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `gf180_nplus_s`, `gf180_pplus_s` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `gf180_nwell` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_npolyf_u`, `gf180_npolyf_s`, `gf180_ppolyf_u`, `gf180_ppolyf_s` (PASS)
 - `gf180_ppolyf_u_1k`, `gf180_ppolyf_u_1k_6p0` (PASS)
-- `gf180_rm1` (KNOWN FAIL: Magic + Netgen LVS, full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `gf180_rm1` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_rm2`, `gf180_rm3` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Diodes**
