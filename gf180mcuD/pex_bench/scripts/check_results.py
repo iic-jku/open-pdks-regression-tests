@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 """Compare a fresh bench run against the expected values and fail on drift.
 
 Usage:  check_results.py <fresh.json> <expected.json> [--write]
@@ -28,8 +32,6 @@ Exit codes, so a CI test can triage a failure without reading the log:
   4  usage error, or the expected file is not there to compare against.
 
 Precedence is 3, then 1, then 2: the most basic problem is the one reported.
-
-SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 SPDX-License-Identifier: Apache-2.0
 """
 import json

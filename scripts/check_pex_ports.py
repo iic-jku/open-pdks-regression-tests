@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
 # SPDX-License-Identifier: Apache-2.0
 # Description: Check that every port of a PEX netlist is really connected to the circuit.
 # Copy of macros/inverter/scripts/check_pex_ports.py of iic-jku/ihp-sg13g2-ams-chip-template

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 """Tables A to E: the deck arithmetic against what Magic extracted.
 
 Reads the netlists the bench Makefile writes into netlist/pex/ and prints the comparison.
 With --json <file> it also writes every compared value for check_results.py.
-
-SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 SPDX-License-Identifier: Apache-2.0
 """
 import json
