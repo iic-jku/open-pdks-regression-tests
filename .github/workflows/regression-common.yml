@@ -13,10 +13,9 @@ on:
         required: true
         type: string
       image:
-        description: IIC-OSIC-TOOLS container image
+        description: IIC-OSIC-TOOLS container image, the nightly when empty
         required: false
         type: string
-        default: ghcr.io/iic-jku/iic-osic-tools:nightly
 
 permissions:
   contents: read
@@ -27,15 +26,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     container:
-      image: ${{ inputs.image }}
+      # Scheduled runs pass no image. The same fallback is repeated for IMAGE below, because the
+      # container block cannot read env.
+      image: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
       # The checkout belongs to the runner user, the tools write into it as root.
       options: --user root
     env:
       PDK_ROOT: /foss/pdks
       PDK_DIR: ${{ inputs.pdk }}
-      IMAGE: ${{ inputs.image }}
+      IMAGE: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
     defaults:
       run:
+        # GitHub runs every step with "bash --noprofile --norc -eo pipefail".
         shell: bash
     steps:
       - name: Check out repository
@@ -86,46 +88,52 @@ jobs:
 
       - name: Run DRC / LVS / PEX regression
         id: regression
-        run: |
-          set -o pipefail
-          make -C "$PDK_DIR" regression 2>&1 | tee regression.log
+        run: make -C "$PDK_DIR" regression 2>&1 | tee regression.log
 
       - name: Run PEX bench
         id: pex-bench
-        # Runs after a failed regression too, the two are independent.
-        if: ${{ !cancelled() }}
-        run: |
-          set -o pipefail
-          make -C "$PDK_DIR" pex-bench 2>&1 | tee pex-bench.log
+        # Runs after a failed regression too, the two are independent. Not after a failed checkout
+        # or environment setup, which skip the regression.
+        if: ${{ !cancelled() && steps.regression.conclusion != 'skipped' }}
+        run: make -C "$PDK_DIR" pex-bench 2>&1 | tee pex-bench.log
 
       - name: Write job summary
         if: always()
         run: |
+          # The verdict lines of the two logs. Empty when a log is missing or a run died before its
+          # summary, which must not fail this step (the shell runs with -e and pipefail).
+          regression=$(grep -h '^\[REGRESSION\] SUMMARY:' regression.log 2>/dev/null || true)
+          bench=$(grep -h -E '^\[CHECK\] ([0-9]+ ok|INCOMPLETE|DECK|TOOL|.* is (not there|unreadable))' pex-bench.log 2>/dev/null || true)
           {
             echo "#### Regression: ${{ steps.regression.outcome }}"
             echo
             echo '```'
-            grep -h '^\[REGRESSION\] SUMMARY:' regression.log 2>/dev/null || echo "No summary, see regression.log in the artifact."
+            echo "${regression:-No summary, see regression.log in the artifact.}"
             echo '```'
             echo
             echo "#### PEX bench: ${{ steps.pex-bench.outcome }}"
             echo
             echo '```'
-            grep -h -E '^\[CHECK\] ([0-9]+ ok|INCOMPLETE|DECK|TOOL|.* is (not there|unreadable))' pex-bench.log 2>/dev/null \
-              || tail -n 5 pex-bench.log 2>/dev/null || echo "No log."
+            echo "${bench:-$(tail -n 5 pex-bench.log 2>/dev/null || echo "No log.")}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           # The same lines as annotations, so the run page shows the verdicts without the log.
+          # Failing verdicts are errors, the rest notices.
           annotate() { msg=${3//%/%25}; echo "::$1 title=$2::$msg"; }
-          grep -h '^\[REGRESSION\] SUMMARY:' regression.log 2>/dev/null | while IFS= read -r line; do
+          while IFS= read -r line; do
             case "$line" in
+              "") ;;
               *"FAILED cells"*|*"UNEXPECTED"*) annotate error "Regression $PDK_DIR" "${line#*SUMMARY: }" ;;
               *) annotate notice "Regression $PDK_DIR" "${line#*SUMMARY: }" ;;
             esac
-          done
-          grep -h -E '^\[CHECK\] ([0-9]+ ok|INCOMPLETE|DECK|TOOL)' pex-bench.log 2>/dev/null | while IFS= read -r line; do
-            annotate notice "PEX bench $PDK_DIR" "${line#\[CHECK\] }"
-          done
+          done <<< "$regression"
+          while IFS= read -r line; do
+            case "$line" in
+              "") ;;
+              "[CHECK] "[0-9]*" ok,"*) annotate notice "PEX bench $PDK_DIR" "${line#\[CHECK\] }" ;;
+              *) annotate error "PEX bench $PDK_DIR" "${line#\[CHECK\] }" ;;
+            esac
+          done <<< "$bench"
 
       - name: Upload logs and reports
         if: always()

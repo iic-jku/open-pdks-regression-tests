@@ -25,5 +25,5 @@ jobs:
     uses: ./.github/workflows/regression-common.yml
     with:
       pdk: sky130A
-      # Scheduled runs have no inputs and fall back to the nightly image.
-      image: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
+      # Empty on scheduled runs, regression-common.yml then picks the nightly image.
+      image: ${{ inputs.image }}

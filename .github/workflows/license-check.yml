@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # SPDX-License-Identifier: Apache-2.0
-#
-# Checks all files for missing license and copyright information with REUSE.
+# Description: Checks all files for missing license and copyright information with REUSE.
 
 name: License Check
 
