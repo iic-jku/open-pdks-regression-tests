@@ -14,8 +14,8 @@ substrate (read_kpex.SUBSTRATE: VSUBS, or the deck's substrate net since kpex 0.
 capsub the plate is the larger of the two substrate couplings, the wire the smaller.
 With --json <file> every compared value is written for check_results.py.
 
-SPDX-FileCopyrightText: 2026 Simon Dorrer
-SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+SPDX-License-Identifier: Apache-2.0
 """
 import glob
 import json

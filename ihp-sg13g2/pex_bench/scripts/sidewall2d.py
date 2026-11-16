@@ -12,8 +12,8 @@ GatPoly and TopMetal2 sit in conformal dielectrics and are not modelled.
 
 Needs numpy and scipy. A point takes a few seconds, a fit a few minutes.
 
-SPDX-FileCopyrightText: 2026 Simon Dorrer
-SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+SPDX-License-Identifier: Apache-2.0
 """
 import sys
 import numpy as np

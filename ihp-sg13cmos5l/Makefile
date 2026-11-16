@@ -1,9 +1,9 @@
 # ihp-sg13cmos5l regression design: PDK selection and known failures.
 # Every target lives in ../common.mk - run with "make <target>" from this directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))

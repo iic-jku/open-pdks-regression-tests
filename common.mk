@@ -6,9 +6,9 @@
 # "make -f <pdk-dir>/Makefile" does NOT work: the relative paths below would
 # then resolve against the current directory instead of the design directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 .DEFAULT_GOAL := help

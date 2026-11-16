@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Description: Check that a full-RC PEX netlist connects devices and ports like the C-coupled
 # netlist of the same cell. Run by the magic-pex and klayout-pex targets of common.mk for
 # EXT_MODE=3, after check_pex_ports.py.
