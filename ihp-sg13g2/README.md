@@ -1,6 +1,8 @@
 # DRC / LVS / PEX Regression Tests for the ihp-sg13g2 Open-PDK
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic + Netgen. The IIC-OSIC-TOOLS run it before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh).
+[![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml)
+
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic + Netgen. The IIC-OSIC-TOOLS run it before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh). The [regression-ihp-sg13g2.yml](../.github/workflows/regression-ihp-sg13g2.yml) workflow of this repository runs the regression and the PEX bench every Monday, Wednesday, and Friday on the IIC-OSIC-TOOLS nightly image.
 
 ## Show Available Targets
 
@@ -211,6 +213,7 @@ The following tools and flows are checked:
 | Magic DRC (`sak-drc.sh -m`) | `magic-drc` |
 | Magic extract + Netgen LVS (`sak-lvs.sh`) | `magic-lvs` |
 | Magic PEX (`sak-pex.sh`, C-decoupled / C-coupled / full-RC), then the port check (`scripts/check_pex_ports.py`, for full-RC also `scripts/check_pex_modes.py`) | `magic-pex1` / `magic-pex2` / `magic-pex3` |
+| KLayout PEX (`kpex` with the Magic engine, C-coupled / full-RC), then the same checks | `klayout-pex2` / `klayout-pex3` |
 
 ### Known failures
 
