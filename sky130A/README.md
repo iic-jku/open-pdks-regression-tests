@@ -2,7 +2,7 @@
 
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the sky130A Open-PDK, using both KLayout and Magic + Netgen. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench every Monday, Wednesday, and Friday on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the sky130A Open-PDK, using both KLayout and Magic + Netgen. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 Things in this PDK that are easy to get wrong when drawing these devices are collected in [FINDINGS.md](FINDINGS.md), the causes of the known failures in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), and the cells broken on purpose in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 

@@ -26,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     container:
-      # Scheduled runs pass no image. The same fallback is repeated for IMAGE below, because the
-      # container block cannot read env.
+      # Push and pull request runs pass no image. The same fallback is repeated for IMAGE below,
+      # because the container block cannot read env.
       image: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
       # The checkout belongs to the runner user, the tools write into it as root.
       options: --user root

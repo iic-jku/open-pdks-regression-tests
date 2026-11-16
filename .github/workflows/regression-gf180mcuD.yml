@@ -1,15 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # SPDX-License-Identifier: Apache-2.0
-# Description: gf180mcuD regression and PEX bench in the IIC-OSIC-TOOLS container, three times a week
-# and on manual dispatch. The job itself is in regression-common.yml.
+# Description: gf180mcuD regression and PEX bench in the IIC-OSIC-TOOLS container on every change of
+# main and on manual dispatch. The job itself is in regression-common.yml.
 
 name: Regression gf180mcuD
 
 on:
-  schedule:
-    # Mon, Wed and Fri at 12:00 UTC. The IIC-OSIC-TOOLS nightly build is scheduled for 23:00 UTC
-    # but starts hours later and takes about 3.5 h, so noon tests the image of that night.
-    - cron: '0 12 * * 1,3,5'
+  # No schedule: the IIC-OSIC-TOOLS test every nightly image against main themselves (tests 26, 31,
+  # and 35), so this workflow checks the changes made here. Documentation changes need no run.
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - 'doc/**'
+  pull_request:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - 'doc/**'
   workflow_dispatch:
     inputs:
       image:
@@ -25,5 +35,5 @@ jobs:
     uses: ./.github/workflows/regression-common.yml
     with:
       pdk: gf180mcuD
-      # Empty on scheduled runs, regression-common.yml then picks the nightly image.
+      # Empty on push and pull request runs, regression-common.yml then picks the nightly image.
       image: ${{ inputs.image }}

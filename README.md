@@ -61,7 +61,7 @@ What is tested are the tools and the PDK decks, not a design. When a new Magic, 
 
 Next to the regression, each PDK has a PEX bench: metal-only dummy layouts whose parasitics follow from the extraction deck by hand. They are extracted with Magic and kpex, and the values are checked against the deck arithmetic and the committed expected results.
 
-The [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) run parts of this repository before every release ([test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh), [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh), [test 35](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/35/test_pex_bench.sh)), and the [CI](#continuous-integration) of this repository runs all four PDKs three times a week on the IIC-OSIC-TOOLS nightly image.
+The [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) run parts of this repository with every nightly build and before every release ([test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh), [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh), [test 35](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/35/test_pex_bench.sh)), and the [CI](#continuous-integration) of this repository runs all four PDKs on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 ```mermaid
 flowchart LR
@@ -191,10 +191,10 @@ The `KNOWN_ISSUES.md` of each PDK links the further upstream issues and pull req
 
 | Workflow | Trigger | What it runs |
 | --- | --- | --- |
-| [`regression-ihp-sg13g2.yml`](.github/workflows/regression-ihp-sg13g2.yml), [`regression-ihp-sg13cmos5l.yml`](.github/workflows/regression-ihp-sg13cmos5l.yml), [`regression-gf180mcuD.yml`](.github/workflows/regression-gf180mcuD.yml), [`regression-sky130A.yml`](.github/workflows/regression-sky130A.yml) | Mon, Wed, and Fri at 12:00 UTC, and manual dispatch | `make regression`, then `make pex-bench`, of one PDK in the IIC-OSIC-TOOLS container |
+| [`regression-ihp-sg13g2.yml`](.github/workflows/regression-ihp-sg13g2.yml), [`regression-ihp-sg13cmos5l.yml`](.github/workflows/regression-ihp-sg13cmos5l.yml), [`regression-gf180mcuD.yml`](.github/workflows/regression-gf180mcuD.yml), [`regression-sky130A.yml`](.github/workflows/regression-sky130A.yml) | Push and pull request to `main` (documentation-only changes excepted), and manual dispatch | `make regression`, then `make pex-bench`, of one PDK in the IIC-OSIC-TOOLS container |
 | [`license-check.yml`](.github/workflows/license-check.yml) | Push and pull request to `main` | `reuse lint` |
 
-The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, which is built the night before. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, which also appear as annotations on the run page. The logs, reports, and netlists are kept as an artifact for 30 days.
+The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, the image of the last night. There is no schedule, because the IIC-OSIC-TOOLS run the `main` branch of this repository against every new nightly image themselves (tests 26, 31, and 35), so the workflows here check the changes made here. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, which also appear as annotations on the run page. The logs, reports, and netlists are kept as an artifact for 30 days.
 
 
 ## Directory Structure

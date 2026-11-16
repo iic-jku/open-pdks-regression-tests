@@ -50,7 +50,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 ## CI
 
 - `.github/workflows/license-check.yml` runs `reuse lint` on pushes and pull requests to `main`.
-- `.github/workflows/regression-<pdk>.yml` (one per PDK, for one badge each) call `regression-common.yml`, which runs `make regression` and then `make pex-bench` of that PDK in `ghcr.io/iic-jku/iic-osic-tools:nightly`. They run on Mon, Wed, and Fri at 12:00 UTC, after the IIC-OSIC-TOOLS nightly build, and on manual dispatch with an `image` input. There is no change gate, since the image changes without a commit here.
+- `.github/workflows/regression-<pdk>.yml` (one per PDK, for one badge each) call `regression-common.yml`, which runs `make regression` and then `make pex-bench` of that PDK in `ghcr.io/iic-jku/iic-osic-tools:nightly`. They run on pushes and pull requests to `main` that touch more than documentation (`**.md`, `doc/**`), and on manual dispatch with an `image` input. There is no schedule: the IIC-OSIC-TOOLS test every nightly image against `main` with tests 26, 31, and 35, so a tool regression shows up there, and the lists here are updated in a commit that these workflows then check.
 - A new PDK folder needs its own `regression-<pdk>.yml` and its badge in the root `README.md` (badge row and PDK table).
 
 ## Traps

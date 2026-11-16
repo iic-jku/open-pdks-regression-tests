@@ -2,7 +2,7 @@
 
 [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic + Netgen. The IIC-OSIC-TOOLS run it before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh). The [regression-ihp-sg13g2.yml](../.github/workflows/regression-ihp-sg13g2.yml) workflow of this repository runs the regression and the PEX bench every Monday, Wednesday, and Friday on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, using both KLayout and Magic + Netgen. The IIC-OSIC-TOOLS run it with every nightly build and before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh). The [regression-ihp-sg13g2.yml](../.github/workflows/regression-ihp-sg13g2.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 ## Show Available Targets
 
