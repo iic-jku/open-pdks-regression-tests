@@ -194,7 +194,7 @@ The `KNOWN_ISSUES.md` of each PDK links the further upstream issues and pull req
 | [`regression-ihp-sg13g2.yml`](.github/workflows/regression-ihp-sg13g2.yml), [`regression-ihp-sg13cmos5l.yml`](.github/workflows/regression-ihp-sg13cmos5l.yml), [`regression-gf180mcuD.yml`](.github/workflows/regression-gf180mcuD.yml), [`regression-sky130A.yml`](.github/workflows/regression-sky130A.yml) | Mon, Wed, and Fri at 12:00 UTC, and manual dispatch | `make regression`, then `make pex-bench`, of one PDK in the IIC-OSIC-TOOLS container |
 | [`license-check.yml`](.github/workflows/license-check.yml) | Push and pull request to `main` | `reuse lint` |
 
-The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, which is built the night before. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, and the logs, reports, and netlists are kept as an artifact for 30 days.
+The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, which is built the night before. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, which also appear as annotations on the run page. The logs, reports, and netlists are kept as an artifact for 30 days.
 
 
 ## Directory Structure
