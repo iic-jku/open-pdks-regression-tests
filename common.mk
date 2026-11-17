@@ -154,17 +154,19 @@ MAGIC_EXT_SPC ?= $(CELL).ext.spc
 
 
 # Auto-discovered cells from all .gds files in $(LAY_DIR)/
-LAYOUT_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
+ALL_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
+LAYOUT_CELLS := $(ALL_CELLS)
 
 # Steps executed by regression for every cell, in this order.
 # Each name must have a matching branch in the case statement of the regression target.
 # Override with: make regression REGRESSION_STEPS="<step> <step> ..."
 # klayout-pex1 is left out: kpex has no C-decoupled mode, falls back to C-coupled and would
 # repeat klayout-pex2.
-REGRESSION_STEPS ?= klayout-drc klayout-lvs \
+DEFAULT_STEPS := klayout-drc klayout-lvs \
 			magic-drc magic-lvs \
 			magic-pex1 magic-pex2 magic-pex3 \
 			klayout-pex2 klayout-pex3
+REGRESSION_STEPS ?= $(DEFAULT_STEPS)
 
 # Every step the regression target knows. The lists below may name any of them, also a step
 # that REGRESSION_STEPS leaves out.
@@ -174,12 +176,20 @@ ALL_STEPS := klayout-drc klayout-lvs klayout-pex1 klayout-pex2 klayout-pex3 \
 # Run only some of REGRESSION_STEPS. Each word is a step or a make pattern, % matches any text:
 #   make regression STEPS=%-lvs          klayout-lvs and magic-lvs
 #   make regression STEPS="magic-%"      every Magic step
-# List entries for the steps left out are not reported as stale.
 STEPS ?=
 ifneq ($(strip $(STEPS)),)
 STEPS_UNKNOWN := $(foreach s,$(STEPS),$(if $(filter $(s),$(ALL_STEPS)),,$(s)))
 override REGRESSION_STEPS := $(filter $(STEPS),$(REGRESSION_STEPS))
 endif
+
+# A run with fewer cells (LAYOUT_CELLS) or steps (STEPS, REGRESSION_STEPS) than the full
+# regression says so at the start and in the summary. Empty for a full run.
+comma := ,
+CELLS_LEFT_OUT = $(filter-out $(LAYOUT_CELLS),$(ALL_CELLS))
+STEPS_LEFT_OUT = $(filter-out $(REGRESSION_STEPS),$(DEFAULT_STEPS))
+RUN_CELLS = $(if $(CELLS_LEFT_OUT),$(words $(LAYOUT_CELLS)) of $(words $(ALL_CELLS)) cells$(if $(word 11,$(LAYOUT_CELLS)),, ($(strip $(LAYOUT_CELLS)))),all $(words $(LAYOUT_CELLS)) cells)
+RUN_STEPS = $(if $(STEPS_LEFT_OUT),$(words $(REGRESSION_STEPS)) of $(words $(DEFAULT_STEPS)) steps ($(strip $(REGRESSION_STEPS))),all $(words $(REGRESSION_STEPS)) steps)
+PARTIAL_RUN = $(if $(CELLS_LEFT_OUT)$(STEPS_LEFT_OUT),$(RUN_CELLS)$(comma) $(RUN_STEPS))
 
 # Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
 # day; a cell that is broken on purpose is "expected" to fail for good.
@@ -493,22 +503,14 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 		echo "[ERROR] No step to run: STEPS=\"$(STEPS)\" matches none of the regression steps."; \
 		exit 1; \
 	fi
+	@$(if $(PARTIAL_RUN),echo "[REGRESSION] Partial run: $(PARTIAL_RUN)",true)
 	@set -f; \
 	$(REGRESSION_SH) \
 	check_list() { \
 		list=$$1; shift; \
 		for kf in "$$@"; do \
-			kf_cell="$${kf%%:*}"; kf_step="$${kf#*:}"; \
-			[ "$$kf_step" = "$$kf" ] && kf_step="*"; \
-			case " $(LAYOUT_CELLS) " in \
-				*" $$kf_cell "*) ;; \
-				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': no $(LAY_DIR)/$$kf_cell.gds" ;; \
-			esac; \
-			[ "$$kf_step" = "*" ] && continue; \
-			case " $(ALL_STEPS) " in \
-				*" $$kf_step "*) ;; \
-				*) echo "[REGRESSION] WARNING: stale $$list entry '$$kf': there is no step '$$kf_step'" ;; \
-			esac; \
+			kf_step="$${kf#*:}"; \
+			[ "$$kf_step" = "$$kf" ] && continue; \
 			if [ "$$list" != KNOWN_FAILS ] && ! is_check "$$kf_step"; then \
 				echo "[REGRESSION] ERROR: $$list entry '$$kf': only DRC and LVS steps can catch a cell broken on purpose"; \
 				exit 1; \
@@ -628,6 +630,7 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 	done; \
 	echo ""; \
 	echo "========================================"; \
+	$(if $(PARTIAL_RUN),echo "[REGRESSION] SUMMARY: Partial run: $(PARTIAL_RUN)";) \
 	if [ -n "$$known" ]; then \
 		echo "[REGRESSION] SUMMARY: KNOWN FAIL cells (tool bug, ignored):$$known"; \
 	fi; \
