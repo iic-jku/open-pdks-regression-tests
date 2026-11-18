@@ -36,15 +36,9 @@ Magic reads the NWell of the IHP `isolbox` PCell as its own type `isolbox`. The 
 
 Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Substrate marker, as every IHP `ptap1` PCell draws it) as its own type `ptapc` (`ptapdiffcont`), not as `psc`. The DRC rules (`libs.tech/magic/ihp-sg13g2-drc.tech`) have no rule for `ptapc` at all, neither directly nor through the aliases that contain it (`allpdiffcontlv`, `allpdiffconthv`): Cnt.a, Cnt.b and Cnt.c are never checked at a substrate tap. `sg13_lv_nmos_tap_cnt_c_ptap` has two contacts 0.04 um inside the tap Activ (Cnt.c asks for 0.07 um); KLayout reports both, Magic reports nothing. The same error at a drain contact (`sg13_lv_nmos_tap_cnt_c`) is caught by Magic.
 
-## Magic + Netgen LVS: the Schottky diode has no parameter in common
-
-`KNOWN_FAILS` entries: `sg13_schottky_nbl1:magic-lvs`, `sg13_combined:magic-lvs`, `sg13_combined_wo_rfcmim:magic-lvs`, `sg13_combined_cmim_ontop:magic-lvs`, `sg13_combined_cmim_ontop_wo_rfcmim:magic-lvs`
-
-Xschem writes the diode as `XD1 A C B schottky_nbl1 Nx=1 Ny=1`, Magic extracts it as `X0 A C B schottky_nbl1 l=1.2u w=2.655u` (`device subcircuit schottky_nbl1 ... w=w l=l` in `libs.tech/magic/ihp-sg13g2-extract.tech`). The netgen setup (`libs.tech/netgen/ihp-sg13g2_setup.tcl`) has property rules for a device named `schottky` only, none for `schottky_nbl1`, so nothing translates or deletes the parameters. The topology matches (`Final result: Circuits match uniquely.`), but Netgen reports `Property w in circuit1 has no matching property in circuit2`, the same for `l`, `Nx` and `Ny` the other way round, and `Property errors were found.`, and `sak-lvs.sh` fails the step on that. The four combined cells contain the diode.
-
 ## Magic + Netgen LVS: `wfeed` of the RF MIM capacitor is compared
 
-`KNOWN_FAILS` entries: `sg13_rf_cmim:magic-lvs`, and together with the Schottky diode above `sg13_combined:magic-lvs`, `sg13_combined_cmim_ontop:magic-lvs`
+`KNOWN_FAILS` entries: `sg13_rf_cmim:magic-lvs`, `sg13_combined:magic-lvs`, `sg13_combined_cmim_ontop:magic-lvs` (both contain the RF MIM capacitor)
 
 Xschem writes `XC1 C0 C1 CX cap_rfcmim w=10.0e-6 l=10.0e-6 wfeed=5.0e-6 m=1`, Magic extracts `X0 C0 C1 CX cap_rfcmim l=10u w=10u`. The netgen setup derives area and perimeter of `cap_rfcmim` from `w` and `l` and deletes `ic w l`, but not `wfeed`, which the layout extraction does not have. Netgen reports `Property wfeed in circuit2 has no matching property in circuit1` and `Property errors were found.`, and `sak-lvs.sh` fails the step on that.
 

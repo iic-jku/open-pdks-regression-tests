@@ -291,7 +291,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 
 - `sg13_dantenna` (PASS)
 - `sg13_dpantenna` (PASS)
-- `sg13_schottky_nbl1` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_schottky_nbl1` (PASS)
 
 **Isolated devices (`isolbox`)**
 
@@ -302,7 +302,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Combined test cells**
 
 - `sg13_combined` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_combined_cmim_ontop` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_short1` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - LV and HV NMOS and PMOS with shorted terminals
