@@ -183,11 +183,13 @@ The target auto-discovers every cell from the `.gds` files in `layout/`, then ru
 make regression LAYOUT_CELLS="sg13_rhigh sg13_rppd" REGRESSION_STEPS="klayout-lvs magic-lvs klayout-pex2"
 ```
 
-`STEPS` runs only the default steps that match, `%` matches any text. List entries of the steps left out are not reported as stale. Both LVS steps:
+`STEPS` runs only the default steps that match, `%` matches any text. Both LVS steps:
 
 ```sh
 make regression STEPS=%-lvs
 ```
+
+A run restricted by `LAYOUT_CELLS`, `STEPS` or `REGRESSION_STEPS` prints a `Partial run:` line with the cells and steps it covers, at the start and again in the summary.
 
 Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. The last summary line lists every cell with the steps that failed it, for example:
 
@@ -292,7 +294,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 
 - `sg13_dantenna` (PASS)
 - `sg13_dpantenna` (PASS)
-- `sg13_schottky_nbl1` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_schottky_nbl1` (PASS)
 
 **Isolated devices (`isolbox`)**
 
@@ -303,7 +305,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Combined test cells**
 
 - `sg13_combined` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_combined_cmim_ontop` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_short1` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - LV and HV NMOS and PMOS with shorted terminals

@@ -117,11 +117,13 @@ It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klay
 make regression LAYOUT_CELLS="sky130_nfet_01v8_tap sky130_res_generic_po" REGRESSION_STEPS="klayout-drc magic-drc magic-lvs"
 ```
 
-`STEPS` runs only the default steps that match, `%` matches any text. List entries of the steps left out are not reported as stale. Both LVS steps:
+`STEPS` runs only the default steps that match, `%` matches any text. Both LVS steps:
 
 ```sh
 make regression STEPS=%-lvs
 ```
+
+A run restricted by `LAYOUT_CELLS`, `STEPS` or `REGRESSION_STEPS` prints a `Partial run:` line with the cells and steps it covers, at the start and again in the summary.
 
 Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. `make regression` exits with a non-zero status when a step fails that is not listed, or a listed step does not end the way its list says, so it can be used directly as a CI gate.
 
