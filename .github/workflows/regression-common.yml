@@ -81,6 +81,7 @@ jobs:
             echo "| Magic | $(magic --version 2>/dev/null) |"
             echo "| Netgen | $(netgen -batch quit 2>/dev/null | grep -o 'Netgen [0-9.]*' | head -1) |"
             echo "| KLayout | $(klayout -v 2>/dev/null) |"
+            echo "| gdscheck | $(gdscheck --version 2>/dev/null) |"
             echo "| kpex | $(kpex --version 2>/dev/null | tail -1) |"
             echo "| Xschem | $(xschem --version 2>/dev/null | head -1) |"
             echo

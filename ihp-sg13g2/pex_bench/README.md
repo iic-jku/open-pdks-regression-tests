@@ -10,7 +10,7 @@ make pex-bench                  # Magic modes 1/2/3 on every layout, kpex 2.5D o
 make pex-bench FASTERCAP=1      # also field-solve the comparison cells (KPEX_AMAX=2 by default, minutes)
 make pex-bench-defects          # the six defects on their smallest cases, netlists printed
 make magic-pex CELL=cross_m1 EXT_MODE=3 MINDELAY=1      # any single cell, any setting
-make klayout-pex CELL=sidewall_m1_s0p8 KPEX_ENGINE=2.5D
+make klayout-pex CELL=sidewall_m1_s0p8                   # kpex 2.5D on a single cell
 make layouts                    # regenerate layout/ from scripts/gen_*.py
 make layouts-check              # assert the generators still reproduce layout/ byte for byte
 ```
@@ -30,7 +30,7 @@ The layouts are committed as well as generated. `make layouts-check` guards that
 | kpex 2.5D | `kpex --2.5D` | a second implementation, reading the identical coefficients from `klayout_pex_protobuf/ihp-sg13g2_tech.pb.json` |
 | FasterCap | `kpex --fastercap` | a boundary-element field solve on the kpex process stack, which matches `sg13g2_for_EM.xs` |
 
-`make klayout-pex` with the default `KPEX_ENGINE=magic` is not a further opinion: kpex then drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
+`make klayout-pex` runs the same kpex 2.5D engine through `sak-pex.sh -k`, so it gives the kpex 2.5D column of a single cell. The Magic engine of kpex (`kpex --magic`) is no further opinion: it drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates. That is how the sidewall factor of two was settled.
 

@@ -32,17 +32,27 @@ def top_block(path):
     return (named or blocks)[-1]
 
 
+def pins(block):
+    """The pins of a block. kpex names a port of several shorted pins "D|S" in its C-decoupled
+    and C-coupled netlists and keeps D and S as ports of the full-RC one, so such a port stands
+    for its pins."""
+    return [pin for port in block[1] for pin in port.split("|")]
+
+
 def connections(block, keep):
     """Merge the nodes joined through resistors. Return (net of a node, ports of each net, Counter of
     devices with the ports in `keep` that each terminal reaches)."""
     _, ports, elements = block
     net = Union()
+    for port in ports:
+        for pin in port.split("|"):
+            net.union(port, pin)
     for tokens in elements:
         nodes = nodes_of(tokens)
         if tokens[0][0].lower() == "r" and len(nodes) == 2:
             net.union(nodes[0], nodes[1])
     ports_of = {}
-    for port in ports:
+    for port in pins(block):
         ports_of.setdefault(net.find(port), set()).add(port)
     devices = Counter()
     for tokens in elements:
@@ -72,8 +82,8 @@ def compare(rc_path, cc_path):
     if rc is None or cc is None:
         return [f"{rc_path if rc is None else cc_path}: no subcircuit found"]
     problems = []
-    keep = set(cc[1])
-    for port in sorted(keep - set(rc[1])):
+    keep = set(pins(cc))
+    for port in sorted(keep - set(pins(rc))):
         problems.append(f"{rc_path}: port {port} of {cc_path} is missing.")
     rc_net, rc_ports, rc_devices = connections(rc, keep)
     cc_net, _, cc_devices = connections(cc, keep)

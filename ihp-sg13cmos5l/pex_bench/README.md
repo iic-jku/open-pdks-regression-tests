@@ -19,7 +19,7 @@ Everything runs inside the IIC-OSIC-TOOLS container from this directory. `make h
 ```sh
 make pex-bench                  # Magic modes 1/2/3 on every layout, kpex 2.5D on the comparison cells, tables, check
 make magic-pex CELL=cross_m1 EXT_MODE=3 MINDELAY=1      # any single cell, any setting
-make klayout-pex CELL=sidewall_m1_s0p8 KPEX_ENGINE=2.5D
+make klayout-pex CELL=sidewall_m1_s0p8                   # kpex 2.5D on a single cell
 make layouts                    # regenerate layout/ from scripts/gen_*.py
 make layouts-check              # assert the generators still reproduce layout/ byte for byte
 ```
@@ -56,7 +56,7 @@ complete deck. `PEX_ENGINES` lists `kpex25 fastercap` again, and `expected/resul
 the kpex 2.5D column, blessed with kpex 0.6.3. Like the Magic column it pins what the tool
 produces, so the sidewall values carry the ihp-sg13g2 coefficients described above.
 
-`make klayout-pex` with the default `KPEX_ENGINE=magic` is not a further opinion: kpex then drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
+`make klayout-pex` runs the same kpex 2.5D engine through `sak-pex.sh -k`, so it gives the kpex 2.5D column of a single cell. The Magic engine of kpex (`kpex --magic`) is no further opinion: it drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates.
 

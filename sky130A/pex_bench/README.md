@@ -49,7 +49,7 @@ Until then the mode 3 netlists of these ten chains also failed `scripts/check_pe
 | kpex 2.5D | `kpex --2.5D` | a second implementation, reading its coefficients from the kpex tech protobuf |
 | FasterCap | `kpex --fastercap` | a boundary-element field solve on the kpex process stack |
 
-`make klayout-pex` with the default `KPEX_ENGINE=magic` is not a further opinion: kpex then drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
+`make klayout-pex` runs the same kpex 2.5D engine through `sak-pex.sh -k`, so it gives the kpex 2.5D column of a single cell. The Magic engine of kpex (`kpex --magic`) is no further opinion: it drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates.
 

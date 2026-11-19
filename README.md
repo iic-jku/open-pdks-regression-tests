@@ -55,13 +55,13 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
 
 ## Overview
 
-This repository holds DRC, LVS, and PEX regression tests for the open-source PDKs ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, and sky130A. Each PDK folder has one small cell per device, with a layout and a schematic (MOS transistors, resistors, capacitors, diodes, bipolar transistors), plus cells that are broken on purpose. One `make regression` runs all of them through KLayout DRC and LVS, Magic DRC, Magic + Netgen LVS, and parasitic extraction with Magic and kpex.
+This repository holds DRC, LVS, and PEX regression tests for the open-source PDKs ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, and sky130A. Each PDK folder has one small cell per device, with a layout and a schematic (MOS transistors, resistors, capacitors, diodes, bipolar transistors), plus cells that are broken on purpose. One `make regression` runs all of them through KLayout DRC and LVS, Magic DRC, Magic + Netgen LVS, gdscheck DRC, and parasitic extraction with Magic and the kpex 2.5D engine.
 
-What is tested are the tools and the PDK decks, not a design. When a new Magic, KLayout, Netgen, kpex, Xschem, or PDK version changes a verdict, the regression fails and names the cell and the step. A failure caused by a known tool or PDK bug is listed in the folder's `Makefile` and written up in its `KNOWN_ISSUES.md`. The regression accepts it while the bug exists and fails once the step passes, so no entry outlives its bug.
+What is tested are the tools and the PDK decks, not a design. When a new Magic, KLayout, Netgen, gdscheck, kpex, Xschem, or PDK version changes a verdict, the regression fails and names the cell and the step. A failure caused by a known tool or PDK bug is listed in the folder's `Makefile` and written up in its `KNOWN_ISSUES.md`. The regression accepts it while the bug exists and fails once the step passes, so no entry outlives its bug.
 
 Next to the regression, each PDK has a PEX bench: metal-only dummy layouts whose parasitics follow from the extraction deck by hand. They are extracted with Magic and kpex, and the values are checked against the deck arithmetic and the committed expected results.
 
-The [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) run parts of this repository with every nightly build and before every release ([test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh), [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh), [test 35](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/35/test_pex_bench.sh)), and the [CI](#continuous-integration) of this repository runs all four PDKs on every change of `main` on the IIC-OSIC-TOOLS nightly image.
+The [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) run parts of this repository with every nightly build and before every release ([test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh), [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh), [test 35](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/35/test_pex_bench.sh), [test 47](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/47/test_drc_lvs_pex_gf180mcud.sh), [test 48](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/48/test_drc_lvs_pex_sky130a.sh)), and the [CI](#continuous-integration) of this repository runs all four PDKs on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 ```mermaid
 flowchart LR
@@ -70,15 +70,17 @@ flowchart LR
     NET["Xschem netlist<br/>CDL and SPICE"]
     KDRC["KLayout DRC"]
     MDRC["Magic DRC"]
+    GDRC["gdscheck DRC"]
     KLVS["KLayout LVS"]
     MLVS["Magic + Netgen LVS"]
     MPEX["Magic PEX<br/>modes 1, 2, 3"]
-    KPEX["kpex PEX<br/>modes 2, 3"]
+    KPEX["kpex 2.5D PEX<br/>modes 1, 2, 3"]
     CHK["Port and mode checks"]
     V{"Verdict per step against<br/>KNOWN_FAILS, EXPECTED_FAILS,<br/>KNOWN_FALSE_PASSES"}
     SCH --> NET
     GDS --> KDRC
     GDS --> MDRC
+    GDS --> GDRC
     GDS --> KLVS
     GDS --> MLVS
     NET --> KLVS
@@ -89,6 +91,7 @@ flowchart LR
     KPEX --> CHK
     KDRC --> V
     MDRC --> V
+    GDRC --> V
     KLVS --> V
     MLVS --> V
     CHK --> V
@@ -101,8 +104,8 @@ flowchart LR
 | --- | :---: | :---: | --- | --- | --- |
 | ihp-sg13g2 | 42 | 63 | [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml) | 26, 35 | [README](ihp-sg13g2/README.md), [known issues](ihp-sg13g2/KNOWN_ISSUES.md), [expected fails](ihp-sg13g2/EXPECTED_FAILS.md), [findings](ihp-sg13g2/FINDINGS.md), [PEX bench](ihp-sg13g2/pex_bench/README.md) |
 | ihp-sg13cmos5l | 32 | 54 | [![Regression ihp-sg13cmos5l](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml) | 31, 35 | [README](ihp-sg13cmos5l/README.md), [known issues](ihp-sg13cmos5l/KNOWN_ISSUES.md), [expected fails](ihp-sg13cmos5l/EXPECTED_FAILS.md), [findings](ihp-sg13cmos5l/FINDINGS.md), [PEX bench](ihp-sg13cmos5l/pex_bench/README.md) |
-| gf180mcuD | 68 | 50 | [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml) | 35 | [README](gf180mcuD/README.md), [known issues](gf180mcuD/KNOWN_ISSUES.md), [expected fails](gf180mcuD/EXPECTED_FAILS.md), [findings](gf180mcuD/FINDINGS.md), [PEX bench](gf180mcuD/pex_bench/README.md) |
-| sky130A | 79 | 58 | [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml) | 35 | [README](sky130A/README.md), [known issues](sky130A/KNOWN_ISSUES.md), [expected fails](sky130A/EXPECTED_FAILS.md), [findings](sky130A/FINDINGS.md), [PEX bench](sky130A/pex_bench/README.md) |
+| gf180mcuD | 68 | 50 | [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml) | 47, 35 | [README](gf180mcuD/README.md), [known issues](gf180mcuD/KNOWN_ISSUES.md), [expected fails](gf180mcuD/EXPECTED_FAILS.md), [findings](gf180mcuD/FINDINGS.md), [PEX bench](gf180mcuD/pex_bench/README.md) |
+| sky130A | 79 | 58 | [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml) | 48, 35 | [README](sky130A/README.md), [known issues](sky130A/KNOWN_ISSUES.md), [expected fails](sky130A/EXPECTED_FAILS.md), [findings](sky130A/FINDINGS.md), [PEX bench](sky130A/pex_bench/README.md) |
 
 The README of each folder documents every target, the regression rules, and the status of every cell. `KNOWN_ISSUES.md` explains the cause of each known failure and links the upstream issue where there is one, `EXPECTED_FAILS.md` describes what is broken in each cell that is broken on purpose, and `FINDINGS.md` collects the things in the PDK that are easy to get wrong when drawing these devices.
 
@@ -134,10 +137,11 @@ Each folder switches the shell to its own PDK with `sak-pdk`, so the PDK selecte
 | `klayout-lvs` | KLayout (`sak-lvs.sh -k`) | LVS against the Xschem CDL netlist |
 | `magic-drc` | Magic (`sak-drc.sh -m`) | DRC with the full rule set of the Magic tech file |
 | `magic-lvs` | Magic + Netgen (`sak-lvs.sh`) | LVS against the Xschem SPICE netlist |
+| `gdscheck-drc` | gdscheck (`sak-drc.sh -g`) | DRC with the `core` suite of its built-in rule decks (ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD) |
 | `magic-pex1`, `magic-pex2`, `magic-pex3` | Magic (`sak-pex.sh`) | C-decoupled, C-coupled, and full-RC extraction |
-| `klayout-pex2`, `klayout-pex3` | kpex with the Magic engine | C-coupled and full-RC extraction |
+| `klayout-pex1`, `klayout-pex2`, `klayout-pex3` | kpex 2.5D engine (`sak-pex.sh -k`) | C-decoupled, C-coupled, and full-RC extraction |
 
-After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. `klayout-pex1` is left out, because kpex has no C-decoupled mode and would repeat `klayout-pex2`.
+After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. gdscheck 0.2.1 has no rule decks for sky130A, so that folder leaves `gdscheck-drc` out.
 
 
 ## Verdicts
@@ -194,7 +198,7 @@ The `KNOWN_ISSUES.md` of each PDK links the further upstream issues and pull req
 | [`regression-ihp-sg13g2.yml`](.github/workflows/regression-ihp-sg13g2.yml), [`regression-ihp-sg13cmos5l.yml`](.github/workflows/regression-ihp-sg13cmos5l.yml), [`regression-gf180mcuD.yml`](.github/workflows/regression-gf180mcuD.yml), [`regression-sky130A.yml`](.github/workflows/regression-sky130A.yml) | Push and pull request to `main` (documentation-only changes excepted), and manual dispatch | `make regression`, then `make pex-bench`, of one PDK in the IIC-OSIC-TOOLS container |
 | [`license-check.yml`](.github/workflows/license-check.yml) | Push and pull request to `main` | `reuse lint` |
 
-The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, the image of the last night. There is no schedule, because the IIC-OSIC-TOOLS run the `main` branch of this repository against every new nightly image themselves (tests 26, 31, and 35), so the workflows here check the changes made here. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, which also appear as annotations on the run page. The logs, reports, and netlists are kept as an artifact for 30 days.
+The four regression workflows share the job in [`regression-common.yml`](.github/workflows/regression-common.yml). They test `ghcr.io/iic-jku/iic-osic-tools:nightly`, the image of the last night. There is no schedule, because the IIC-OSIC-TOOLS run the `main` branch of this repository against every new nightly image themselves (tests 26, 31, 35, 47, and 48), so the workflows here check the changes made here. A manual dispatch takes any other image, for example a release tag like `hpretl/iic-osic-tools:2026.11`. The job summary lists the tool versions of the image and the summary lines of both runs, which also appear as annotations on the run page. The logs, reports, and netlists are kept as an artifact for 30 days.
 
 
 ## Directory Structure

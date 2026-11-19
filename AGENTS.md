@@ -30,7 +30,9 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 
 - `common.mk` holds every target. A PDK `Makefile` only sets variables and includes it. Change a flow in `common.mk`, never copy a target into a PDK folder.
 - `.DEFAULT_GOAL := help`, and `make help` lists every target from its `## ` comment. Give every new target a `## ` comment.
-- Variables are set with `?=` and overridden on the command line, for example `CELL=<cell>`, `EXT_MODE=<1|2|3>`, `DRC_LEVEL=<precheck|macro|regular>`, `KPEX_ENGINE=<magic|2.5D|fastercap>`, `STEPS=<pattern>`, `LAYOUT_CELLS="<cell> ..."`.
+- Variables are set with `?=` and overridden on the command line, for example `CELL=<cell>`, `EXT_MODE=<1|2|3>`, `DRC_LEVEL=<precheck|macro|regular>`, `DRC_JOBS=<n>`, `GDSCHECK_SUITE=<suite>`, `KPEX_REDUCE=<none|floating|ticer>`, `PEX_SUB_NET=<net>`, `STEPS=<pattern>`, `LAYOUT_CELLS="<cell> ..."`. `SAK_DRC`, `SAK_LVS` and `SAK_PEX` point every step at another copy of a sak script, for example the one of an open IIC-OSIC-TOOLS pull request.
+- The DRC engines are KLayout (`klayout-drc`, the sign-off deck), Magic (`magic-drc`) and gdscheck (`gdscheck-drc`). gdscheck has rule decks for ihp-sg13g2, ihp-sg13cmos5l and gf180mcuD only, so `sky130A/Makefile` sets `GDSCHECK_STEP` empty and its regression leaves the step out.
+- `klayout-pex` runs the kpex 2.5D engine through `sak-pex.sh -k` and passes no schematic (`-S`): kpex's device check would fail the full-RC step of every cell broken on purpose, and PEX steps may not be in `EXPECTED_FAILS`.
 - `make regression` discovers the cells from `layout/*.gds`. A new cell needs a GDS and a schematic of the same name, nothing else.
 
 ## Regression lists
@@ -50,14 +52,14 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 ## CI
 
 - `.github/workflows/license-check.yml` runs `reuse lint` on pushes and pull requests to `main`.
-- `.github/workflows/regression-<pdk>.yml` (one per PDK, for one badge each) call `regression-common.yml`, which runs `make regression` and then `make pex-bench` of that PDK in `ghcr.io/iic-jku/iic-osic-tools:nightly`. They run on pushes and pull requests to `main` that touch more than documentation (`**.md`, `doc/**`), and on manual dispatch with an `image` input. There is no schedule: the IIC-OSIC-TOOLS test every nightly image against `main` with tests 26, 31, and 35, so a tool regression shows up there, and the lists here are updated in a commit that these workflows then check.
+- `.github/workflows/regression-<pdk>.yml` (one per PDK, for one badge each) call `regression-common.yml`, which runs `make regression` and then `make pex-bench` of that PDK in `ghcr.io/iic-jku/iic-osic-tools:nightly`. They run on pushes and pull requests to `main` that touch more than documentation (`**.md`, `doc/**`), and on manual dispatch with an `image` input. There is no schedule: the IIC-OSIC-TOOLS test every nightly image against `main` with tests 26, 31, 35, 47, and 48, so a tool regression shows up there, and the lists here are updated in a commit that these workflows then check.
 - A new PDK folder needs its own `regression-<pdk>.yml` and its badge in the root `README.md` (badge row and PDK table).
 
 ## Traps
 
 - Generated output (`<pdk>/netlist/`, `<pdk>/verification/`, `pex_bench/netlist/`, `pex_bench/runs/`) is git-ignored. `make clean` and `make -C <pdk>/pex_bench pex-bench-clean` delete it.
 - The root `README.md` states the number of cells and bench layouts per PDK. Update it when adding or removing a cell.
-- The IHP folders are also run by IIC-OSIC-TOOLS tests 26 and 31, and all bench folders by test 35. Renaming a target or a folder breaks those tests.
+- The PDK folders are also run by IIC-OSIC-TOOLS tests 26 (ihp-sg13g2), 31 (ihp-sg13cmos5l), 47 (gf180mcuD) and 48 (sky130A), and all bench folders by test 35. Renaming a target or a folder breaks those tests.
 
 ## License headers
 
