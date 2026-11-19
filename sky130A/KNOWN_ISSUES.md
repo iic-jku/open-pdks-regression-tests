@@ -51,9 +51,9 @@ The cell is the PDK's own fixed photodiode, placed by the `photodiode` PCell: a 
 
 ## Magic full-RC extraction crashes on `sky130_pnp_05v5_W3p40L3p40`
 
-`KNOWN_FAILS` entries: `sky130_pnp_05v5_W3p40L3p40:magic-pex3`, `sky130_pnp_05v5_W3p40L3p40:klayout-pex3`
+`KNOWN_FAILS` entry: `sky130_pnp_05v5_W3p40L3p40:magic-pex3`
 
-`make magic-pex EXT_MODE=3` on the PDK's fixed 3.4 x 3.4 um PNP ends in a segmentation fault of Magic during the resistance extraction (`Processing cell sky130_pnp_05v5_W3p40L3p40_pex for resistance extraction.`, `Extracting C`, `Segmentation fault (core dumped)`), and no netlist is written. `klayout-pex3`, kpex driving Magic in RC mode, fails the same way: `MAGIC failed with status code -11`. The C-decoupled and C-coupled extractions pass, and so does the full-RC extraction of the 0.68 x 0.68 um PNP.
+`make magic-pex EXT_MODE=3` on the PDK's fixed 3.4 x 3.4 um PNP ends in a segmentation fault of Magic during the resistance extraction (`Processing cell sky130_pnp_05v5_W3p40L3p40_pex for resistance extraction.`, `Extracting C`, `Segmentation fault (core dumped)`), and no netlist is written. The C-decoupled and C-coupled extractions pass, and so do the full-RC extraction of the 0.68 x 0.68 um PNP and the kpex 2.5D engine (`klayout-pex3`) on this cell.
 
 The crash is in Magic's resistance extraction. The core dump of Magic 8.3.685 (IIC-OSIC-TOOLS 2026.10), with the frame addresses resolved by `addr2line` on `tclmagic.so`, ends in `ResAddTerminalPlumbing`, called from `ResAddDevPlumbing`, `ResExtractNet`, `ResProcessNode`, `ResCheckExtNodes` and `ExtResisForDef`. The IIC-OSIC-TOOLS nightly of 2026-10-22 crashes on the same cell. The open Magic issues on `extresist` crashes name other functions: [magic#353](https://github.com/RTimothyEdwards/magic/issues/353) `ResNewSDDevice`, [magic#573](https://github.com/RTimothyEdwards/magic/issues/573) `ResScrunchNet`.
 
@@ -102,14 +102,14 @@ Magic's GDS import ignores the drawn NPC (`ignore NPC`, line 2356), and Magic wr
 
 ## Full-RC PEX leaves device terminals unconnected
 
-`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_short1:klayout-pex3`, `sky130_photodiode:magic-pex3`, `sky130_photodiode:klayout-pex3`
+`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_photodiode:magic-pex3`
 
-Full-RC extraction (`magic-pex3`, and `klayout-pex3` with kpex driving Magic) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
+Full-RC extraction with Magic (`magic-pex3`) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
 
 - `sky130_short1`: the sources of both NMOS are nodes of their own, `X0 VDD VDD VDD.t10 VDD.t9 sky130_fd_pr__nfet_g5v0d10v5 ... as=0 ps=0` and `X1 VDD VDD VDD.t1 VDD.t0 sky130_fd_pr__nfet_01v8 ...`, and `VDD.t10` and `VDD.t1` appear in no other element. In the C-coupled netlist the sources are on `VDD`. The single `_tap` cells of the same transistors do not show it.
 - `sky130_photodiode`: the anode of the extracted diode is the node `w_n338_n339#` (`D0 w_n338_n339# C ...`), which no resistor connects to the pin A; the C-coupled netlist has `D0 A C`.
 
-Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element; `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here.
+Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element; `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here. The kpex 2.5D engine keeps the sources of `sky130_short1` on VDD, and stops on the photodiode before any extraction (see "kpex has no model mapping for the photodiode").
 
 ## Magic + Netgen LVS: `VM` of the varactors is compared
 
@@ -135,6 +135,12 @@ The deck also extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: thei
 - **Varactors.** Both sides have the device with the same terminals, but the schematic one has no value: the CDL line `XC1 C0 C1 B sky130_fd_pr__cap_var_hvt W=1 L=0.18` becomes a device with `C=0 A=0 P=0`, the extraction has `A=1.8e+11 P=2.36e+06`.
 - **VPP capacitors.** The CDL line carries no value (`XC1 C0 C1 B sky130_fd_pr__cap_vpp_04p4x04p6_m1m2_shieldl1`), the schematic device gets `C=0`, the extracted one `C=2e-16`. The deck extracts `cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5` with a four-terminal extractor (`VPP4Extractor`, line 2544), and the extracted device has a fourth terminal on a net of its own, against three terminals in the schematic.
 
+## kpex stops on the varactors
+
+`KNOWN_FAILS` entries: `sky130_cap_var_lvt:klayout-pex1`, `sky130_cap_var_lvt:klayout-pex2`, `sky130_cap_var_lvt:klayout-pex3`, `sky130_cap_var_hvt:klayout-pex1`, `sky130_cap_var_hvt:klayout-pex2`, `sky130_cap_var_hvt:klayout-pex3`, `sky130_cap_var_hvt_varac5:klayout-pex1`, `sky130_cap_var_hvt_varac5:klayout-pex2`, `sky130_cap_var_hvt_varac5:klayout-pex3`
+
+`klayout-pex` ends in every mode with `Can't find a schematic counterpart for the top cell sky130_cap_var_hvt - use 'same_circuit' to establish a correspondence` from the LVS step of kpex 0.10.0 (IIC-OSIC-TOOLS nightly of 2026-11-19), which it runs with its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) against a dummy schematic, since the target passes none. The deck extracts the varactor, but inside the subcircuit of the PCell: the layout netlist reads `X$1 C1 C0 B cap_var` in the top cell and the device `C$1 ... sky130_fd_pr__cap_var_hvt` in the subcircuit `cap_var`, so the top cell holds no device and the LVS finds no circuit to match it with. The MIM capacitors and the MOS cells, whose devices land in the top circuit, pass, and Magic extracts the varactors in all three modes.
+
 ## KLayout LVS joins the isolated P-well of `sky130_res_iso_pw` to the substrate
 
 `KNOWN_FAILS` entry: `sky130_res_iso_pw:klayout-lvs`
@@ -143,11 +149,17 @@ The deck also extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: thei
 
 The same short hits `sky130_dnwell_nmos` and `sky130_dnwell_inv`, where it does not change the result: their isolated P-well, the NMOS bulk and source, is extracted as one net with the substrate ring, `S,VSS`, and KLayout still reports a match. The schematic VSS pin connects to no device, so it has no partner in the comparison, and the layout net `S,VSS` is matched to the schematic net S. The layouts are right and the step passes, but on a shorted netlist.
 
-## KLayout LVS stops on `sky130_npn_11v0_W1p00L1p00`
+## KLayout LVS and kpex stop on `sky130_npn_11v0_W1p00L1p00`
 
-`KNOWN_FAILS` entry: `sky130_npn_11v0_W1p00L1p00:klayout-lvs`
+`KNOWN_FAILS` entries: `sky130_npn_11v0_W1p00L1p00:klayout-lvs`, `sky130_npn_11v0_W1p00L1p00:klayout-pex1`, `sky130_npn_11v0_W1p00L1p00:klayout-pex2`, `sky130_npn_11v0_W1p00L1p00:klayout-pex3`
 
-The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5.
+The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. kpex 0.10.0 runs its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) in its LVS step and stops with the same error in every mode, on KLayout 0.30.13 as well.
+
+## kpex has no model mapping for the photodiode
+
+`KNOWN_FAILS` entries: `sky130_photodiode:klayout-pex1`, `sky130_photodiode:klayout-pex2`, `sky130_photodiode:klayout-pex3`
+
+The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its sky130A tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
 
 ## KLayout LVS has no 16 V MOS
 

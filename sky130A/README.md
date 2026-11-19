@@ -2,7 +2,7 @@
 
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the sky130A Open-PDK, using both KLayout and Magic + Netgen. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the sky130A Open-PDK, with KLayout, Magic + Netgen and kpex. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 Things in this PDK that are easy to get wrong when drawing these devices are collected in [FINDINGS.md](FINDINGS.md), the causes of the known failures in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), and the cells broken on purpose in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 
@@ -18,9 +18,22 @@ make
 make help
 ```
 
+## PDK Selection
+
+Every target except `help` needs the sky130A PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh sky130A` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to sky130A` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+
+## Open the Design Files
+
+Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK selected above:
+
+```sh
+make open
+make open OPEN_ARGS=--all     # also the generated netlists and reports
+```
+
 ## Design Rule Check (DRC)
 
-Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`.
+Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`. There is no gdscheck flow here: gdscheck 0.2.1 has no rule decks for sky130A, so the [Makefile](Makefile) leaves the `gdscheck-drc` step out of the regression, and `make gdscheck-drc` stops with `gdscheck DRC for sky130A not yet supported`.
 
 KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus separate pin/label, zero-area and density checks depending on `DRC_LEVEL` (`sak-drc.sh -l`). It is ignored by `magic-drc`, which always runs the full rule set of the PDK's Magic tech file:
 
@@ -32,6 +45,8 @@ KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus
 | Zero-area | – | ✓ | ✓ |
 | Density (`met_min_ca_density.lydrc`) | – | – | ✓ |
 
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) caps how many of these decks run at once, by default 4 (or the CPU count if lower). On cells this small, more jobs change nothing.
+
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
 ```sh
@@ -40,7 +55,7 @@ make klayout-drc CELL=sky130_nfet_01v8_tap
 make klayout-drc CELL=sky130_nfet_01v8_tap DRC_LEVEL=regular
 ```
 
-**Magic DRC** runs a hierarchical Magic DRC (`sak-drc.sh -m`):
+**Magic DRC** runs Magic's full DRC on the layout (`sak-drc.sh -m`), hierarchically and without flattening any cell:
 
 ```sh
 make magic-drc
@@ -83,15 +98,24 @@ make magic-lvs CELL=sky130_nfet_01v8_tap
 
 Runs parasitic extraction on the GDS layout in `layout/`. The extracted SPICE netlist is written to `netlist/pex/`, as `<CELL>_klayout_pex_<EXT_MODE>.spice` (`klayout-pex`) or `<CELL>_magic_pex_<EXT_MODE>.spice` (`magic-pex`).
 
-The `EXT_MODE` parameter selects the extraction mode: `1` = C-decoupled (default), `2` = C-coupled, `3` = full-RC. For `klayout-pex`, `EXT_MODE=1` is not yet supported by kpex and falls back to `EXT_MODE=2` with a warning.
+The `EXT_MODE` parameter selects the extraction mode: `1` = C-decoupled (default), `2` = C-coupled, `3` = full-RC. For `klayout-pex`, `EXT_MODE=1` runs kpex in its mode `C`, which replaces each coupling capacitance by its full value from both nets to the substrate.
 
-After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
+After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
 
-**KLayout PEX** uses `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_ENGINE`, `KPEX_AMAX`, `KPEX_TOL` and the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md).
+**KLayout PEX** uses `sak-pex.sh -k`, the 2.5D engine of `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`), `PEX_SUB_NET` (the net the substrate port `sky130_gnd` is tied to, empty by default to keep the port) and the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there `klayout-pex` passes no schematic to kpex.
 
 ```sh
 make magic-pex CELL=sky130_nfet_01v8_tap EXT_MODE=3
-make klayout-pex CELL=sky130_nfet_01v8_tap EXT_MODE=2 KPEX_ENGINE=2.5D
+make klayout-pex CELL=sky130_nfet_01v8_tap EXT_MODE=2
+```
+
+## Verify a Cell
+
+Runs DRC, LVS and PEX of one cell in sequence with KLayout (`klayout-drc`, `klayout-lvs`, `klayout-pex`) or with Magic (`magic-drc`, `magic-lvs`, `magic-pex`), each step only if the one before it passed. `make regression` runs every step instead and judges the outcome against the lists:
+
+```sh
+make klayout-verify CELL=sky130_nfet_01v8_tap
+make magic-verify CELL=sky130_nfet_01v8_tap
 ```
 
 ## PEX Bench
@@ -111,7 +135,7 @@ The `regression` target runs the DRC / LVS / PEX toolchain over **every** cell i
 make regression
 ```
 
-It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC), and `klayout-lvs`: the default of `../common.mk`. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
+It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `klayout-lvs`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex1` (C-decoupled), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC): the default of `../common.mk` without `gdscheck-drc`, which the [Makefile](Makefile) leaves out because gdscheck 0.2.1 has no rule decks for sky130A. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
 
 ```sh
 make regression LAYOUT_CELLS="sky130_nfet_01v8_tap sky130_res_generic_po" REGRESSION_STEPS="klayout-drc magic-drc magic-lvs"
@@ -123,7 +147,7 @@ make regression LAYOUT_CELLS="sky130_nfet_01v8_tap sky130_res_generic_po" REGRES
 make regression STEPS=%-lvs
 ```
 
-A run restricted by `LAYOUT_CELLS`, `STEPS` or `REGRESSION_STEPS` prints a `Partial run:` line with the cells and steps it covers, at the start and again in the summary.
+A run restricted by `LAYOUT_CELLS`, `STEPS` or `REGRESSION_STEPS` prints a `Partial run:` line with the cells and steps it covers, at the start and again in the summary. `SAK_DRC=<path>`, `SAK_LVS=<path>` and `SAK_PEX=<path>` run another copy of `sak-drc.sh`, `sak-lvs.sh` or `sak-pex.sh` in every step, for example the one of an open IIC-OSIC-TOOLS pull request.
 
 Each cell prints a `PASSED` or `FAILED` line, or one line per listed outcome (see below), and the run ends with a summary. `make regression` exits with a non-zero status when a step fails that is not listed, or a listed step does not end the way its list says, so it can be used directly as a CI gate.
 
@@ -153,6 +177,14 @@ When a tool misses the error in a cell that is broken on purpose because of a bu
 
 A step can be covered by one of the three lists only. [../common.mk](../common.mk) has the entry syntax and every outcome.
 
+## Clean
+
+`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`, which has its own `make -C pex_bench pex-bench-clean`:
+
+```sh
+make clean
+```
+
 ## Supported Cells / Files
 
 Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the current IIC-OSIC-TOOLS image; the lists in the `Makefile` are the reference.
@@ -177,8 +209,8 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Capacitors**
 
 - `sky130_cap_mim_m3_1`, `sky130_cap_mim_m3_2` (KNOWN FAIL: KLayout LVS)
-- `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS)
-- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC; KNOWN FAIL: KLayout LVS, Magic + Netgen LVS) - Nwell of the PCell (`varac.5`)
+- `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC; KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX) - Nwell of the PCell (`varac.5`)
 - `sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5`, `sky130_cap_vpp_11p5x11p7_m1m2_noshield`, `sky130_cap_vpp_08p6x07p8_m1m2_shieldl1`, `sky130_cap_vpp_04p4x04p6_m1m2_shieldl1` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS)
 
 **Resistors**
@@ -195,19 +227,19 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 - `sky130_diode_pd2nw_05v5`, `_11v0` (KNOWN FAIL: KLayout LVS)
 - `sky130_diode_pd2nw_05v5_lvt`, `sky130_diode_pd2nw_05v5_hvt` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS)
 - `sky130_diode_pd2nw_05v5_psd8` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC, KNOWN FAIL: KLayout LVS) - PSDM of the PCell over the cathode ring (`n/psd.8`)
-- `sky130_photodiode` (KNOWN FAIL: KLayout DRC, Magic DRC, Magic + Netgen LVS, full-RC PEX)
+- `sky130_photodiode` (KNOWN FAIL: KLayout DRC, Magic DRC, Magic + Netgen LVS, Magic full-RC PEX, kpex PEX)
 
 **Bipolar transistors**
 
 - `sky130_npn_05v5_W1p00L1p00`, `sky130_npn_05v5_W1p00L2p00` (PASS)
-- `sky130_npn_11v0_W1p00L1p00` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS)
+- `sky130_npn_11v0_W1p00L1p00` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS, kpex PEX)
 - `sky130_pnp_05v5_W0p68L0p68` (PASS)
-- `sky130_pnp_05v5_W3p40L3p40` (KNOWN FAIL: full-RC PEX, `magic-pex3` and `klayout-pex3`)
+- `sky130_pnp_05v5_W3p40L3p40` (KNOWN FAIL: Magic full-RC PEX, `magic-pex3`)
 
 **Combined test cells**
 
 - `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS) - 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (KNOWN FAIL: full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_short1` (KNOWN FAIL: Magic full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell
 
