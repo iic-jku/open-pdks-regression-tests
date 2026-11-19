@@ -6,9 +6,9 @@ Unlike [KNOWN_ISSUES.md](KNOWN_ISSUES.md), which shrinks as bugs get fixed, this
 
 ## `gf180_nfet_06v0_nvt_ring_nat`: NAT over the guard ring
 
-`EXPECTED_FAILS` entry: `gf180_nfet_06v0_nvt_ring_nat:klayout-drc`
+`EXPECTED_FAILS` entries: `gf180_nfet_06v0_nvt_ring_nat:klayout-drc`, `gf180_nfet_06v0_nvt_ring_nat:gdscheck-drc`
 
-`gf180_nfet_06v0_nvt_ring` with the NAT layer drawn 0.2 um around all of its COMP, so the guard ring lies under the same NAT shape as the native transistor. NAT.6 forbids that ("Two or more COMPs if connected to different potential are not allowed under same NAT layer"), see [FINDINGS.md](FINDINGS.md) ("Guard Ring option of the gdsfactory PCells"). The NAT stays inside the Dualgate, which reaches 0.24 um beyond the ring, so NAT.8 does not fire. KLayout reports `NAT.6` twice. Magic DRC misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). The circuit is unchanged, both LVS steps pass.
+`gf180_nfet_06v0_nvt_ring` with the NAT layer drawn 0.2 um around all of its COMP, so the guard ring lies under the same NAT shape as the native transistor. NAT.6 forbids that ("Two or more COMPs if connected to different potential are not allowed under same NAT layer"), see [FINDINGS.md](FINDINGS.md) ("Guard Ring option of the gdsfactory PCells"). The NAT stays inside the Dualgate, which reaches 0.24 um beyond the ring, so NAT.8 does not fire. KLayout reports `NAT.6` twice, gdscheck once ("nat6_comp regions at 2 different potentials lie under this nat"). Magic DRC misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). The circuit is unchanged, both LVS steps pass.
 
 ## `gf180_cap_mim_2f0fF_via3`: MIM bottom plate connected through Via3
 
