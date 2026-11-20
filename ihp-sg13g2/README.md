@@ -2,7 +2,7 @@
 
 [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the ihp-sg13g2 Open-PDK, with KLayout, Magic + Netgen, gdscheck and kpex. The IIC-OSIC-TOOLS run it with every nightly build and before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh). The [regression-ihp-sg13g2.yml](../.github/workflows/regression-ihp-sg13g2.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the `ihp-sg13g2` Open-PDK, with KLayout, Magic + Netgen, gdscheck and kpex. The IIC-OSIC-TOOLS run it with every nightly build and before every release, as [test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh). The [regression-ihp-sg13g2.yml](../.github/workflows/regression-ihp-sg13g2.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 ## Show Available Targets
 
@@ -15,7 +15,7 @@ make help
 
 ## PDK Selection
 
-Every target except `help` needs the ihp-sg13g2 PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh ihp-sg13g2` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to ihp-sg13g2` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help` needs the `ihp-sg13g2` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh ihp-sg13g2` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to ihp-sg13g2` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
 
 ## Open the Design Files
 
@@ -139,7 +139,7 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: both targets set
 
 After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare. The extracted values themselves are checked by the PEX bench.
 
-**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. It reads the same coefficients as the Magic deck (`ihp-sg13g2_tech.pb.json`), so where it disagrees with Magic exactly one of the two has a bug, which the [PEX bench](#pex-bench) is there to find:
+**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. It reads its coefficients from its own `ihp-sg13g2_tech.pb.json`, which is meant to match the Magic deck, so where the two disagree, one of them has a bug or a different coefficient, which the [PEX bench](#pex-bench) is there to find:
 
 ```sh
 make klayout-pex
@@ -329,7 +329,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **Capacitors**
 
 - `sg13_cmim` (PASS)
-- `sg13_rf_cmim` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_rf_cmim` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_cmomi` (KNOWN FAIL: Magic + Netgen LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_cmomf` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
