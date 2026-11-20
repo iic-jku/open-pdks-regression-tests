@@ -6,8 +6,8 @@
 name: Regression sky130A
 
 on:
-  # No schedule: the IIC-OSIC-TOOLS test every nightly image against main themselves (tests 26, 31,
-  # and 35), so this workflow checks the changes made here. Documentation changes need no run.
+  # No schedule: the IIC-OSIC-TOOLS test every nightly image against main themselves (tests 26, 31, 35,
+  # 47, and 48), so this workflow checks the changes made here. Documentation changes need no run.
   push:
     branches:
       - 'main'
