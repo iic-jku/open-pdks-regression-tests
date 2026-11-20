@@ -5,7 +5,7 @@
 [![Regression ihp-sg13cmos5l](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml)
 [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml)
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
-[![License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml/badge.svg)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml)
+[![License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml)
 
 (c) 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 
@@ -49,13 +49,13 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
   </tr>
 </table>
 <p align="center">
-  <em>The combined test cell of each PDK places several of its device cells as instances in one layout. Rendered with <code>sak-render.py</code>.</em>
+  <em>The combined test cell of each PDK puts several of its device cells into one layout. Rendered with <code>sak-render.py</code>.</em>
 </p>
 
 
 ## Overview
 
-This repository holds DRC, LVS, and PEX regression tests for the open-source PDKs ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, and sky130A. Each PDK folder has one small cell per device, with a layout and a schematic (MOS transistors, resistors, capacitors, diodes, bipolar transistors), plus cells that are broken on purpose. One `make regression` runs all of them through KLayout DRC and LVS, Magic DRC, Magic + Netgen LVS, gdscheck DRC, and parasitic extraction with Magic and the kpex 2.5D engine.
+This repository holds DRC, LVS, and PEX regression tests for the open-source PDKs `ihp-sg13g2`, `ihp-sg13cmos5l`, `gf180mcuD`, and `sky130A`. Each PDK folder has one small cell per device, with a layout and a schematic (MOS transistors, resistors, capacitors, diodes, bipolar transistors), plus cells that are broken on purpose. One `make regression` runs all of them through KLayout DRC and LVS, Magic DRC, Magic + Netgen LVS, gdscheck DRC, and parasitic extraction with Magic and the kpex 2.5D engine.
 
 What is tested are the tools and the PDK decks, not a design. When a new Magic, KLayout, Netgen, gdscheck, kpex, Xschem, or PDK version changes a verdict, the regression fails and names the cell and the step. A failure caused by a known tool or PDK bug is listed in the folder's `Makefile` and written up in its `KNOWN_ISSUES.md`. The regression accepts it while the bug exists and fails once the step passes, so no entry outlives its bug.
 
@@ -102,10 +102,10 @@ flowchart LR
 
 | PDK | Cells | PEX bench layouts | CI | IIC-OSIC-TOOLS test | Documentation |
 | --- | :---: | :---: | --- | --- | --- |
-| ihp-sg13g2 | 42 | 63 | [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml) | 26, 35 | [README](ihp-sg13g2/README.md), [known issues](ihp-sg13g2/KNOWN_ISSUES.md), [expected fails](ihp-sg13g2/EXPECTED_FAILS.md), [findings](ihp-sg13g2/FINDINGS.md), [PEX bench](ihp-sg13g2/pex_bench/README.md) |
-| ihp-sg13cmos5l | 32 | 54 | [![Regression ihp-sg13cmos5l](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml) | 31, 35 | [README](ihp-sg13cmos5l/README.md), [known issues](ihp-sg13cmos5l/KNOWN_ISSUES.md), [expected fails](ihp-sg13cmos5l/EXPECTED_FAILS.md), [findings](ihp-sg13cmos5l/FINDINGS.md), [PEX bench](ihp-sg13cmos5l/pex_bench/README.md) |
-| gf180mcuD | 68 | 50 | [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml) | 47, 35 | [README](gf180mcuD/README.md), [known issues](gf180mcuD/KNOWN_ISSUES.md), [expected fails](gf180mcuD/EXPECTED_FAILS.md), [findings](gf180mcuD/FINDINGS.md), [PEX bench](gf180mcuD/pex_bench/README.md) |
-| sky130A | 79 | 58 | [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml) | 48, 35 | [README](sky130A/README.md), [known issues](sky130A/KNOWN_ISSUES.md), [expected fails](sky130A/EXPECTED_FAILS.md), [findings](sky130A/FINDINGS.md), [PEX bench](sky130A/pex_bench/README.md) |
+| `ihp-sg13g2` | 42 | 63 | [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml) | 26, 35 | [README](ihp-sg13g2/README.md), [known issues](ihp-sg13g2/KNOWN_ISSUES.md), [expected fails](ihp-sg13g2/EXPECTED_FAILS.md), [findings](ihp-sg13g2/FINDINGS.md), [PEX bench](ihp-sg13g2/pex_bench/README.md) |
+| `ihp-sg13cmos5l` | 32 | 54 | [![Regression ihp-sg13cmos5l](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13cmos5l.yml) | 31, 35 | [README](ihp-sg13cmos5l/README.md), [known issues](ihp-sg13cmos5l/KNOWN_ISSUES.md), [expected fails](ihp-sg13cmos5l/EXPECTED_FAILS.md), [findings](ihp-sg13cmos5l/FINDINGS.md), [PEX bench](ihp-sg13cmos5l/pex_bench/README.md) |
+| `gf180mcuD` | 68 | 50 | [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml) | 47, 35 | [README](gf180mcuD/README.md), [known issues](gf180mcuD/KNOWN_ISSUES.md), [expected fails](gf180mcuD/EXPECTED_FAILS.md), [findings](gf180mcuD/FINDINGS.md), [PEX bench](gf180mcuD/pex_bench/README.md) |
+| `sky130A` | 79 | 58 | [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml) | 48, 35 | [README](sky130A/README.md), [known issues](sky130A/KNOWN_ISSUES.md), [expected fails](sky130A/EXPECTED_FAILS.md), [findings](sky130A/FINDINGS.md), [PEX bench](sky130A/pex_bench/README.md) |
 
 The README of each folder documents every target, the regression rules, and the status of every cell. `KNOWN_ISSUES.md` explains the cause of each known failure and links the upstream issue where there is one, `EXPECTED_FAILS.md` describes what is broken in each cell that is broken on purpose, and `FINDINGS.md` collects the things in the PDK that are easy to get wrong when drawing these devices.
 
@@ -137,11 +137,11 @@ Each folder switches the shell to its own PDK with `sak-pdk`, so the PDK selecte
 | `klayout-lvs` | KLayout (`sak-lvs.sh -k`) | LVS against the Xschem CDL netlist |
 | `magic-drc` | Magic (`sak-drc.sh -m`) | DRC with the full rule set of the Magic tech file |
 | `magic-lvs` | Magic + Netgen (`sak-lvs.sh`) | LVS against the Xschem SPICE netlist |
-| `gdscheck-drc` | gdscheck (`sak-drc.sh -g`) | DRC with the `core` suite of its built-in rule decks (ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD) |
+| `gdscheck-drc` | gdscheck (`sak-drc.sh -g`) | DRC with the `core` suite of its built-in rule decks (`ihp-sg13g2`, `ihp-sg13cmos5l`, `gf180mcuD`) |
 | `magic-pex1`, `magic-pex2`, `magic-pex3` | Magic (`sak-pex.sh`) | C-decoupled, C-coupled, and full-RC extraction |
 | `klayout-pex1`, `klayout-pex2`, `klayout-pex3` | kpex 2.5D engine (`sak-pex.sh -k`) | C-decoupled, C-coupled, and full-RC extraction |
 
-After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. gdscheck 0.2.1 has no rule decks for sky130A, so that folder leaves `gdscheck-drc` out.
+After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. gdscheck 0.2.1 has no rule decks for `sky130A`, so that folder leaves `gdscheck-drc` out.
 
 
 ## Verdicts
@@ -184,8 +184,8 @@ Issues filed while building these tests:
 
 | Project | Issues |
 | --- | --- |
-| [Magic](https://github.com/RTimothyEdwards/magic) | [#532](https://github.com/RTimothyEdwards/magic/issues/532) full-RC crash on an ihp-sg13g2 layout, [#552](https://github.com/RTimothyEdwards/magic/issues/552) LVS and PEX of the IHP MOM capacitors, [#557](https://github.com/RTimothyEdwards/magic/issues/557) five parasitic extraction defects on ihp-sg13g2, with the PEX bench as the reproducer |
-| [klayout-pex](https://github.com/iic-jku/klayout-pex) | [#156](https://github.com/iic-jku/klayout-pex/issues/156) and [#197](https://github.com/iic-jku/klayout-pex/issues/197) capacitance test patterns for gf180mcuD and ihp-sg13g2, [#198](https://github.com/iic-jku/klayout-pex/issues/198) `--mesh` ignored and duplicated resistors in RC mode |
+| [Magic](https://github.com/RTimothyEdwards/magic) | [#532](https://github.com/RTimothyEdwards/magic/issues/532) full-RC crash on an `ihp-sg13g2` layout, [#552](https://github.com/RTimothyEdwards/magic/issues/552) LVS and PEX of the IHP MOM capacitors, [#557](https://github.com/RTimothyEdwards/magic/issues/557) five parasitic extraction defects on `ihp-sg13g2`, with the PEX bench as the reproducer |
+| [klayout-pex](https://github.com/iic-jku/klayout-pex) | [#156](https://github.com/iic-jku/klayout-pex/issues/156) and [#197](https://github.com/iic-jku/klayout-pex/issues/197) capacitance test patterns for `gf180mcuD` and `ihp-sg13g2`, [#198](https://github.com/iic-jku/klayout-pex/issues/198) `--mesh` ignored and duplicated resistors in RC mode |
 | [Xschem](https://github.com/StefanSchippers/xschem) | [#465](https://github.com/StefanSchippers/xschem/issues/465) rounding precision of device properties in LVS netlists |
 
 The `KNOWN_ISSUES.md` of each PDK links the further upstream issues and pull requests that its known failures depend on, in Magic, open_pdks, the gf180mcu libraries, and the IHP Open PDK.

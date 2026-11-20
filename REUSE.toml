@@ -1,8 +1,7 @@
 version = 1
 
-# Files that cannot carry an SPDX header (documentation, schematics, layouts, expected results,
-# reports, figures) are annotated here. Scripts, Makefiles and workflows carry their own SPDX
-# headers, so the license check still catches a new script without licensing information.
+# Files that cannot carry an SPDX header (documentation, schematics, layouts, expected results, reports, figures) are annotated here.
+# Scripts, Makefiles and workflows carry their own SPDX headers, so the license check still catches a new script without licensing information.
 
 [[annotations]]
 path = [".designinit", ".gitattributes", ".gitignore", "AGENTS.md", "CITATION.cff", "README.md"]

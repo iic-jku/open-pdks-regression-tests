@@ -176,8 +176,8 @@ MAGIC_EXT_SPC ?= $(CELL).ext.spc
 ALL_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 LAYOUT_CELLS := $(ALL_CELLS)
 
-# gdscheck has rule decks for ihp-sg13g2, ihp-sg13cmos5l and gf180mcuD, not for sky130A. The
-# sky130A Makefile sets this empty, so its regression leaves the step out.
+# gdscheck has rule decks for ihp-sg13g2, ihp-sg13cmos5l and gf180mcuD, not for sky130A.
+# The sky130A Makefile sets this empty, so its regression leaves the step out.
 GDSCHECK_STEP ?= gdscheck-drc
 
 # Steps executed by regression for every cell, in this order.
@@ -437,9 +437,8 @@ magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make mag
 # PEX Targets
 klayout-pex: check-pdk ## Run Parasitic Extraction with the KPEX 2.5D engine of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_REDUCE=<none|floating|ticer>] [PEX_SUB_NET=<net>])
 	mkdir -p $(NET_PEX_DIR)
-	@# No schematic for kpex (sak-pex.sh -S): its device check fails the full-RC extraction of
-	@# every cell whose layout and schematic differ, which is what the LVS steps report. A PEX
-	@# step checks the extraction, not the cell.
+	@# No schematic for kpex (sak-pex.sh -S): its device check fails the full-RC extraction of every cell whose layout and schematic differ, which is what the LVS steps report.
+	@# A PEX step checks the extraction, not the cell.
 	$(SAK_PEX) -d -k -m $(EXT_MODE) -n $(CELL)_pex -R $(KPEX_REDUCE) -g "$(PEX_SUB_NET)" -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
 	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
