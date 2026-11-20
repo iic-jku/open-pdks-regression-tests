@@ -318,7 +318,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 **High-voltage MOS transistors**
 
 - `sg13_hv_nmos_tap` (PASS)
-- `sg13_hv_pmos_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sg13_hv_pmos_tap` (PASS)
 - `sg13_hv_nmos_ring_dev` (PASS)
 - `sg13_hv_nmos_ring_pcell` (PASS)
 - `sg13_hv_pmos_ring_dev` (PASS)

@@ -2,7 +2,7 @@
 
 Every entry of `KNOWN_FAILS` and `KNOWN_FALSE_PASSES` in the [Makefile](Makefile) has a section here. Remove both once the tool is fixed: the regression then reports the step as `UNEXPECTED PASS` (a known fail that passes) or `UNEXPECTED FAIL` (a known false pass that catches the error now) and fails.
 
-KLayout DRC and LVS and Magic DRC pass on every cell that is not broken on purpose. Two `KNOWN_FAILS` entries are the same Magic + Netgen LVS issue, the other two are gdscheck findings. The `KNOWN_FALSE_PASSES` entry is a Magic issue.
+KLayout DRC and LVS and Magic DRC pass on every cell that is not broken on purpose. Two `KNOWN_FAILS` entries are the same Magic + Netgen LVS issue, the third is a gdscheck finding. The `KNOWN_FALSE_PASSES` entry is a Magic issue.
 
 ## Magic + Netgen LVS fails on the MOM capacitors
 
@@ -12,18 +12,14 @@ Magic does not extract the MOM capacitors, neither the interdigitated `cap_cmomi
 
 Upstream: [magic#552](https://github.com/RTimothyEdwards/magic/issues/552)
 
+## Magic DRC does not check contacts in substrate taps
+
+`KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_cnt_c_ptap:magic-drc`
+
+Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Substrate marker, as every IHP `ptap1` PCell draws it) as its own type `ptapc` (`ptapdiffcont`), not as `psc`. The DRC rules (`libs.tech/magic/ihp-sg13cmos5l-drc.tech`) have no rule for `ptapc` at all, neither directly nor through the aliases that contain it (`allpdiffcontlv`, `allpdiffconthv`): Cnt.a, Cnt.b and Cnt.c are never checked at a substrate tap. `sg13_lv_nmos_tap_cnt_c_ptap` has two contacts 0.04 um inside the tap Activ (Cnt.c asks for 0.07 um). KLayout reports both, Magic reports nothing. The same error at a drain contact (`sg13_lv_nmos_tap_cnt_c`) is caught by Magic.
+
 ## gdscheck reads the via columns of the MOM capacitor as an array
 
 `KNOWN_FAILS` entry: `sg13_cmomi:gdscheck-drc`
 
 gdscheck 0.2.1 reports `V1.b1`, `V2.b1` and `V3.b1` on `sg13_cmomi`, as on the cell of the same name in `../ihp-sg13g2`. V1.b1 is one of the IHP extra rules: "Min. Via1 space in an array of more than 3 rows and more than 3 columns = 0.29", required in one direction only, the other direction needs V1.b. The IHP `cmomi` PCell places one column of vias per finger, and the columns of neighbouring fingers are offset, so the vias form no rows. gdscheck takes the staggered columns for an array and asks for 0.29 um between the columns. The KLayout deck reports nothing at `DRC_LEVEL=regular`, which runs the extra rules of `sg13cmos5l_maximal.drc`, and Magic DRC passes the cell as well.
-
-## gdscheck checks the extra rule TGO.b on `sg13_hv_pmos_tap`
-
-`KNOWN_FAILS` entry: `sg13_hv_pmos_tap:gdscheck-drc`
-
-gdscheck 0.2.1 reports `TGO.b` on `sg13_hv_pmos_tap`: "space 0.2400 µm < 0.27 µm between ThickGateOx and ActivOutsideTGO". TGO.b ("Min. space between ThickGateOx and Activ outside thick gate oxide region = 0.27") is one of the IHP extra rules in `sg13cmos5l_maximal.drc`, which the `core` suite of gdscheck includes and `klayout-drc` runs at `DRC_LEVEL=regular` only, where KLayout reports the same violation. Magic has no TGO.b check. The Activ of the tap below the transistor is 0.24 um from the ThickGateOx, in the cell of the same name in `../ihp-sg13g2` 0.30 um, and that cell passes all three DRC flows. The entry records that the three flows check different rule sets at the `macro` level, not a tool bug: redrawing the tap 0.03 um further down makes gdscheck and KLayout at `regular` pass and removes the entry.
-
-`KNOWN_FALSE_PASSES` entry: `sg13_lv_nmos_tap_cnt_c_ptap:magic-drc`
-
-Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Substrate marker, as every IHP `ptap1` PCell draws it) as its own type `ptapc` (`ptapdiffcont`), not as `psc`. The DRC rules (`libs.tech/magic/ihp-sg13cmos5l-drc.tech`) have no rule for `ptapc` at all, neither directly nor through the aliases that contain it (`allpdiffcontlv`, `allpdiffconthv`): Cnt.a, Cnt.b and Cnt.c are never checked at a substrate tap. `sg13_lv_nmos_tap_cnt_c_ptap` has two contacts 0.04 um inside the tap Activ (Cnt.c asks for 0.07 um). KLayout reports both, Magic reports nothing. The same error at a drain contact (`sg13_lv_nmos_tap_cnt_c`) is caught by Magic.
