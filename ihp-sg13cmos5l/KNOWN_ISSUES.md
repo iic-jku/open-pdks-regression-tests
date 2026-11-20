@@ -23,3 +23,5 @@ Magic reads a contact in a substrate tap (diffusion tagged `sub!` with the Subst
 `KNOWN_FAILS` entry: `sg13_cmomi:gdscheck-drc`
 
 gdscheck 0.2.1 reports `V1.b1`, `V2.b1` and `V3.b1` on `sg13_cmomi`, as on the cell of the same name in `../ihp-sg13g2`. V1.b1 is one of the IHP extra rules: "Min. Via1 space in an array of more than 3 rows and more than 3 columns = 0.29", required in one direction only, the other direction needs V1.b. The IHP `cmomi` PCell places one column of vias per finger, and the columns of neighbouring fingers are offset, so the vias form no rows. gdscheck takes the staggered columns for an array and asks for 0.29 um between the columns. The KLayout deck reports nothing at `DRC_LEVEL=regular`, which runs the extra rules of `sg13cmos5l_maximal.drc`, and Magic DRC passes the cell as well.
+
+Upstream: [gdscheck#63](https://github.com/aesc-silicon/gdscheck/issues/63).

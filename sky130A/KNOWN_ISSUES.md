@@ -141,6 +141,8 @@ The deck also extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: thei
 
 `klayout-pex` ends in every mode with `Can't find a schematic counterpart for the top cell sky130_cap_var_hvt - use 'same_circuit' to establish a correspondence` from the LVS step of kpex 0.10.0 (IIC-OSIC-TOOLS nightly of 2026-11-19), which it runs with its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) against a dummy schematic, since the target passes none. The deck extracts the varactor, but inside the subcircuit of the PCell: the layout netlist reads `X$1 C1 C0 B cap_var` in the top cell and the device `C$1 ... sky130_fd_pr__cap_var_hvt` in the subcircuit `cap_var`, so the top cell holds no device and the LVS finds no circuit to match it with. The MIM capacitors and the MOS cells, whose devices land in the top circuit, pass, and Magic extracts the varactors in all three modes.
 
+Upstream: [klayout-pex#587](https://github.com/iic-jku/klayout-pex/issues/587).
+
 ## KLayout LVS joins the isolated P-well of `sky130_res_iso_pw` to the substrate
 
 `KNOWN_FAILS` entry: `sky130_res_iso_pw:klayout-lvs`
@@ -155,11 +157,15 @@ The same short hits `sky130_dnwell_nmos` and `sky130_dnwell_inv`, where it does 
 
 The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. kpex 0.10.0 runs its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) in its LVS step and stops with the same error in every mode, on KLayout 0.30.13 as well.
 
+Upstream: [klayout-pex#588](https://github.com/iic-jku/klayout-pex/issues/588), with a tested fix for the copy of the deck in kpex.
+
 ## kpex has no model mapping for the photodiode
 
 `KNOWN_FAILS` entries: `sky130_photodiode:klayout-pex1`, `sky130_photodiode:klayout-pex2`, `sky130_photodiode:klayout-pex3`
 
 The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its `sky130A` tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
+
+Upstream: [klayout-pex#254](https://github.com/iic-jku/klayout-pex/issues/254) lists the photodiode as still without a model, since the PDK has none, and [klayout-pex#589](https://github.com/iic-jku/klayout-pex/issues/589) asks for a way to extract such a cell anyway.
 
 ## KLayout LVS has no 16 V MOS
 

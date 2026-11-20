@@ -48,6 +48,8 @@ Xschem writes `XC1 C0 C1 CX cap_rfcmim w=10.0e-6 l=10.0e-6 wfeed=5.0e-6 m=1`, Ma
 
 gdscheck 0.2.1 reports `V1.b1`, `V2.b1`, `V3.b1` and `V4.b1` on `sg13_cmomi` ("9×10 Via1NoSealring array (3.97×3.82 µm) below 0.29 µm"). V1.b1 is one of the IHP extra rules: "Min. Via1 space in an array of more than 3 rows and more than 3 columns = 0.29", required in one direction only, the other direction needs V1.b (0.22 um). The IHP `cmomi` PCell places one column of vias per finger, and the columns of neighbouring fingers are offset, so the 106 vias of each via layer form no rows: they sit at 16 different y positions, 0.07 um apart. gdscheck takes the staggered columns for a 9 x 10 array and asks for 0.29 um where the columns are 0.23 um apart. The KLayout deck reports nothing at `DRC_LEVEL=regular`, which runs the extra rules of `sg13g2_maximal.drc`, and Magic DRC passes the cell as well.
 
+Upstream: [gdscheck#63](https://github.com/aesc-silicon/gdscheck/issues/63).
+
 ## Not checked at `DRC_LEVEL=macro`: KLayout misses nmosi.c in `sg13_dnwell_inv_nmosi_c`
 
 No list entry. `klayout-drc` runs at `DRC_LEVEL=macro`, which leaves out the IHP extra rules in `sg13g2_maximal.drc`, and nmosi.c is one of them, so the step passes `sg13_dnwell_inv_nmosi_c` legitimately (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). With the extra rules (`DRC_LEVEL=regular`) KLayout would still miss it: the deck measures nmosi.c only against `NWell.with_holes`, the isolation ring, not against an NWell inside it, and reports `nmosi.c: 0 error(s)`. Should the regression ever run the extra rules, the step belongs in `KNOWN_FALSE_PASSES`. gdscheck, whose `core` suite includes the extra rules, reports nmosi.c on the cell, so `sg13_dnwell_inv_nmosi_c:gdscheck-drc` is an `EXPECTED_FAILS` entry.
