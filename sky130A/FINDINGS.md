@@ -35,13 +35,13 @@ The `sky130_fd_pr` MOS symbols write their CDL line as a subcircuit call with W 
 XM1 D G S S sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1
 ```
 
-The `sky130.lvs` deck reads such lines as devices only with `-rd convert_subckts=true` (`wants_subcircuit` in `SubcircuitModelsReader`); otherwise they stay calls of an empty subcircuit. And it only matches the micrometer values with `-rd scale=true` (`device_scaling(1000000)`). The PDK's `run_lvs.py` has no option for `convert_subckts` at all; `sak-lvs.sh` runs the deck directly and has to pass both. With both switches the MOS cells here pass KLayout LVS; with only one of them they do not. What the deck still gets wrong with both switches set is in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), in the `klayout-lvs` sections.
+The `sky130.lvs` deck reads such lines as devices only with `-rd convert_subckts=true` (`wants_subcircuit` in `SubcircuitModelsReader`). Otherwise they stay calls of an empty subcircuit. And it only matches the micrometer values with `-rd scale=true` (`device_scaling(1000000)`). The PDK's `run_lvs.py` has no option for `convert_subckts` at all. `sak-lvs.sh` runs the deck directly and has to pass both. With both switches the MOS cells here pass KLayout LVS, with only one of them they do not. What the deck still gets wrong with both switches set is in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), in the `klayout-lvs` sections.
 
 ## Bulk tie is butted against the source
 
-`bulk = "bulk tie"` of the `nfet`/`pfet` PCells butts the tap against the source diffusion and gives it its own li1, not connected to the source li1. Source and bulk are one net through the silicide. The `_tap` cells tie the bulk to the source in the schematic and strap the tap li1 to the source li1, as the gf180mcuD `_tap` cells do with Metal1.
+`bulk = "bulk tie"` of the `nfet`/`pfet` PCells butts the tap against the source diffusion and gives it its own li1, not connected to the source li1. Source and bulk are one net through the silicide. The `_tap` cells tie the bulk to the source in the schematic and strap the tap li1 to the source li1, as the `gf180mcuD` `_tap` cells do with Metal1.
 
-Inside HVI a tap butted to diffusion has to reach at least 0.7 um away from the butting edge (`hvdifftap.16`, "Min width tap butting diff on one or two sides"; the figure of the rule measures across the tap, like `difftap.4` and `difftap.5` for a tap bound by one or two diffusions). The bulk tie of the PCell reaches 0.45 um (`nfet`) or 0.39 um (`pfet`), and its `grw` parameter does not change that. The `_tap` cells of the MV devices (`nfet_03v3_nvt`, `nfet_05v0_nvt`, `nfet_g5v0d10v5`, `pfet_g5v0d10v5`) extend the tap to 0.7 um in the top cell, with its implant (0.125 um, `n/psd.5b`), HVI (0.18 um, `hvdifftap.22`) and, for the PMOS, the HV Nwell (0.33 um, `hvdifftap.19`).
+Inside HVI a tap butted to diffusion has to reach at least 0.7 um away from the butting edge (`hvdifftap.16`, "Min width tap butting diff on one or two sides", and the figure of the rule measures across the tap, like `difftap.4` and `difftap.5` for a tap bound by one or two diffusions). The bulk tie of the PCell reaches 0.45 um (`nfet`) or 0.39 um (`pfet`), and its `grw` parameter does not change that. The `_tap` cells of the MV devices (`nfet_03v3_nvt`, `nfet_05v0_nvt`, `nfet_g5v0d10v5`, `pfet_g5v0d10v5`) extend the tap to 0.7 um in the top cell, with its implant (0.125 um, `n/psd.5b`), HVI (0.18 um, `hvdifftap.22`) and, for the PMOS, the HV Nwell (0.33 um, `hvdifftap.19`).
 
 ## NPC around the poly contacts
 
@@ -57,13 +57,13 @@ The `guard_ring_gen` PCell does not place its ring around the origin. The `_ring
 
 ## guard_ring_gen draws no well and no HVI
 
-`guard_ring_gen` draws the tap ring only. Around a PMOS the cells widen the PCell's Nwell over the N+ ring, 0.18 um beyond the tap (`difftap.10`), 0.33 um for `pfet_g5v0d10v5` (`hvdifftap.19`), and keep the widened Nwell inside HVI with the enclosure the PCell uses (`hvnwell.9`). Around an MV NMOS the cells widen HVI over the ring, 0.18 um beyond the tap (`hvdifftap.22`); without that the ring lies 0.025 um outside the HVI edge, where `hvdifftap.23` asks for 0.18 um.
+`guard_ring_gen` draws the tap ring only. Around a PMOS the cells widen the PCell's Nwell over the N+ ring, 0.18 um beyond the tap (`difftap.10`), 0.33 um for `pfet_g5v0d10v5` (`hvdifftap.19`), and keep the widened Nwell inside HVI with the enclosure the PCell uses (`hvnwell.9`). Around an MV NMOS the cells widen HVI over the ring, 0.18 um beyond the tap (`hvdifftap.22`). Without that the ring lies 0.025 um outside the HVI edge, where `hvdifftap.23` asks for 0.18 um.
 
 The added Nwell and HVI are drawn in the top cell, the ring is in the PCell. Magic evaluates its GDS import within each cell and does not combine the two, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 ## PCells widen length and width silently
 
-`res_poly` raises `len` to its minimum without reporting it in its parameters: `res_high_po_*` and `res_xhigh_po_*` at the default `len=0.5` are drawn 0.62 um long. `res_iso_pw` ignores `w`/`len` and draws 2.65 x 26.5 um, and `mim_cap` draws the Metal4-Metal5 option at 2.16 x 2.16 um for `w = l = 2`. The cells take W and L from the resistor marker (66/13, 65/13 or 64/13) and from the capm shape. Magic + Netgen LVS accepted the wrong schematic value; only KLayout noticed.
+`res_poly` raises `len` to its minimum without reporting it in its parameters: `res_high_po_*` and `res_xhigh_po_*` at the default `len=0.5` are drawn 0.62 um long. `res_iso_pw` ignores `w`/`len` and draws 2.65 x 26.5 um, and `mim_cap` draws the Metal4-Metal5 option at 2.16 x 2.16 um for `w = l = 2`. The cells take W and L from the resistor marker (66/13, 65/13 or 64/13) and from the capm shape. Magic + Netgen LVS accepted the wrong schematic value, only KLayout noticed.
 
 The `res_diff` PCell names its types `res_nd_lvt`/`res_pd_lvt` where the models and symbols are `res_generic_nd`/`res_generic_pd`.
 
@@ -83,12 +83,12 @@ The `sky130_diode_pd2nw_*` cells flatten the PCell, keep the anode and the catho
 
 ## Varactor
 
-`gr = 1` of the `cap_var` PCell draws the substrate ring's tap and licons but no li1 over them (`licon.4`); the cells add li1 over the ring. The PCell's Nwell encloses the gate poly by 0.010 um at its ends, where `varac.5` asks for 0.15 um; the cells widen the Nwell to one rectangle that does. The ring tap is then 0.13 um from the Nwell, the minimum of `difftap.11`. The added li1 is drawn in the top cell, the ring is in the PCell, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for what Magic makes of that.
+`gr = 1` of the `cap_var` PCell draws the substrate ring's tap and licons but no li1 over them (`licon.4`). The cells add li1 over the ring. The PCell's Nwell encloses the gate poly by 0.010 um at its ends, where `varac.5` asks for 0.15 um. The cells widen the Nwell to one rectangle that does. The ring tap is then 0.13 um from the Nwell, the minimum of `difftap.11`. The added li1 is drawn in the top cell, the ring is in the PCell, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for what Magic makes of that.
 
 ## 16 V MOS from the Magic generator
 
-`nfet_g5v0d16v0` and `pfet_g5v0d16v0` have no KLayout PCell. The cells are drawn with `sky130::sky130_fd_pr__{n,p}fet_g5v0d16v0_draw` at the generator defaults (W = 5 um, L = 1.055 / 1.05 um, guard ring included). The generator labels S, G and B on li1 but not the drain; the cells add the D pin on the drain pad.
+`nfet_g5v0d16v0` and `pfet_g5v0d16v0` have no KLayout PCell. The cells are drawn with `sky130::sky130_fd_pr__{n,p}fet_g5v0d16v0_draw` at the generator defaults (W = 5 um, L = 1.055 / 1.05 um, guard ring included). The generator labels S, G and B on li1 but not the drain. The cells add the D pin on the drain pad.
 
 ## Deep Nwell cells
 
-`sky130_dnwell_nmos` and `sky130_dnwell_inv` follow `sg13_dnwell_nmos` and `sg13_dnwell_inv` and the gf180mcuD cells of the same name: an NMOS in the P-well inside a DNWELL (bulk on the source), and a PMOS/NMOS pair, pins D, S, G, VDD and VSS. The DNWELL edge is covered by an Nwell ring from 1.03 um inside (`nwell.6`) to 0.4 um outside, with an N+ tap ring on it (VDD), and a P+ substrate ring outside (VSS). The PMOS of the inverter sits in the left arm of the Nwell ring, so its bulk is the DNWELL.
+`sky130_dnwell_nmos` and `sky130_dnwell_inv` follow `sg13_dnwell_nmos` and `sg13_dnwell_inv` and the `gf180mcuD` cells of the same name: an NMOS in the P-well inside a DNWELL (bulk on the source), and a PMOS/NMOS pair, pins D, S, G, VDD and VSS. The DNWELL edge is covered by an Nwell ring from 1.03 um inside (`nwell.6`) to 0.4 um outside, with an N+ tap ring on it (VDD), and a P+ substrate ring outside (VSS). The PMOS of the inverter sits in the left arm of the Nwell ring, so its bulk is the DNWELL.

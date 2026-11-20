@@ -6,9 +6,9 @@ Unlike [KNOWN_ISSUES.md](KNOWN_ISSUES.md), which shrinks as bugs get fixed, this
 
 ## `sg13_dnwell_inv_nmosi_c`: PMOS NWell too close to a tap in the isolated PWell
 
-`EXPECTED_FAILS` entry: `sg13_dnwell_inv_nmosi_c:magic-drc`
+`EXPECTED_FAILS` entries: `sg13_dnwell_inv_nmosi_c:magic-drc`, `sg13_dnwell_inv_nmosi_c:gdscheck-drc`
 
-A copy of `sg13_dnwell_inv` from before its fix. The NWell of the PMOS ends 0.30 um above the ptap inside the isolated PWell. The IHP rule nmosi.c asks for 0.39 um ("Min. NWell space to Iso-PWell-Activ", tested inside a closed NWell AND nBuLay ring). Magic reports it as `N-well space to diffusion in P-well (nmosi.c)`. `klayout-drc` has no entry and has to pass: nmosi.c is one of the IHP extra rules in `sg13g2_maximal.drc`, which `DRC_LEVEL=macro` does not run (and the deck would miss this case even with them, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). The circuit is unchanged, so both LVS steps pass.
+A copy of `sg13_dnwell_inv` from before its fix. The NWell of the PMOS ends 0.30 um above the ptap inside the isolated PWell. The IHP rule nmosi.c asks for 0.39 um ("Min. NWell space to Iso-PWell-Activ", tested inside a closed NWell AND nBuLay ring). Magic reports it as `N-well space to diffusion in P-well (nmosi.c)`, and gdscheck reports `nmosi.c`. `klayout-drc` has no entry and has to pass: nmosi.c is one of the IHP extra rules in `sg13g2_maximal.drc`, which `DRC_LEVEL=macro` does not run (and the deck would miss this case even with them, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). The circuit is unchanged, so both LVS steps pass.
 
 As long as the `isolbox` issue in KNOWN_ISSUES.md is open, Magic DRC also fails this cell for nmosi.b and nmosi.d, so the entry alone does not prove that Magic still finds nmosi.c. Look for nmosi.c in `verification/drc/sg13_dnwell_inv_nmosi_c.magic.drc/sg13_dnwell_inv_nmosi_c.magic.drc.rpt`.
 
@@ -18,33 +18,33 @@ Copies of `sg13_lv_nmos_tap` with exactly one error each, so that every DRC and 
 
 ## `sg13_lv_nmos_tap_m1_a`: Metal1 0.10 um wide
 
-`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_m1_a:klayout-drc`, `sg13_lv_nmos_tap_m1_a:magic-drc`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_m1_a:klayout-drc`, `sg13_lv_nmos_tap_m1_a:magic-drc`, `sg13_lv_nmos_tap_m1_a:gdscheck-drc`
 
-A Metal1 stub 0.10 um wide and 0.40 um long on the drain pad. M1.a asks for 0.16 um ("Min. Metal1 width"). KLayout reports `M1.a`, Magic `Metal1 width < 0.16um (M1.a)`. The stub belongs to the drain net, both LVS steps pass.
+A Metal1 stub 0.10 um wide and 0.40 um long on the drain pad. M1.a asks for 0.16 um ("Min. Metal1 width"). KLayout and gdscheck report `M1.a`, Magic `Metal1 width < 0.16um (M1.a)`. The stub belongs to the drain net, both LVS steps pass.
 
 ## `sg13_lv_nmos_tap_m1_b`: drain and source Metal1 0.12 um apart
 
-`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_m1_b:klayout-drc`, `sg13_lv_nmos_tap_m1_b:magic-drc`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_m1_b:klayout-drc`, `sg13_lv_nmos_tap_m1_b:magic-drc`, `sg13_lv_nmos_tap_m1_b:gdscheck-drc`
 
-A copy of `sg13_lv_nmos_tap` with the drain Metal1 pad widened from 0.30 um to 0.45 um, which leaves 0.12 um to the source pad. The IHP rule M1.b asks for 0.18 um ("Min. Metal1 space"). It is a basic rule of the `macro` level, so both DRC flows have to report it: KLayout as `M1.b`, Magic as `Metal1 spacing < 0.18um (M1.b)`. Both pads are drawn in the top cell, so the cell also catches a DRC run that loads the top cell empty, as `gds flatglob *` did. The pads do not touch, the circuit is unchanged, and both LVS steps pass.
+A copy of `sg13_lv_nmos_tap` with the drain Metal1 pad widened from 0.30 um to 0.45 um, which leaves 0.12 um to the source pad. The IHP rule M1.b asks for 0.18 um ("Min. Metal1 space"). It is a basic rule of the `macro` level, so all three DRC flows have to report it: KLayout and gdscheck as `M1.b`, Magic as `Metal1 spacing < 0.18um (M1.b)`. Both pads are drawn in the top cell, so the cell also catches a DRC run that loads the top cell empty, as `gds flatglob *` did. The pads do not touch, the circuit is unchanged, and both LVS steps pass.
 
 ## `sg13_lv_nmos_tap_cnt_c`: drain contact 0.04 um inside Activ
 
-`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_cnt_c:klayout-drc`, `sg13_lv_nmos_tap_cnt_c:magic-drc`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_cnt_c:klayout-drc`, `sg13_lv_nmos_tap_cnt_c:magic-drc`, `sg13_lv_nmos_tap_cnt_c:gdscheck-drc`
 
-The left edge of the drain Activ moved from 0 to 0.03 um, so the drain contact is 0.04 um from it. Cnt.c asks for 0.07 um ("Min. Activ enclosure of Cont"). KLayout reports `Cnt.c`, Magic `N-diffusion overlap of N-diffusion contact < 0.07um (Cnt.c)`. Channel width and length stay the same, both LVS steps pass.
+The left edge of the drain Activ moved from 0 to 0.03 um, so the drain contact is 0.04 um from it. Cnt.c asks for 0.07 um ("Min. Activ enclosure of Cont"). KLayout and gdscheck report `Cnt.c`, Magic `N-diffusion overlap of N-diffusion contact < 0.07um (Cnt.c)`. Channel width and length stay the same, both LVS steps pass.
 
 ## `sg13_lv_nmos_tap_cnt_c_ptap`: substrate tap contacts 0.04 um inside Activ
 
-`EXPECTED_FAILS` entry: `sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc`, `sg13_lv_nmos_tap_cnt_c_ptap:gdscheck-drc`
 
-The same rule as `sg13_lv_nmos_tap_cnt_c`, at the substrate tap instead of the drain: the left edge of the tap Activ moved in by 0.10 um, so its two left contacts are 0.04 um from it. KLayout reports `Cnt.c` twice. Magic DRC misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md): the pair of cells shows that Magic checks Cnt.c at a drain contact and not at a substrate tap. Both LVS steps pass.
+The same rule as `sg13_lv_nmos_tap_cnt_c`, at the substrate tap instead of the drain: the left edge of the tap Activ moved in by 0.10 um, so its two left contacts are 0.04 um from it. KLayout and gdscheck report `Cnt.c` twice. Magic DRC misses it, see `KNOWN_FALSE_PASSES` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md): the pair of cells shows that Magic checks Cnt.c at a drain contact and not at a substrate tap. Both LVS steps pass.
 
 ## `sg13_lv_nmos_tap_gat_c`: gate end cap 0.10 um
 
-`EXPECTED_FAILS` entry: `sg13_lv_nmos_tap_gat_c:magic-drc`
+`EXPECTED_FAILS` entries: `sg13_lv_nmos_tap_gat_c:magic-drc`, `sg13_lv_nmos_tap_gat_c:gdscheck-drc`
 
-The gate poly ends 0.10 um below the channel instead of 0.18 um (GatPoly, GatPoly.pin and HeatTrans alike). Gat.c asks for 0.18 um ("Min. GatPoly extension over Activ (end cap)"). Magic reports `Poly overhang of transistor < 0.18um (Gat.c)`. `klayout-drc` has no entry and has to pass: Gat.c is one of the IHP extra rules in `sg13g2_maximal.drc`, which `DRC_LEVEL=macro` does not run. With `DRC_LEVEL=regular` KLayout reports `Gat.c` as well. Both LVS steps pass.
+The gate poly ends 0.10 um below the channel instead of 0.18 um (GatPoly, GatPoly.pin and HeatTrans alike). Gat.c asks for 0.18 um ("Min. GatPoly extension over Activ (end cap)"). Magic reports `Poly overhang of transistor < 0.18um (Gat.c)`, and gdscheck reports `Gat.c`, since its `core` suite includes the extra rules. `klayout-drc` has no entry and has to pass: Gat.c is one of the IHP extra rules in `sg13g2_maximal.drc`, which `DRC_LEVEL=macro` does not run. With `DRC_LEVEL=regular` KLayout reports `Gat.c` as well. Both LVS steps pass.
 
 ## `sg13_lv_nmos_tap_short_ds`: drain and source shorted
 

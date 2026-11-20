@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 """2D field solve of the lateral coupling between two parallel wires on the IHP SG13G2 stack.
 
 Finite-volume Laplace solve on a tensor grid graded toward every edge, ground plane at z = 0,
@@ -11,9 +15,6 @@ GatPoly and TopMetal2 sit in conformal dielectrics and are not modelled.
                                           0.25 um steps) fitted to b / (s + c) by least squares
 
 Needs numpy and scipy. A point takes a few seconds, a fit a few minutes.
-
-SPDX-FileCopyrightText: 2026 Simon Dorrer
-SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 """
 import sys
 import numpy as np

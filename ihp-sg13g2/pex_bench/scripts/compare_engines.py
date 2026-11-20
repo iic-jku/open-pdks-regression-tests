@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 """Tables F to I: three implementations of the SG13G2 parasitic model against a field solve.
 
   deck        the arithmetic of ihp-sg13g2-extract.tech, done by hand
@@ -13,9 +17,6 @@ against), so nets are never looked up by name: the pair is whichever two nets ar
 substrate (read_kpex.SUBSTRATE: VSUBS, or the deck's substrate net since kpex 0.6.1), and on
 capsub the plate is the larger of the two substrate couplings, the wire the smaller.
 With --json <file> every compared value is written for check_results.py.
-
-SPDX-FileCopyrightText: 2026 Simon Dorrer
-SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 """
 import glob
 import json

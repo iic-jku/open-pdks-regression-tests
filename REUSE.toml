@@ -1,0 +1,69 @@
+version = 1
+
+# Files that cannot carry an SPDX header (documentation, schematics, layouts, expected results, reports, figures) are annotated here.
+# Scripts, Makefiles and workflows carry their own SPDX headers, so the license check still catches a new script without licensing information.
+
+[[annotations]]
+path = [".designinit", ".gitattributes", ".gitignore", "AGENTS.md", "CITATION.cff", "README.md"]
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "doc/**"
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["*/*.md", "*/pex_bench/README.md", "*/pex_bench/.gitignore", "*/pex_bench/report/**"]
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "*/schematic/**"
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+# The layouts instantiate the devices of the respective PDK (PCells and fixed-layout devices),
+# which are licensed under Apache-2.0 by the PDK authors.
+[[annotations]]
+path = ["*/layout/**", "*/pex_bench/layout/**"]
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "*/pex_bench/expected/**"
+SPDX-FileCopyrightText = "2026 Julian Schwarz, Simon Dorrer, and Harald Pretl"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Standard cells copied from the PDK libraries by the gen_hier.py generators, alone and as the
+# subcell of hier_test. These blocks come after the layout block above, so they take precedence
+# for these files.
+[[annotations]]
+path = ["ihp-sg13g2/pex_bench/layout/sg13g2_inv_1.gds", "ihp-sg13cmos5l/pex_bench/layout/sg13cmos5l_inv_1.gds"]
+SPDX-FileCopyrightText = "2023 IHP PDK Authors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["ihp-sg13g2/pex_bench/layout/hier_test.gds", "ihp-sg13cmos5l/pex_bench/layout/hier_test.gds"]
+SPDX-FileCopyrightText = ["2026 Julian Schwarz, Simon Dorrer, and Harald Pretl", "2023 IHP PDK Authors"]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "gf180mcuD/pex_bench/layout/gf180mcu_fd_sc_mcu7t5v0__inv_1.gds"
+SPDX-FileCopyrightText = "2022 GlobalFoundries PDK Authors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "gf180mcuD/pex_bench/layout/hier_test.gds"
+SPDX-FileCopyrightText = ["2026 Julian Schwarz, Simon Dorrer, and Harald Pretl", "2022 GlobalFoundries PDK Authors"]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "sky130A/pex_bench/layout/sky130_fd_sc_hd__inv_1.gds"
+SPDX-FileCopyrightText = "2020 The SkyWater PDK Authors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "sky130A/pex_bench/layout/hier_test.gds"
+SPDX-FileCopyrightText = ["2026 Julian Schwarz, Simon Dorrer, and Harald Pretl", "2020 The SkyWater PDK Authors"]
+SPDX-License-Identifier = "Apache-2.0"

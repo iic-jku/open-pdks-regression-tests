@@ -1,9 +1,9 @@
 # gf180mcuD regression design: PDK selection and known failures.
-# Every target lives in ../common.mk - run with "make <target>" from this directory.
+# Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
@@ -44,21 +44,25 @@ KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt
 	gf180_pnp_05p00x00p42:magic-drc gf180_pnp_05p00x05p00:magic-drc \
 	gf180_pnp_10p00x00p42:magic-drc gf180_pnp_10p00x10p00:magic-drc \
 	gf180_sc_diode:magic-drc gf180_combined:magic-drc gf180_combined_cmim_ontop:magic-drc \
-	gf180_dnwell_nmos:magic-pex3 gf180_dnwell_nmos:klayout-pex3 \
-	gf180_dnwell_inv:magic-pex3 gf180_dnwell_inv:klayout-pex3 \
-	gf180_npn_00p54x02p00:magic-pex3 gf180_npn_00p54x02p00:klayout-pex3 \
-	gf180_npn_00p54x08p00:magic-pex3 gf180_npn_00p54x08p00:klayout-pex3 \
-	gf180_npn_00p54x16p00:magic-pex3 gf180_npn_00p54x16p00:klayout-pex3 \
-	gf180_npn_05p00x05p00:magic-pex3 gf180_npn_05p00x05p00:klayout-pex3 \
-	gf180_npn_00p54x04p00:magic-pex3 gf180_npn_00p54x04p00:klayout-pex3 \
-	gf180_npn_10p00x10p00:magic-pex3 gf180_npn_10p00x10p00:klayout-pex3 \
-	gf180_combined:magic-pex3 gf180_combined:klayout-pex3 \
-	gf180_combined_cmim_ontop:magic-pex3 gf180_combined_cmim_ontop:klayout-pex3
-EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc \
+	gf180_dnwell_nmos:magic-pex3 \
+	gf180_dnwell_inv:magic-pex3 \
+	gf180_npn_00p54x02p00:magic-pex3 \
+	gf180_npn_00p54x08p00:magic-pex3 \
+	gf180_npn_00p54x16p00:magic-pex3 \
+	gf180_npn_05p00x05p00:magic-pex3 \
+	gf180_npn_00p54x04p00:magic-pex3 \
+	gf180_npn_10p00x10p00:magic-pex3 \
+	gf180_combined:magic-pex3 \
+	gf180_combined_cmim_ontop:magic-pex3 gf180_sc_diode:klayout-pex3 \
+	gf180_dnwell_inv:gdscheck-drc gf180_dnwell_nmos:gdscheck-drc \
+	gf180_nfet_03v3_tap:gdscheck-drc gf180_nfet_03v3_tap_nostrap:gdscheck-drc gf180_nfet_03v3_tap_poly2pin:gdscheck-drc \
+	gf180_nfet_05v0_tap:gdscheck-drc gf180_nfet_06v0_tap:gdscheck-drc \
+	gf180_pfet_03v3_tap:gdscheck-drc gf180_pfet_05v0_tap:gdscheck-drc gf180_pfet_06v0_tap:gdscheck-drc
+EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc gf180_nfet_06v0_nvt_ring_nat:gdscheck-drc \
 	gf180_diode_nd2ps_03v3:magic-lvs gf180_diode_nd2ps_06v0:magic-lvs \
 	gf180_diode_pd2nw_03v3:magic-lvs gf180_diode_pd2nw_06v0:magic-lvs
 KNOWN_FALSE_PASSES ?= gf180_nfet_06v0_nvt_ring_nat:magic-drc \
-	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc \
+	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc gf180_cap_mim_2f0fF_via3:gdscheck-drc \
 	gf180_diode_nd2ps_03v3:klayout-lvs gf180_diode_nd2ps_06v0:klayout-lvs \
 	gf180_diode_pd2nw_03v3:klayout-lvs gf180_diode_pd2nw_06v0:klayout-lvs
 

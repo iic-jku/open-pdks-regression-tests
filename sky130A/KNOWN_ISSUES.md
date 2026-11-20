@@ -27,7 +27,7 @@ device msubcircuit sky130_fd_pr__npn_11v0_W1p00L1p00 npn *mvndiff \
 
 Magic extracts the emitter of the fixed layout with an area of 1.9724 um^2, so the condition never holds and Magic falls back to the generic line before it, `sky130_fd_pr__npn_11v0 ... a1=area` (line 5982). There is no `sky130_fd_pr__npn_11v0` model, only `sky130_fd_pr__npn_11v0_W1p00L1p00`, and Netgen reports a device mismatch.
 
-Magic DRC reports nine rule classes on the same layout, among them `MV Diffusion in N-well to P-tap spacing < 0.76um (diff/tap.20 + diff/tap.17,19)` 139 times, and transistor rules such as `MV NMOS minimum length < 0.5um (poly.13)` and `N-Diffusion overhang of nFET < 0.25um (poly.7)` at the poly over the diffusion of the device. KLayout DRC passes the cell. The device layers are those of `sky130_fd_pr__rf_npn_11v0_W1p00L1p00` in `libs.ref/sky130_fd_pr/gds/sky130_fd_pr.gds` (XOR empty on every device layer; the cell adds the outer guard ring of the PCell and the pins). Measured on the drawn geometry against the periphery rules of the SkyWater PDK documentation, one marker class is a real error of that layout: the DNWELL spans 0.40 to 9.35 um, and the Nwell reaches 0.4 um beyond it only on 1.08 um long pieces next to each corner. Along the rest of each side the Nwell edge is at 0.35 and 9.40 um, 0.05 um outside the DNWELL. `nwell.5` asks for 0.4 um, exempt only inside UHVI or `areaid.lw`, and the cell has neither. Magic reports it as `N-well overlap of Deep N-well < 0.4um outside, 1.03um inside (nwell.5a, 7)` 8 times; `sky130A_mr.drc` has no `nwell.5` check. The transistor markers come from Magic reading the poly ring over the base as an MV gate; the rules do not say whether transistor rules apply to it (only `poly.12` exempts a `gated_npn`). `diff/tap.20` is met: the collector tap ring in the Nwell is 0.765 um from the P tap ring (0.76 um). The step stays in `KNOWN_FAILS`: the cell is the PDK's own device, not broken on purpose.
+Magic DRC reports nine rule classes on the same layout, among them `MV Diffusion in N-well to P-tap spacing < 0.76um (diff/tap.20 + diff/tap.17,19)` 139 times, and transistor rules such as `MV NMOS minimum length < 0.5um (poly.13)` and `N-Diffusion overhang of nFET < 0.25um (poly.7)` at the poly over the diffusion of the device. KLayout DRC passes the cell. The device layers are those of `sky130_fd_pr__rf_npn_11v0_W1p00L1p00` in `libs.ref/sky130_fd_pr/gds/sky130_fd_pr.gds` (XOR empty on every device layer, the cell adds the outer guard ring of the PCell and the pins). Measured on the drawn geometry against the periphery rules of the SkyWater PDK documentation, one marker class is a real error of that layout: the DNWELL spans 0.40 to 9.35 um, and the Nwell reaches 0.4 um beyond it only on 1.08 um long pieces next to each corner. Along the rest of each side the Nwell edge is at 0.35 and 9.40 um, 0.05 um outside the DNWELL. `nwell.5` asks for 0.4 um, exempt only inside UHVI or `areaid.lw`, and the cell has neither. Magic reports it as `N-well overlap of Deep N-well < 0.4um outside, 1.03um inside (nwell.5a, 7)` 8 times, and `sky130A_mr.drc` has no `nwell.5` check. The transistor markers come from Magic reading the poly ring over the base as an MV gate. The rules do not say whether transistor rules apply to it (only `poly.12` exempts a `gated_npn`). `diff/tap.20` is met: the collector tap ring in the Nwell is 0.765 um from the P tap ring (0.76 um). The step stays in `KNOWN_FAILS`: the cell is the PDK's own device, not broken on purpose.
 
 ## Magic + Netgen LVS fails on the four `sky130_cap_vpp_*` cells
 
@@ -35,7 +35,7 @@ Magic DRC reports nine rule classes on the same layout, among them `MV Diffusion
 
 The Magic tech file has no device line for the VPP (MOM) capacitors: it mentions `sky130_fd_pr__cap_vpp_*` only in a comment (line 107), so Magic cannot extract the capacitor from its geometry. The extracted cell has its pins and no device, and Netgen reports `has no elements and/or nodes. Not checked.` A layout drawn with Magic's own generator (`sky130::sky130_fd_pr__cap_vpp_*_draw`), which places the fixed cell of `libs.ref` as a named subcell, does not get further through `sak-lvs.sh`, which flattens the layout first: the extraction then writes no subcircuit at all.
 
-This is the same situation as `sg13_cmomi:magic-lvs` in ihp-sg13g2.
+This is the same situation as `sg13_cmomi:magic-lvs` in `ihp-sg13g2`.
 
 ## KLayout DRC, Magic DRC and Magic + Netgen LVS fail on `sky130_photodiode`
 
@@ -43,7 +43,7 @@ This is the same situation as `sg13_cmomi:magic-lvs` in ihp-sg13g2.
 
 The cell is the PDK's own fixed photodiode, placed by the `photodiode` PCell: a 3 x 3 um DNWELL under the photo marker `areaid.po` (81/81) with the cathode tap in its middle, an N+ ring on a DNWELL ring around it, and the P+ substrate ring as the anode.
 
-**KLayout DRC.** `sky130A_mr.drc` checks the 6.3 um DNWELL spacing `dnwell.2` on `dnwell.not(uhvi.or(vhvi))` (lines 293-296). The photodiode DNWELL sits 5.3 um from the ring and is reported four times. The older deck in the same directory, `sky130A.lydrc`, exempts it (`dnwell.not(uhvi).not(areaid_po)`, line 206) and checks it with its own rule instead, `photo.4 : mini. photodiode spacing to dnwell : 5.3um` (line 332), which the cell meets; `sky130A_mr.drc` has no `photo.*` rule at all.
+**KLayout DRC.** `sky130A_mr.drc` checks the 6.3 um DNWELL spacing `dnwell.2` on `dnwell.not(uhvi.or(vhvi))` (lines 293-296). The photodiode DNWELL sits 5.3 um from the ring and is reported four times. The older deck in the same directory, `sky130A.lydrc`, exempts it (`dnwell.not(uhvi).not(areaid_po)`, line 206) and checks it with its own rule instead, `photo.4 : mini. photodiode spacing to dnwell : 5.3um` (line 332), which the cell meets. `sky130A_mr.drc` has no `photo.*` rule at all.
 
 **Magic DRC.** Magic reports `N-well overlap of Deep N-well < 0.4um outside, 1.03um inside (nwell.5a, 7)` four times, at the 3 x 3 um photodiode DNWELL. The layout of the PDK has no Nwell ring around it but a 0.84 um Nwell inside it, 1.08 um from each edge, as the `photo.8` and `photo.9` rules ask. KLayout DRC does not report it.
 
@@ -51,9 +51,9 @@ The cell is the PDK's own fixed photodiode, placed by the `photodiode` PCell: a 
 
 ## Magic full-RC extraction crashes on `sky130_pnp_05v5_W3p40L3p40`
 
-`KNOWN_FAILS` entries: `sky130_pnp_05v5_W3p40L3p40:magic-pex3`, `sky130_pnp_05v5_W3p40L3p40:klayout-pex3`
+`KNOWN_FAILS` entry: `sky130_pnp_05v5_W3p40L3p40:magic-pex3`
 
-`make magic-pex EXT_MODE=3` on the PDK's fixed 3.4 x 3.4 um PNP ends in a segmentation fault of Magic during the resistance extraction (`Processing cell sky130_pnp_05v5_W3p40L3p40_pex for resistance extraction.`, `Extracting C`, `Segmentation fault (core dumped)`), and no netlist is written. `klayout-pex3`, kpex driving Magic in RC mode, fails the same way: `MAGIC failed with status code -11`. The C-decoupled and C-coupled extractions pass, and so does the full-RC extraction of the 0.68 x 0.68 um PNP.
+`make magic-pex EXT_MODE=3` on the PDK's fixed 3.4 x 3.4 um PNP ends in a segmentation fault of Magic during the resistance extraction (`Processing cell sky130_pnp_05v5_W3p40L3p40_pex for resistance extraction.`, `Extracting C`, `Segmentation fault (core dumped)`), and no netlist is written. The C-decoupled and C-coupled extractions pass, and so do the full-RC extraction of the 0.68 x 0.68 um PNP and the kpex 2.5D engine (`klayout-pex3`) on this cell.
 
 The crash is in Magic's resistance extraction. The core dump of Magic 8.3.685 (IIC-OSIC-TOOLS 2026.10), with the frame addresses resolved by `addr2line` on `tclmagic.so`, ends in `ResAddTerminalPlumbing`, called from `ResAddDevPlumbing`, `ResExtractNet`, `ResProcessNode`, `ResCheckExtNodes` and `ExtResisForDef`. The IIC-OSIC-TOOLS nightly of 2026-10-22 crashes on the same cell. The open Magic issues on `extresist` crashes name other functions: [magic#353](https://github.com/RTimothyEdwards/magic/issues/353) `ResNewSDDevice`, [magic#573](https://github.com/RTimothyEdwards/magic/issues/573) `ResScrunchNet`.
 
@@ -61,7 +61,7 @@ The crash is in Magic's resistance extraction. The core dump of Magic 8.3.685 (I
 
 `KNOWN_FAILS` entries: `sky130_pfet_01v8_ring_pcell:magic-drc`, `sky130_pfet_01v8_ring_pcell:magic-lvs`, `sky130_pfet_01v8_lvt_ring_pcell:magic-drc`, `sky130_pfet_01v8_lvt_ring_pcell:magic-lvs`, `sky130_pfet_01v8_hvt_ring_pcell:magic-drc`, `sky130_pfet_01v8_hvt_ring_pcell:magic-lvs`, `sky130_pfet_g5v0d10v5_ring_pcell:magic-drc`, `sky130_pfet_g5v0d10v5_ring_pcell:magic-lvs`, `sky130_cap_var_lvt:magic-lvs`, `sky130_cap_var_hvt:magic-lvs`, `sky130_cap_var_hvt_varac5:magic-lvs`
 
-Magic applies the rules of its GDS import within each cell. In these cells a ring is drawn by a PCell and completed in the top cell, see [FINDINGS.md](FINDINGS.md): in the PMOS `_ring_pcell` cells the N+ ring of `guard_ring_gen` gets its Nwell (and HVI) in the top cell, in the varactors the substrate ring of `cap_var` gets the li1 over its licons. GDS merges layers across the hierarchy, and KLayout DRC passes the cells; Magic does not combine them.
+Magic applies the rules of its GDS import within each cell. In these cells a ring is drawn by a PCell and completed in the top cell, see [FINDINGS.md](FINDINGS.md): in the PMOS `_ring_pcell` cells the N+ ring of `guard_ring_gen` gets its Nwell (and HVI) in the top cell, in the varactors the substrate ring of `cap_var` gets the li1 over its licons. GDS merges layers across the hierarchy, and KLayout DRC passes the cells. Magic does not combine them.
 
 - **PMOS `_ring_pcell`.** Magic DRC reports `Can't overlap those layers` 4 times, `nwell.4` 5 times and `LU.3` twice, for `pfet_g5v0d10v5` also `diff/tap.18,20` 4 times and `nwell.8` 16 times. Magic + Netgen LVS finds no connection between the ring and the well: the extracted netlist has the node `w_n61_n76#` without a pin, the schematic pin B has no match, and Netgen ends with `Top level cell failed pin matching.`
 - **Varactors.** Magic DRC passes. Magic + Netgen LVS fails in the same way on B: the li1 ring with the pin is not connected to the substrate ring below it.
@@ -80,7 +80,7 @@ Magic's own generator draws the same resistor with an RPM of only 0.75 um: `sky1
 
 `KNOWN_FAILS` entry: `sky130_pfet_g5v0d16v0:magic-drc`
 
-The cell is drawn by Magic's own generator, `sky130::sky130_fd_pr__pfet_g5v0d16v0_draw`, at its defaults (see [FINDINGS.md](FINDINGS.md)). Magic DRC reports `Spacing of HV nwell to HV nwell < 2.0um (nwell.8)` twice. The layout has one Nwell, a single polygon with a 2.57 um wide hole for the drain, so there is no second Nwell to keep 2 um from; `hvnwell.8` asks for 2 um between nwells on different nets. KLayout DRC passes the cell. Why Magic reports it is not known.
+The cell is drawn by Magic's own generator, `sky130::sky130_fd_pr__pfet_g5v0d16v0_draw`, at its defaults (see [FINDINGS.md](FINDINGS.md)). Magic DRC reports `Spacing of HV nwell to HV nwell < 2.0um (nwell.8)` twice. The layout has one Nwell, a single polygon with a 2.57 um wide hole for the drain, so there is no second Nwell to keep 2 um from. `hvnwell.8` asks for 2 um between nwells on different nets. KLayout DRC passes the cell. Why Magic reports it is not known.
 
 ## KLayout DRC misses the deliberate errors of four cells
 
@@ -92,7 +92,7 @@ The cell is drawn by Magic's own generator, `sky130::sky130_fd_pr__pfet_g5v0d16v
 
 `KNOWN_FALSE_PASSES` entry: `sky130_cap_var_hvt_varac5:magic-drc`
 
-Magic checks `varac.5` on the layer `var_poly_no_nwell`, which it builds from `varactor,mvvaractor` only (lines 1506-1509), and reports `N-well overlap of varactor poly < 0.15um (varac.5)` where that layer is not empty (`cifmaxwidth var_poly_no_nwell 0`, line 4880). The high-Vt varactor is a type of its own, `varhvt` (line 174), and is not among them. `sky130_cap_var_hvt_varac5` encloses the gate poly by 0.010 um and passes Magic DRC; the same error in `sky130_cap_var_lvt`, before that cell was repaired, was reported twice.
+Magic checks `varac.5` on the layer `var_poly_no_nwell`, which it builds from `varactor,mvvaractor` only (lines 1506-1509), and reports `N-well overlap of varactor poly < 0.15um (varac.5)` where that layer is not empty (`cifmaxwidth var_poly_no_nwell 0`, line 4880). The high-Vt varactor is a type of its own, `varhvt` (line 174), and is not among them. `sky130_cap_var_hvt_varac5` encloses the gate poly by 0.010 um and passes Magic DRC. The same error in `sky130_cap_var_lvt`, before that cell was repaired, was reported twice.
 
 ## Magic DRC does not check NPC
 
@@ -102,14 +102,14 @@ Magic's GDS import ignores the drawn NPC (`ignore NPC`, line 2356), and Magic wr
 
 ## Full-RC PEX leaves device terminals unconnected
 
-`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_short1:klayout-pex3`, `sky130_photodiode:magic-pex3`, `sky130_photodiode:klayout-pex3`
+`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_photodiode:magic-pex3`
 
-Full-RC extraction (`magic-pex3`, and `klayout-pex3` with kpex driving Magic) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
+Full-RC extraction with Magic (`magic-pex3`) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
 
 - `sky130_short1`: the sources of both NMOS are nodes of their own, `X0 VDD VDD VDD.t10 VDD.t9 sky130_fd_pr__nfet_g5v0d10v5 ... as=0 ps=0` and `X1 VDD VDD VDD.t1 VDD.t0 sky130_fd_pr__nfet_01v8 ...`, and `VDD.t10` and `VDD.t1` appear in no other element. In the C-coupled netlist the sources are on `VDD`. The single `_tap` cells of the same transistors do not show it.
-- `sky130_photodiode`: the anode of the extracted diode is the node `w_n338_n339#` (`D0 w_n338_n339# C ...`), which no resistor connects to the pin A; the C-coupled netlist has `D0 A C`.
+- `sky130_photodiode`: the anode of the extracted diode is the node `w_n338_n339#` (`D0 w_n338_n339# C ...`), which no resistor connects to the pin A. The C-coupled netlist has `D0 A C`.
 
-Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element; `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here.
+Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element. `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here. The kpex 2.5D engine keeps the sources of `sky130_short1` on VDD, and stops on the photodiode before any extraction (see "kpex has no model mapping for the photodiode").
 
 ## Magic + Netgen LVS: `VM` of the varactors is compared
 
@@ -123,7 +123,7 @@ The `cap_var_lvt` and `cap_var_hvt` symbols write `VM` into the SPICE netlist (`
 
 `KNOWN_FAILS` entries: `sky130_diode_pd2nw_05v5:klayout-lvs`, `sky130_diode_pd2nw_05v5_lvt:klayout-lvs`, `sky130_diode_pd2nw_05v5_hvt:klayout-lvs`, `sky130_diode_pd2nw_05v5_psd8:klayout-lvs`, `sky130_diode_pd2nw_11v0:klayout-lvs`, `sky130_diode_pw2nd_05v5:klayout-lvs`, `sky130_diode_pw2nd_05v5_lvt:klayout-lvs`, `sky130_diode_pw2nd_05v5_nvt:klayout-lvs`, `sky130_diode_pw2nd_11v0:klayout-lvs`, and `sky130_combined:klayout-lvs` (with the two sections below)
 
-The `diode.sym` symbol writes `XD1 A C sky130_fd_pr__diode_pd2nw_05v5 area=2.025e+11 perim=1.8e+06`. The deck's netlist reader knows the diode parameters only as `A` and `P` and reads the schematic diode with `A=0 P=0`; the extraction has `A=2.025e+11 P=1.8e+06`, and the comparison fails. With the CDL rewritten to `A=0.2025 P=1.8`, in micrometers as `scale=true` expects, all nine diode cells match; with `A=2.025e+11 P=1.8e+06` they still fail.
+The `diode.sym` symbol writes `XD1 A C sky130_fd_pr__diode_pd2nw_05v5 area=2.025e+11 perim=1.8e+06`. The deck's netlist reader knows the diode parameters only as `A` and `P` and reads the schematic diode with `A=0 P=0`. The extraction has `A=2.025e+11 P=1.8e+06`, and the comparison fails. With the CDL rewritten to `A=0.2025 P=1.8`, in micrometers as `scale=true` expects, all nine diode cells match, with `A=2.025e+11 P=1.8e+06` they still fail.
 
 The deck also extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: their `tA` and `tC` terminal layers are swapped against `diode_pw2nd_05v5` (lines 2145-2157 of `sky130.lvs`), and the extracted line of `sky130_diode_pw2nd_05v5_lvt` reads `XD$1 C A`. In a cell with one diode this does not change the result, since the comparison is free to swap the two top-level pins.
 
@@ -135,19 +135,37 @@ The deck also extracts `diode_pw2nd_05v5_lvt`, `_nvt` and `_11v0` reversed: thei
 - **Varactors.** Both sides have the device with the same terminals, but the schematic one has no value: the CDL line `XC1 C0 C1 B sky130_fd_pr__cap_var_hvt W=1 L=0.18` becomes a device with `C=0 A=0 P=0`, the extraction has `A=1.8e+11 P=2.36e+06`.
 - **VPP capacitors.** The CDL line carries no value (`XC1 C0 C1 B sky130_fd_pr__cap_vpp_04p4x04p6_m1m2_shieldl1`), the schematic device gets `C=0`, the extracted one `C=2e-16`. The deck extracts `cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5` with a four-terminal extractor (`VPP4Extractor`, line 2544), and the extracted device has a fourth terminal on a net of its own, against three terminals in the schematic.
 
+## kpex stops on the varactors
+
+`KNOWN_FAILS` entries: `sky130_cap_var_lvt:klayout-pex1`, `sky130_cap_var_lvt:klayout-pex2`, `sky130_cap_var_lvt:klayout-pex3`, `sky130_cap_var_hvt:klayout-pex1`, `sky130_cap_var_hvt:klayout-pex2`, `sky130_cap_var_hvt:klayout-pex3`, `sky130_cap_var_hvt_varac5:klayout-pex1`, `sky130_cap_var_hvt_varac5:klayout-pex2`, `sky130_cap_var_hvt_varac5:klayout-pex3`
+
+`klayout-pex` ends in every mode with `Can't find a schematic counterpart for the top cell sky130_cap_var_hvt - use 'same_circuit' to establish a correspondence` from the LVS step of kpex 0.10.0 (IIC-OSIC-TOOLS nightly of 2026-11-19), which it runs with its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) against a dummy schematic, since the target passes none. The deck extracts the varactor, but inside the subcircuit of the PCell: the layout netlist reads `X$1 C1 C0 B cap_var` in the top cell and the device `C$1 ... sky130_fd_pr__cap_var_hvt` in the subcircuit `cap_var`, so the top cell holds no device and the LVS finds no circuit to match it with. The MIM capacitors and the MOS cells, whose devices land in the top circuit, pass, and Magic extracts the varactors in all three modes.
+
+Upstream: [klayout-pex#587](https://github.com/iic-jku/klayout-pex/issues/587).
+
 ## KLayout LVS joins the isolated P-well of `sky130_res_iso_pw` to the substrate
 
 `KNOWN_FAILS` entry: `sky130_res_iso_pw:klayout-lvs`
 
-`ptap_conn` (line 1158 of `sky130.lvs`) excludes taps in Nwell but not in DNWELL, and `connect_global(ptap_conn, substrate_name)` (line 1862) joins every P tap to the substrate. The two ends of the resistor sit on P taps inside DNWELL and are extracted as one net: `XR$1 R0|R1 R0|R1 B sky130_fd_pr__res_iso_pw`. The schematic resistor also has `R=0` against `R=30500` extracted; whether that alone fails the comparison is not tested. Magic extracts the isolation correctly, and `magic-lvs` passes.
+`ptap_conn` (line 1158 of `sky130.lvs`) excludes taps in Nwell but not in DNWELL, and `connect_global(ptap_conn, substrate_name)` (line 1862) joins every P tap to the substrate. The two ends of the resistor sit on P taps inside DNWELL and are extracted as one net: `XR$1 R0|R1 R0|R1 B sky130_fd_pr__res_iso_pw`. The schematic resistor also has `R=0` against `R=30500` extracted. Whether that alone fails the comparison is not tested. Magic extracts the isolation correctly, and `magic-lvs` passes.
 
 The same short hits `sky130_dnwell_nmos` and `sky130_dnwell_inv`, where it does not change the result: their isolated P-well, the NMOS bulk and source, is extracted as one net with the substrate ring, `S,VSS`, and KLayout still reports a match. The schematic VSS pin connects to no device, so it has no partner in the comparison, and the layout net `S,VSS` is matched to the schematic net S. The layouts are right and the step passes, but on a shorted netlist.
 
-## KLayout LVS stops on `sky130_npn_11v0_W1p00L1p00`
+## KLayout LVS and kpex stop on `sky130_npn_11v0_W1p00L1p00`
 
-`KNOWN_FAILS` entry: `sky130_npn_11v0_W1p00L1p00:klayout-lvs`
+`KNOWN_FAILS` entries: `sky130_npn_11v0_W1p00L1p00:klayout-lvs`, `sky130_npn_11v0_W1p00L1p00:klayout-pex1`, `sky130_npn_11v0_W1p00L1p00:klayout-pex2`, `sky130_npn_11v0_W1p00L1p00:klayout-pex3`
 
-The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5.
+The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. kpex 0.10.0 runs its own copy of the deck (`klayout_pex/pdk/sky130A/libs.tech/kpex/sky130.lvs`) in its LVS step and stops with the same error in every mode, on KLayout 0.30.13 as well.
+
+Upstream: [klayout-pex#588](https://github.com/iic-jku/klayout-pex/issues/588), with a tested fix for the copy of the deck in kpex.
+
+## kpex has no model mapping for the photodiode
+
+`KNOWN_FAILS` entries: `sky130_photodiode:klayout-pex1`, `sky130_photodiode:klayout-pex2`, `sky130_photodiode:klayout-pex3`
+
+The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its `sky130A` tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
+
+Upstream: [klayout-pex#254](https://github.com/iic-jku/klayout-pex/issues/254) lists the photodiode as still without a model, since the PDK has none, and [klayout-pex#589](https://github.com/iic-jku/klayout-pex/issues/589) asks for a way to extract such a cell anyway.
 
 ## KLayout LVS has no 16 V MOS
 

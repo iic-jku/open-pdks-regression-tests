@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Generates dummy metal-only layouts for validating Magic PEX against hand calculations.
 # Run: klayout -b -r gen_structures.py
 

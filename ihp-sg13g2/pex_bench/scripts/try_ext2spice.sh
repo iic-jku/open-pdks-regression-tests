@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # magic-pex and klayout-pex give identical coupling caps but differ by 40 fF in the
 # substrate terms on the same layout. The only difference in how they drive Magic is
 # that sak-pex.sh issues "ext2spice lvs" and kpex does not. Isolate which sub-option.

@@ -1,9 +1,9 @@
 # sky130A regression design: PDK selection and known failures.
-# Every target lives in ../common.mk - run with "make <target>" from this directory.
+# Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
@@ -16,6 +16,9 @@ EXPECTED_PDK := sky130A
 # Override with: make <target> CELL=<cellname>
 CELL ?= sky130_nfet_01v8_tap
 
+# gdscheck 0.2.1 has no rule decks for sky130A, so the regression leaves its step out.
+GDSCHECK_STEP :=
+
 # Steps of regression that do not simply pass. ../common.mk has the entry syntax and what
 # each outcome is reported as.
 #   KNOWN_FAILS         tool bug: the step fails although it should pass (KNOWN_ISSUES.md)
@@ -25,19 +28,24 @@ CELL ?= sky130_nfet_01v8_tap
 KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt:magic-lvs \
 	sky130_diode_pd2nw_05v5_lvt:magic-drc sky130_diode_pd2nw_05v5_hvt:magic-drc \
 	sky130_npn_11v0_W1p00L1p00:magic-lvs sky130_npn_11v0_W1p00L1p00:magic-drc \
+	sky130_npn_11v0_W1p00L1p00:klayout-pex1 sky130_npn_11v0_W1p00L1p00:klayout-pex2 sky130_npn_11v0_W1p00L1p00:klayout-pex3 \
+	sky130_photodiode:klayout-pex1 sky130_photodiode:klayout-pex2 \
 	sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5:magic-lvs sky130_cap_vpp_11p5x11p7_m1m2_noshield:magic-lvs \
 	sky130_cap_vpp_08p6x07p8_m1m2_shieldl1:magic-lvs sky130_cap_vpp_04p4x04p6_m1m2_shieldl1:magic-lvs \
 	sky130_photodiode:klayout-drc sky130_photodiode:magic-drc sky130_photodiode:magic-lvs \
-	sky130_pnp_05v5_W3p40L3p40:magic-pex3 sky130_pnp_05v5_W3p40L3p40:klayout-pex3 \
+	sky130_pnp_05v5_W3p40L3p40:magic-pex3 \
 	sky130_pfet_01v8_ring_pcell:magic-drc sky130_pfet_01v8_ring_pcell:magic-lvs \
 	sky130_pfet_01v8_lvt_ring_pcell:magic-drc sky130_pfet_01v8_lvt_ring_pcell:magic-lvs \
 	sky130_pfet_01v8_hvt_ring_pcell:magic-drc sky130_pfet_01v8_hvt_ring_pcell:magic-lvs \
 	sky130_pfet_g5v0d10v5_ring_pcell:magic-drc sky130_pfet_g5v0d10v5_ring_pcell:magic-lvs \
 	sky130_cap_var_lvt:magic-lvs sky130_cap_var_hvt:magic-lvs sky130_cap_var_hvt_varac5:magic-lvs \
+	sky130_cap_var_lvt:klayout-pex1 sky130_cap_var_lvt:klayout-pex2 sky130_cap_var_lvt:klayout-pex3 \
+	sky130_cap_var_hvt:klayout-pex1 sky130_cap_var_hvt:klayout-pex2 sky130_cap_var_hvt:klayout-pex3 \
+	sky130_cap_var_hvt_varac5:klayout-pex1 sky130_cap_var_hvt_varac5:klayout-pex2 sky130_cap_var_hvt_varac5:klayout-pex3 \
 	sky130_res_high_po_0p35:magic-drc sky130_res_high_po_0p69:magic-drc \
 	sky130_res_xhigh_po_0p35:magic-drc sky130_res_xhigh_po_0p69:magic-drc sky130_combined:magic-drc \
 	sky130_pfet_g5v0d16v0:magic-drc \
-	sky130_short1:magic-pex3 sky130_short1:klayout-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3 \
+	sky130_short1:magic-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3 \
 	sky130_combined:magic-lvs \
 	sky130_diode_pd2nw_05v5:klayout-lvs sky130_diode_pd2nw_05v5_lvt:klayout-lvs sky130_diode_pd2nw_05v5_hvt:klayout-lvs \
 	sky130_diode_pd2nw_05v5_psd8:klayout-lvs sky130_diode_pd2nw_11v0:klayout-lvs \
