@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # SPDX-License-Identifier: Apache-2.0
-# Description: Reusable job behind the four regression-<pdk>.yml workflows. Runs the DRC / LVS / PEX
-# regression and the PEX bench of one PDK inside the IIC-OSIC-TOOLS container.
+# Description: Reusable job behind the four regression-<pdk>.yml workflows. Runs the DRC / LVS / PEX regression and the PEX bench of one PDK inside the IIC-OSIC-TOOLS container.
 
 name: Regression (common)
 
@@ -26,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     container:
-      # Push and pull request runs pass no image. The same fallback is repeated for IMAGE below,
-      # because the container block cannot read env.
+      # Push and pull request runs pass no image.
+      # The same fallback is repeated for IMAGE below, because the container block cannot read env.
       image: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
       # The checkout belongs to the runner user, the tools write into it as root.
       options: --user root
@@ -44,8 +43,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up IIC-OSIC-TOOLS environment
-        # GitHub Actions bypasses the container entrypoint, so the image's tool environment is
-        # never initialised: $PATH is the runner host's and KLAYOUT_PATH, PYTHONPATH, ... are unset.
+        # GitHub Actions bypasses the container entrypoint, so the image's tool environment is never initialised: $PATH is the runner host's and KLAYOUT_PATH, PYTHONPATH, ... are unset.
         # Source the image's setup script and persist the result for every later step.
         # common.mk switches PDK to the folder's own PDK with sak-pdk.
         run: |
@@ -83,7 +81,7 @@ jobs:
             echo "| KLayout | $(klayout -v 2>/dev/null) |"
             echo "| gdscheck | $(gdscheck --version 2>/dev/null) |"
             echo "| kpex | $(kpex --version 2>/dev/null | tail -1) |"
-            echo "| Xschem | $(xschem --version 2>/dev/null | head -1) |"
+            echo "| Xschem | $(xschem --version 2>/dev/null | grep -m1 -o 'XSCHEM V[^ ]*') |"
             echo
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
@@ -93,8 +91,8 @@ jobs:
 
       - name: Run PEX bench
         id: pex-bench
-        # Runs after a failed regression too, the two are independent. Not after a failed checkout
-        # or environment setup, which skip the regression.
+        # Runs after a failed regression too, the two are independent.
+        # Not after a failed checkout or environment setup, which skip the regression.
         if: ${{ !cancelled() && steps.regression.conclusion != 'skipped' }}
         run: make -C "$PDK_DIR" pex-bench 2>&1 | tee pex-bench.log
 

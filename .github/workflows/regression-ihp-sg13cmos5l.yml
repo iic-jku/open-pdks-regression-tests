@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # SPDX-License-Identifier: Apache-2.0
-# Description: ihp-sg13cmos5l regression and PEX bench in the IIC-OSIC-TOOLS container on every change of
-# main and on manual dispatch. The job itself is in regression-common.yml.
+# Description: ihp-sg13cmos5l regression and PEX bench in the IIC-OSIC-TOOLS container on every change of main and on manual dispatch. The job itself is in regression-common.yml.
 
 name: Regression ihp-sg13cmos5l
 
 on:
-  # No schedule: the IIC-OSIC-TOOLS test every nightly image against main themselves (tests 26, 31, 35,
-  # 47, and 48), so this workflow checks the changes made here. Documentation changes need no run.
+  # No schedule: the IIC-OSIC-TOOLS test every nightly image against main themselves (tests 26, 31, 35, 47, and 48), so this workflow checks the changes made here.
+  # Documentation changes need no run.
   push:
     branches:
       - 'main'
@@ -29,6 +28,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   regression:
