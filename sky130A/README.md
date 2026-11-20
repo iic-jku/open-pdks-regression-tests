@@ -2,7 +2,7 @@
 
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the sky130A Open-PDK, with KLayout, Magic + Netgen and kpex. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the `sky130A` Open-PDK, with KLayout, Magic + Netgen and kpex. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The IIC-OSIC-TOOLS run it with every nightly build and before every release, as [test 48](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/48/test_drc_lvs_pex_sky130a.sh). The [regression-sky130A.yml](../.github/workflows/regression-sky130A.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 Things in this PDK that are easy to get wrong when drawing these devices are collected in [FINDINGS.md](FINDINGS.md), the causes of the known failures in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), and the cells broken on purpose in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 
@@ -20,7 +20,7 @@ make help
 
 ## PDK Selection
 
-Every target except `help` needs the sky130A PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh sky130A` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to sky130A` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help` needs the `sky130A` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh sky130A` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to sky130A` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
 
 ## Open the Design Files
 
@@ -33,7 +33,7 @@ make open OPEN_ARGS=--all     # also the generated netlists and reports
 
 ## Design Rule Check (DRC)
 
-Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`. There is no gdscheck flow here: gdscheck 0.2.1 has no rule decks for sky130A, so the [Makefile](Makefile) leaves the `gdscheck-drc` step out of the regression, and `make gdscheck-drc` stops with `gdscheck DRC for sky130A not yet supported`.
+Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`. There is no gdscheck flow here: gdscheck 0.2.1 has no rule decks for `sky130A`, so the [Makefile](Makefile) leaves the `gdscheck-drc` step out of the regression, and `make gdscheck-drc` stops with `gdscheck DRC for sky130A not yet supported`.
 
 KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus separate pin/label, zero-area and density checks depending on `DRC_LEVEL` (`sak-drc.sh -l`). It is ignored by `magic-drc`, which always runs the full rule set of the PDK's Magic tech file:
 
@@ -87,7 +87,7 @@ Exports the schematic netlist from Xschem, then runs LVS. Compares the GDS layou
 make klayout-lvs CELL=sky130_nfet_01v8_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the sky130A Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the `sky130A` Open-PDK:
 
 ```sh
 make magic-lvs
@@ -120,7 +120,7 @@ make magic-verify CELL=sky130_nfet_01v8_tap
 
 ## PEX Bench
 
-[pex_bench/](pex_bench/) is a second, independent PEX test: metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand, extracted with Magic and the kpex engines and checked against `pex_bench/expected/results.json`. It is the ihp-sg13g2 bench ported to this PDK, see [pex_bench/README.md](pex_bench/README.md).
+[pex_bench/](pex_bench/) is a second, independent PEX test: metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand, extracted with Magic and the kpex engines and checked against `pex_bench/expected/results.json`. It is the `ihp-sg13g2` bench ported to this PDK, see [pex_bench/README.md](pex_bench/README.md).
 
 ```sh
 make pex-bench                      # Magic modes 1/2/3 and kpex 2.5D, compare, check against expected
@@ -135,7 +135,7 @@ The `regression` target runs the DRC / LVS / PEX toolchain over **every** cell i
 make regression
 ```
 
-It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `klayout-lvs`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex1` (C-decoupled), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC): the default of `../common.mk` without `gdscheck-drc`, which the [Makefile](Makefile) leaves out because gdscheck 0.2.1 has no rule decks for sky130A. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
+It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `klayout-lvs`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex1` (C-decoupled), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC): the default of `../common.mk` without `gdscheck-drc`, which the [Makefile](Makefile) leaves out because gdscheck 0.2.1 has no rule decks for `sky130A`. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
 
 ```sh
 make regression LAYOUT_CELLS="sky130_nfet_01v8_tap sky130_res_generic_po" REGRESSION_STEPS="klayout-drc magic-drc magic-lvs"
@@ -204,13 +204,13 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 
 **Deep Nwell**
 
-- `sky130_dnwell_nmos`, `sky130_dnwell_inv` (PASS; the KLayout deck shorts the isolated P-well to the substrate and still reports a match, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sky130_dnwell_nmos`, `sky130_dnwell_inv` (PASS, but the KLayout deck shorts the isolated P-well to the substrate and still reports a match, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 
 **Capacitors**
 
 - `sky130_cap_mim_m3_1`, `sky130_cap_mim_m3_2` (KNOWN FAIL: KLayout LVS)
 - `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC; KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX): Nwell of the PCell (`varac.5`)
+- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX): Nwell of the PCell (`varac.5`)
 - `sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5`, `sky130_cap_vpp_11p5x11p7_m1m2_noshield`, `sky130_cap_vpp_08p6x07p8_m1m2_shieldl1`, `sky130_cap_vpp_04p4x04p6_m1m2_shieldl1` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS)
 
 **Resistors**

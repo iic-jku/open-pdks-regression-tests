@@ -39,9 +39,9 @@ The `sky130.lvs` deck reads such lines as devices only with `-rd convert_subckts
 
 ## Bulk tie is butted against the source
 
-`bulk = "bulk tie"` of the `nfet`/`pfet` PCells butts the tap against the source diffusion and gives it its own li1, not connected to the source li1. Source and bulk are one net through the silicide. The `_tap` cells tie the bulk to the source in the schematic and strap the tap li1 to the source li1, as the gf180mcuD `_tap` cells do with Metal1.
+`bulk = "bulk tie"` of the `nfet`/`pfet` PCells butts the tap against the source diffusion and gives it its own li1, not connected to the source li1. Source and bulk are one net through the silicide. The `_tap` cells tie the bulk to the source in the schematic and strap the tap li1 to the source li1, as the `gf180mcuD` `_tap` cells do with Metal1.
 
-Inside HVI a tap butted to diffusion has to reach at least 0.7 um away from the butting edge (`hvdifftap.16`, "Min width tap butting diff on one or two sides"; the figure of the rule measures across the tap, like `difftap.4` and `difftap.5` for a tap bound by one or two diffusions). The bulk tie of the PCell reaches 0.45 um (`nfet`) or 0.39 um (`pfet`), and its `grw` parameter does not change that. The `_tap` cells of the MV devices (`nfet_03v3_nvt`, `nfet_05v0_nvt`, `nfet_g5v0d10v5`, `pfet_g5v0d10v5`) extend the tap to 0.7 um in the top cell, with its implant (0.125 um, `n/psd.5b`), HVI (0.18 um, `hvdifftap.22`) and, for the PMOS, the HV Nwell (0.33 um, `hvdifftap.19`).
+Inside HVI a tap butted to diffusion has to reach at least 0.7 um away from the butting edge (`hvdifftap.16`, "Min width tap butting diff on one or two sides", and the figure of the rule measures across the tap, like `difftap.4` and `difftap.5` for a tap bound by one or two diffusions). The bulk tie of the PCell reaches 0.45 um (`nfet`) or 0.39 um (`pfet`), and its `grw` parameter does not change that. The `_tap` cells of the MV devices (`nfet_03v3_nvt`, `nfet_05v0_nvt`, `nfet_g5v0d10v5`, `pfet_g5v0d10v5`) extend the tap to 0.7 um in the top cell, with its implant (0.125 um, `n/psd.5b`), HVI (0.18 um, `hvdifftap.22`) and, for the PMOS, the HV Nwell (0.33 um, `hvdifftap.19`).
 
 ## NPC around the poly contacts
 
@@ -91,4 +91,4 @@ The `sky130_diode_pd2nw_*` cells flatten the PCell, keep the anode and the catho
 
 ## Deep Nwell cells
 
-`sky130_dnwell_nmos` and `sky130_dnwell_inv` follow `sg13_dnwell_nmos` and `sg13_dnwell_inv` and the gf180mcuD cells of the same name: an NMOS in the P-well inside a DNWELL (bulk on the source), and a PMOS/NMOS pair, pins D, S, G, VDD and VSS. The DNWELL edge is covered by an Nwell ring from 1.03 um inside (`nwell.6`) to 0.4 um outside, with an N+ tap ring on it (VDD), and a P+ substrate ring outside (VSS). The PMOS of the inverter sits in the left arm of the Nwell ring, so its bulk is the DNWELL.
+`sky130_dnwell_nmos` and `sky130_dnwell_inv` follow `sg13_dnwell_nmos` and `sg13_dnwell_inv` and the `gf180mcuD` cells of the same name: an NMOS in the P-well inside a DNWELL (bulk on the source), and a PMOS/NMOS pair, pins D, S, G, VDD and VSS. The DNWELL edge is covered by an Nwell ring from 1.03 um inside (`nwell.6`) to 0.4 um outside, with an N+ tap ring on it (VDD), and a P+ substrate ring outside (VSS). The PMOS of the inverter sits in the left arm of the Nwell ring, so its bulk is the DNWELL.

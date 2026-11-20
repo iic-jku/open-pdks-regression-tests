@@ -3,7 +3,7 @@
 Metal-only dummy layouts whose parasitics can be computed by hand from the PDK extraction deck, extracted with Magic and with the kpex engines, compared term by term, and checked against expected values.
 It is the test that says whether the parasitic extractors in IIC-OSIC-TOOLS implement the deck.
 
-This is the [ihp-sg13g2 bench](../../ihp-sg13g2/pex_bench/) ported to sky130A. The geometry is unchanged, the layers and every coefficient are read from this PDK. See that directory's README for the investigation that built the bench, the report on the six defects it found, and the upstream issue drafts. Those defects are properties of the tools, not of the PDK.
+This is the [`ihp-sg13g2` bench](../../ihp-sg13g2/pex_bench/) ported to `sky130A`. The geometry is unchanged, the layers and every coefficient are read from this PDK. See that directory's README for the investigation that built the bench, the report on the six defects it found, and the upstream issue drafts. Those defects are properties of the tools, not of the PDK.
 
 ## The metal stack
 
@@ -30,13 +30,13 @@ Five via levels, and the widest spread of cut sizes and resistances of any of th
 | m3-m4 | `via3` | 70/44 | 0.20 | 0.20 | 3410 |
 | m4-m5 | `via4` | 71/44 | 0.80 | 0.80 | 380 |
 
-There is one via family per level, so as in gf180mcuD there is no `vp_*` chain and no `gen_via3.py`. The via chains use a 16 um wide landing arm rather than the 12 um of the IHP benches, because `via4`'s eight 0.8 um cuts on 0.8 um spacing need 12 um of room.
+There is one via family per level, so as in `gf180mcuD` there is no `vp_*` chain and no `gen_via3.py`. The via chains use a 16 um wide landing arm rather than the 12 um of the IHP benches, because `via4`'s eight 0.8 um cuts on 0.8 um spacing need 12 um of room.
 
 Note that `cifinput` grows the via layers before forming the contact: `VIA3` by 60 nm per side and `VIA4` by 190 nm, so a drawn 0.8 um `via4` becomes 1.18 um inside Magic. Anything narrower than that will not form a contact even though the drawn cut looks legal.
 
 ## Table E and the via3 and via4 chains
 
-Up to Magic 8.3.691, full-RC extraction emitted no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting (swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing), so table E covered li1-m1, m1-m2 and m2-m3 only. The deck was not the cause: the same structure with a narrow, resistive arm came out right, 8.0635 Ohm for one `via3` (1 um wide, 49.5 um per arm; deck 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063) and 2.26195 Ohm for one `via4` (2 um wide; deck 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261). The defect was reported in [magic#568](https://github.com/RTimothyEdwards/magic/issues/568) and fixed in 8.3.692. Since then table E covers all five levels, `via4`'s 380 mOhm included, and every row matches the deck to 0.001 %.
+Up to Magic 8.3.691, full-RC extraction emitted no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting (swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing), so table E covered li1-m1, m1-m2 and m2-m3 only. The deck was not the cause: the same structure with a narrow, resistive arm came out right, 8.0635 Ohm for one `via3` (1 um wide, 49.5 um per arm, deck 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063) and 2.26195 Ohm for one `via4` (2 um wide, deck 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261). The defect was reported in [magic#568](https://github.com/RTimothyEdwards/magic/issues/568) and fixed in 8.3.692. Since then table E covers all five levels, `via4`'s 380 mOhm included, and every row matches the deck to 0.001 %.
 
 Until then the mode 3 netlists of these ten chains also failed `scripts/check_pex_ports.py`, which `magic-pex` in `common.mk` runs after every extraction: without a resistor `l` and `u` shared one node, the netlist still declared both, and port `l` was connected to nothing. The ten steps were in `KNOWN_FAILS` in the Makefile up to that fix.
 
@@ -55,7 +55,7 @@ Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap
 
 This PDK keeps its extraction rules in the main tech file rather than a separate `<pdk>-extract.tech`. The extract section opens at line 5006 with `style ngspice variants (),(orig),(si),(hrhc),(lrhc),(hrlc),(lrlc)`. The nominal resistances are the `variants (),(orig),(si)` block at 5095 and the nominal capacitances the one at 5266. Every coefficient is repeated per corner, so a value taken from the wrong block is a plausible-looking wrong number. The hand-maintained tables in `scripts/analyse.py` and `scripts/compare_engines.py` are transcribed from those two blocks only.
 
-Unlike ihp-sg13cmos5l and gf180mcuD, this PDK's `klayout_pex_protobuf/sky130A_tech.pb.json` is consistent with its deck: every `sidewalls` and `substrates` value matches, and the computed-layer names resolve to layers the parasitics tables know.
+Unlike `ihp-sg13cmos5l` and `gf180mcuD`, this PDK's `klayout_pex_protobuf/sky130A_tech.pb.json` is consistent with its deck: every `sidewalls` and `substrates` value matches, and the computed-layer names resolve to layers the parasitics tables know.
 
 ## Structures
 
@@ -74,7 +74,7 @@ All in `layout/`, 58 cells, regenerated by `make layouts` from `scripts/gen_*.py
 
 Reaching that wire takes two cuts here, not one as in the other PDKs: the standard cell's pins are on `li1` and `met1` is already occupied by the power rails, so `gen_hier.py` builds `li1 -> mcon -> met1 pad -> via -> met2`. The pin is labelled `A` on the li1 label purpose 67/5, while the pin box that positions the cut is on 67/16 and is exactly one `mcon` wide.
 
-The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for this PDK. That was a deliberate call: the bench measures extractor arithmetic on known shapes, and identical shapes across PDKs are what make the columns comparable. Fitting the shapes to this PDK's rules would move every hand-computed number.
+The geometry was carried over from `ihp-sg13g2` unchanged and is not DRC clean for this PDK. That was a deliberate call: the bench measures extractor arithmetic on known shapes, and identical shapes across PDKs are what make the columns comparable. Fitting the shapes to this PDK's rules would move every hand-computed number.
 
 ## Outputs and the check
 

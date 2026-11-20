@@ -35,7 +35,7 @@ Magic DRC reports nine rule classes on the same layout, among them `MV Diffusion
 
 The Magic tech file has no device line for the VPP (MOM) capacitors: it mentions `sky130_fd_pr__cap_vpp_*` only in a comment (line 107), so Magic cannot extract the capacitor from its geometry. The extracted cell has its pins and no device, and Netgen reports `has no elements and/or nodes. Not checked.` A layout drawn with Magic's own generator (`sky130::sky130_fd_pr__cap_vpp_*_draw`), which places the fixed cell of `libs.ref` as a named subcell, does not get further through `sak-lvs.sh`, which flattens the layout first: the extraction then writes no subcircuit at all.
 
-This is the same situation as `sg13_cmomi:magic-lvs` in ihp-sg13g2.
+This is the same situation as `sg13_cmomi:magic-lvs` in `ihp-sg13g2`.
 
 ## KLayout DRC, Magic DRC and Magic + Netgen LVS fail on `sky130_photodiode`
 
@@ -159,7 +159,7 @@ The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`
 
 `KNOWN_FAILS` entries: `sky130_photodiode:klayout-pex1`, `sky130_photodiode:klayout-pex2`, `sky130_photodiode:klayout-pex3`
 
-The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its sky130A tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
+The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its `sky130A` tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
 
 ## KLayout LVS has no 16 V MOS
 
