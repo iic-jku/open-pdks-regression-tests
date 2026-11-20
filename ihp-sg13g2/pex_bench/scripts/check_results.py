@@ -31,7 +31,6 @@ Exit codes, so a CI test can triage a failure without reading the log:
   4  usage error, or the expected file is not there to compare against.
 
 Precedence is 3, then 1, then 2: the most basic problem is the one reported.
-SPDX-License-Identifier: Apache-2.0
 """
 import json
 import shutil

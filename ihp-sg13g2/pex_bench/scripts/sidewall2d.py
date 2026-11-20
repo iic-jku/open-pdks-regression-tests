@@ -15,7 +15,6 @@ GatPoly and TopMetal2 sit in conformal dielectrics and are not modelled.
                                           0.25 um steps) fitted to b / (s + c) by least squares
 
 Needs numpy and scipy. A point takes a few seconds, a fit a few minutes.
-SPDX-License-Identifier: Apache-2.0
 """
 import sys
 import numpy as np

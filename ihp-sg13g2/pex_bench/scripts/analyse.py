@@ -7,7 +7,6 @@
 
 Reads the netlists the bench Makefile writes into netlist/pex/ and prints the comparison.
 With --json <file> it also writes every compared value for check_results.py.
-SPDX-License-Identifier: Apache-2.0
 """
 import json
 import os

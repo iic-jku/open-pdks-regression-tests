@@ -17,7 +17,6 @@ against), so nets are never looked up by name: the pair is whichever two nets ar
 substrate (read_kpex.SUBSTRATE: VSUBS, or the deck's substrate net since kpex 0.6.1), and on
 capsub the plate is the larger of the two substrate couplings, the wire the smaller.
 With --json <file> every compared value is written for check_results.py.
-SPDX-License-Identifier: Apache-2.0
 """
 import glob
 import json
