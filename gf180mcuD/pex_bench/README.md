@@ -8,7 +8,7 @@ This is the [ihp-sg13g2 bench](../../ihp-sg13g2/pex_bench/) ported to gf180mcuD.
 **Up to kpex 0.5.1, kpex 2.5D could not extract this PDK's top metal.** `klayout_pex_protobuf/gf180mcuD_tech.pb.json` declared the computed layer `metal5_con` with `"original_layer_name": "MetalTop"`, while every parasitics table in the same file names that layer `Metal5`. One wrong string, two consequences:
 
 - Any cell whose fringe extraction touches the top metal crashed: `RuntimeError: KeyError: 'MetalTop' in EdgeNeighborhoodVisitor.on_edge`. That was `overlap_m4_m5` and `overlap_m1_m5`, which sat in `KPEX_KNOWN_FAILS`.
-- `capsub_m5` did not crash but was silently wrong. The `substrates` table carried a stray `MetalTop` row whose coefficients are **sky130A's** met5 values (6.32 aF/um^2 and 38.85 aF/um), so kpex returned 23.5703 fF where the deck gives 20.5722 fF - 14.6 % high. `expected/results.json` pinned that value, so the check would notice the day it changed.
+- `capsub_m5` did not crash but was silently wrong. The `substrates` table carried a stray `MetalTop` row whose coefficients are **sky130A's** met5 values (6.32 aF/um^2 and 38.85 aF/um), so kpex returned 23.5703 fF where the deck gives 20.5722 fF, 14.6 % high. `expected/results.json` pinned that value, so the check would notice the day it changed.
 
 kpex 0.5.2 fixed the tech file. Both overlap cells extract, `KPEX_KNOWN_FAILS` is empty, and `capsub_m5` now matches the deck. `expected/results.json` was re-blessed with kpex 0.6.3.
 
@@ -27,7 +27,7 @@ The layouts are committed as well as generated. `make layouts-check` guards that
 
 ## The metal stack
 
-Five conductors, `m5` being the thick top metal. It is called `m5` and not `tm1` as in the two IHP benches because that is what this PDK calls it everywhere - `Metal5` in `libs.tech/klayout/tech/gf180mcu.map`, `allm5`/`metal5` in the Magic deck. There is no separate TopMetal layer and no skipped count, so the name is unambiguous. The pin purpose lives on datatype 10 here, not 2 as in the IHP PDKs.
+Five conductors, `m5` being the thick top metal. It is called `m5` and not `tm1` as in the two IHP benches because that is what this PDK calls it everywhere: `Metal5` in `libs.tech/klayout/tech/gf180mcu.map`, `allm5`/`metal5` in the Magic deck. There is no separate TopMetal layer and no skipped count, so the name is unambiguous. The pin purpose lives on datatype 10 here, not 2 as in the IHP PDKs.
 
 | Bench name | Magic deck | drawn | pin | Rsheet [mOhm/sq] |
 |---|---|---|---|---|
@@ -52,7 +52,7 @@ Vias: `Via1` 35/0 m1-m2, `Via2` 38/0 m2-m3, `Via3` 40/0 m3-m4, `Via4` 41/0 m4-m5
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates.
 
-This PDK keeps its extraction rules in the main tech file rather than a separate `<pdk>-extract.tech`. The extract section opens at line 3252 with `style ngspice variants (),(hrhc),(lrhc),(hrlc),(lrlc)`; the nominal resistances are the `variants ()` block at 3311 and the nominal capacitances the one at 3490. Every coefficient is repeated per corner, so a value taken from the wrong block is a plausible-looking wrong number. The hand-maintained tables in `scripts/analyse.py` and `scripts/compare_engines.py` are transcribed from those two blocks only.
+This PDK keeps its extraction rules in the main tech file rather than a separate `<pdk>-extract.tech`. The extract section opens at line 3252 with `style ngspice variants (),(hrhc),(lrhc),(hrlc),(lrlc)`. The nominal resistances are the `variants ()` block at 3311 and the nominal capacitances the one at 3490. Every coefficient is repeated per corner, so a value taken from the wrong block is a plausible-looking wrong number. The hand-maintained tables in `scripts/analyse.py` and `scripts/compare_engines.py` are transcribed from those two blocks only.
 
 ## Structures
 
@@ -84,11 +84,7 @@ The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for
 
 This directory ships no `expected/fastercap/` matrices, so the FasterCap column stays empty until a field solve is run locally with `FASTERCAP=1`.
 
-To produce a set, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
-the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices
-contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and
-`--tolerance` is written up once, in
-[../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
+To produce a set, use `scripts/make_fastercap_expected.sh` in the repository root, which takes the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and `--tolerance` is written up once, in [../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
 
 ## Notes for anyone extending this
 

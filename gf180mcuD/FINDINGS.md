@@ -42,7 +42,7 @@ The KLayout deck reads capacitors and resistors only as `C` and `R` elements wit
 
 ## MOS capacitors need a tap
 
-`cap_nmos_*` and `cap_pmos_*` come without a substrate or Nwell tap and fail `DF.14_LV` / `DF.13_LV` (a tap within 20 um). The cells here put a 0.46 um tap under the wide bottom bar of the diffusion Metal1, which straps it to the diffusion terminal; 0.36 um is too small for `DF.9` (0.2025 um^2 of COMP).
+`cap_nmos_*` and `cap_pmos_*` come without a substrate or Nwell tap and fail `DF.14_LV` / `DF.13_LV` (a tap within 20 um). The cells here put a 0.46 um tap under the wide bottom bar of the diffusion Metal1, which straps it to the diffusion terminal. A 0.36 um tap is too small for `DF.9` (0.2025 um^2 of COMP).
 
 ## Guard rings of the diode PCells are solid plates
 
@@ -54,7 +54,7 @@ With `pcmpgr=1` (the default of `diode_pw2dw` and `sc_diode`, and always for `di
 
 `deepnwell=1` of the `gf180mcu` `nfet`/`pfet` PCells draws DNWELL (and LVPWELL around an NMOS, 2.51 um inside the DNWELL edge, `LPW.3`), but no DNWELL tap, and its `pcmpgr=1` substrate ring has the solid-plate problem of the diode rings above. The `gf180_dnwell_*` cells therefore use `pcmpgr=0` and draw both rings themselves: an N+ tap ring inside the DNWELL, 1 um outside the LVPWELL, and the P+ substrate ring 2.5 um outside the DNWELL (`DF.18`), which is also the guard ring `DN.3` asks for. Two devices share one DNWELL.
 
-A PMOS in DNWELL (bulk = DNWELL, extracted as a regular `pfet_03v3` since `consider_dn_dw_features` defaults to false) still needs an N+ tap inside its own Nwell (`DF.13_LV`); the DNWELL tap ring outside the Nwell does not count. `gf180_dnwell_inv` has a 0.46 um tap in the PMOS Nwell, strapped to the ring.
+A PMOS in DNWELL (bulk = DNWELL, extracted as a regular `pfet_03v3` since `consider_dn_dw_features` defaults to false) still needs an N+ tap inside its own Nwell (`DF.13_LV`). The DNWELL tap ring outside the Nwell does not count. `gf180_dnwell_inv` has a 0.46 um tap in the PMOS Nwell, strapped to the ring.
 
 The deep Nwell diodes `diode_pw2dw` and `diode_dw2ps` are only extracted under `WELL_DIODE_MK` (153/51), so the `gf180_dnwell_*` cells have no diode device, and their VDD and VSS pins connect to no device in either netlist.
 
@@ -64,13 +64,13 @@ The deep Nwell diodes `diode_pw2dw` and `diode_dw2ps` are only extracted under `
 
 ## Small diodes are larger than their parameters
 
-At the default `wa = la = 0.36` the `diode_nd2ps` and `diode_pd2nw` PCells draw the diode COMP 0.36 x 0.565 um, 0.2034 um^2, which is the smallest area of 0.36 um width that meets `DF.9`. A schematic with the PCell parameters (`area='0.36u * 0.36u '`, 0.1296 um^2) is 36 % smaller than the layout. Both extractors read the drawn area (`A=0.2034P P=1.85U`). Only Netgen reports the difference, as a property error; the KLayout deck does not compare diode areas (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). The `gf180_diode_nd2ps_*` and `gf180_diode_pd2nw_*` cells keep the PCell parameters in their schematics and show the mismatch (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)).
+At the default `wa = la = 0.36` the `diode_nd2ps` and `diode_pd2nw` PCells draw the diode COMP 0.36 x 0.565 um, 0.2034 um^2, which is the smallest area of 0.36 um width that meets `DF.9`. A schematic with the PCell parameters (`area='0.36u * 0.36u '`, 0.1296 um^2) is 36 % smaller than the layout. Both extractors read the drawn area (`A=0.2034P P=1.85U`). Only Netgen reports the difference, as a property error. The KLayout deck does not compare diode areas (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). The `gf180_diode_nd2ps_*` and `gf180_diode_pd2nw_*` cells keep the PCell parameters in their schematics and show the mismatch (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)).
 
 **Work-around:** Set `la = 0.565`: the PCell then draws the same 0.36 x 0.565 um COMP as at the default, and the parameters say so. `gf180_combined` and `gf180_combined_cmim_ontop` place the two diodes that way.
 
 ## Metal resistors
 
-The `metal_resistor` PCell draws the `Metal<n>_Res` marker (110/11 to 110/13) but no `RES_MK` (110/5). The design manual asks for both: "Metal resistor should draw Metal1_Res to Metal5_Res for LVS purpose" (section 4.1, note 11), and "RES_MK layer is necessary for all resistors" (section 13.0 a, so that no dummy COMP is generated under them). The `gf180_rm*` cells add `RES_MK` over the marker in the top cell; the PCell stays as it is.
+The `metal_resistor` PCell draws the `Metal<n>_Res` marker (110/11 to 110/13) but no `RES_MK` (110/5). The design manual asks for both: "Metal resistor should draw Metal1_Res to Metal5_Res for LVS purpose" (section 4.1, note 11), and "RES_MK layer is necessary for all resistors" (section 13.0 a, so that no dummy COMP is generated under them). The `gf180_rm*` cells add `RES_MK` over the marker in the top cell. The PCell stays as it is.
 
 KLayout needs only `Metal<n>_Res` (`rm1_res = metal1.and(metal1_res)`), Magic both: its GDS import builds `rm1`..`rm3` as `MET<n> and RESDEF and MET<n>RES`, and `RESDEF` only receives 110/5, since the specific datatypes 110/11..15 are mapped to `MET<n>RES` first. Magic writes `RES_MK` itself for every metal resistor. It evaluates these import rules within each cell, though, so `RES_MK` in the top cell does nothing for the metal in the PCell, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 

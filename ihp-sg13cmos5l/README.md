@@ -165,9 +165,9 @@ make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3
 
 For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the `sak-pex.sh` `extresist` tuning parameters. They are ignored in `EXT_MODE=1`/`2`:
 
-- `THRESHOLD` - extresist threshold in mOhm (`-t`, default `10000` = 10 Ohm)
-- `MINRES` - extresist minimum resistance in mOhm (`-r`, default `1000` = 1 Ohm)
-- `MINDELAY` - extresist minimum delay in ps (`-y`, default `1`; `0` = gate by resistance)
+- `THRESHOLD`: extresist threshold in mOhm (`-t`, default `10000` = 10 Ohm)
+- `MINRES`: extresist minimum resistance in mOhm (`-r`, default `1000` = 1 Ohm)
+- `MINDELAY`: extresist minimum delay in ps (`-y`, default `1`, `0` = gate by resistance)
 
 ```sh
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
@@ -191,9 +191,9 @@ make pex-bench                      # Magic modes 1/2/3, kpex 2.5D, compare, che
 make -C pex_bench help              # the finer-grained targets
 ```
 
-It is the [ihp-sg13g2 bench](../ihp-sg13g2/pex_bench/) ported to this PDK: same geometry, every layer and every coefficient read from `ihp-sg13cmos5l-extract.tech`. The thick top metal is called `tm1` here as it is there, since it is the same physical layer (GDS 126) even though this deck calls it `metal5`; the thin `m5` of ihp-sg13g2 does not exist in cmos5l. The defects the bench found in ihp-sg13g2 are properties of Magic and kpex, not of the PDK - the write-up is in [../ihp-sg13g2/pex_bench/report/pex_bench_report.html](../ihp-sg13g2/pex_bench/report/pex_bench_report.html). The lateral coupling case is even cleaner in this PDK: the deck offset of 0.003 um quantises to zero, so Magic emits exactly half the deck coefficient at all five spacings.
+It is the [ihp-sg13g2 bench](../ihp-sg13g2/pex_bench/) ported to this PDK: same geometry, every layer and every coefficient read from `ihp-sg13cmos5l-extract.tech`. The thick top metal is called `tm1` here as it is there, since it is the same physical layer (GDS 126) even though this deck calls it `metal5`. The thin `m5` of ihp-sg13g2 does not exist in cmos5l. The defects the bench found in ihp-sg13g2 are properties of Magic and kpex, not of the PDK. The write-up is in [../ihp-sg13g2/pex_bench/report/pex_bench_report.html](../ihp-sg13g2/pex_bench/report/pex_bench_report.html). The lateral coupling case is even cleaner in this PDK: the deck offset of 0.003 um quantises to zero, so Magic emits exactly half the deck coefficient at all five spacings.
 
-The port also turned up two defects that are specific to this PDK, both in kpex. kpex's `ihp-sg13cmos5l_tech.pb.json` carries **ihp-sg13g2's** coefficients wherever a layer exists in both PDKs with a different value: the whole `sidewalls` block (Metal1 should be 43.268 aF with offset +0.003 um and kpex uses 28.735 / -0.057, so the error on lateral coupling grows with spacing from -5.7 % at 0.2 um to -32.3 % at 3.2 um), and in total 36 of the file's 107 coefficients - the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct. And up to kpex 0.4.4, kpex could not run for this PDK at all: its wheel shipped the `sg13cmos5l` LVS deck without the rule decks the deck includes, so `create_lvsdb` failed before any engine started. kpex 0.4.5 ships the complete deck, and the bench runs kpex 2.5D again. Details in [pex_bench/README.md](pex_bench/README.md).
+The port also turned up two defects that are specific to this PDK, both in kpex. kpex's `ihp-sg13cmos5l_tech.pb.json` carries **ihp-sg13g2's** coefficients wherever a layer exists in both PDKs with a different value: the whole `sidewalls` block (Metal1 should be 43.268 aF with offset +0.003 um and kpex uses 28.735 / -0.057, so the error on lateral coupling grows with spacing from -5.7 % at 0.2 um to -32.3 % at 3.2 um), and in total 36 of the file's 107 coefficients: the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct. And up to kpex 0.4.4, kpex could not run for this PDK at all: its wheel shipped the `sg13cmos5l` LVS deck without the rule decks the deck includes, so `create_lvsdb` failed before any engine started. kpex 0.4.5 ships the complete deck, and the bench runs kpex 2.5D again. Details in [pex_bench/README.md](pex_bench/README.md).
 
 ## Regression
 
@@ -279,7 +279,7 @@ A cell can be broken on purpose, to check that a tool still catches the mistake:
 When a tool misses the error in a cell that is broken on purpose because of a bug, that step goes into `KNOWN_FALSE_PASSES` instead, and the bug gets a section in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 - A listed step that passes is reported as `KNOWN FALSE PASS (tool bug, ignored)` and does not fail the regression.
-- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it; until then, a step that catches it is reported as `EXPECTED FAIL`.
+- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it. Until then, a step that catches it is reported as `EXPECTED FAIL`.
 - A listed step that fails without a finding is reported as `BROKEN`, as above.
 
 A step can be covered by one of the three lists only. The regression stops before running anything when a step is listed twice, or when a PEX step is listed under `EXPECTED_FAILS` or `KNOWN_FALSE_PASSES`.
@@ -294,19 +294,19 @@ make clean
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image; `KNOWN_FAILS` in the `Makefile` is the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image, and `KNOWN_FAILS` in the `Makefile` is the reference.
 
 **Low-voltage MOS transistors**
 
 - `sg13_lv_nmos_tap` (PASS)
-- `sg13_lv_nmos_tap_m1_a` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - Metal1 0.10 um wide (M1.a)
-- `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
-- `sg13_lv_nmos_tap_cnt_c` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain contact 0.04 um inside Activ (Cnt.c)
-- `sg13_lv_nmos_tap_cnt_c_ptap` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - substrate tap contacts 0.04 um inside Activ (Cnt.c)
-- `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate end cap 0.10 um (Gat.c)
-- `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain and source shorted
-- `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate not connected to its pin
-- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - schematic W 0.30 um, layout 0.15 um
+- `sg13_lv_nmos_tap_m1_a` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): Metal1 0.10 um wide (M1.a)
+- `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
+- `sg13_lv_nmos_tap_cnt_c` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): drain contact 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_cnt_c_ptap` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): substrate tap contacts 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): gate end cap 0.10 um (Gat.c)
+- `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): drain and source shorted
+- `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): gate not connected to its pin
+- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): schematic W 0.30 um, layout 0.15 um
 - `sg13_lv_pmos_tap` (PASS)
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)

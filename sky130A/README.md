@@ -7,7 +7,7 @@ This Makefile-driven directory runs standalone DRC, LVS, and PEX regression test
 Things in this PDK that are easy to get wrong when drawing these devices are collected in [FINDINGS.md](FINDINGS.md), the causes of the known failures in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), and the cells broken on purpose in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 
 > [!NOTE]
-> The `sky130.lvs` deck needs `-rd convert_subckts=true -rd scale=true` to read the CDL that the `sky130_fd_pr` Xschem symbols write (see [FINDINGS.md](FINDINGS.md)). The lists in the [Makefile](Makefile) are for a `sak-lvs.sh` that passes both switches and fails Magic + Netgen LVS on property errors. With an older `sak-lvs.sh`, KLayout LVS fails on every cell; `make regression SAK_LVS=<path>` runs another `sak-lvs.sh`.
+> The `sky130.lvs` deck needs `-rd convert_subckts=true -rd scale=true` to read the CDL that the `sky130_fd_pr` Xschem symbols write (see [FINDINGS.md](FINDINGS.md)). The lists in the [Makefile](Makefile) are for a `sak-lvs.sh` that passes both switches and fails Magic + Netgen LVS on property errors. With an older `sak-lvs.sh`, KLayout LVS fails on every cell. `make regression SAK_LVS=<path>` runs another `sak-lvs.sh`.
 
 ## Show Available Targets
 
@@ -62,7 +62,7 @@ make magic-drc
 make magic-drc CELL=sky130_nfet_01v8_tap
 ```
 
-Magic DRC and the KLayout deck disagree in both directions. `sky130A_mr.drc` has no check for several periphery rules that Magic does check, such as `hvdifftap.16` and `varac.5`; Magic does not check NPC and HVI as drawn, and reports errors on some layouts the deck passes. See [FINDINGS.md](FINDINGS.md) ("The KLayout DRC deck misses rules") and [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+Magic DRC and the KLayout deck disagree in both directions. `sky130A_mr.drc` has no check for several periphery rules that Magic does check, such as `hvdifftap.16` and `varac.5`. Magic does not check NPC and HVI as drawn, and reports errors on some layouts the deck passes. See [FINDINGS.md](FINDINGS.md) ("The KLayout DRC deck misses rules") and [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 ## Export Schematic Netlist for LVS
 
@@ -187,7 +187,7 @@ make clean
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the current IIC-OSIC-TOOLS image; the lists in the `Makefile` are the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the current IIC-OSIC-TOOLS image, and the lists in the `Makefile` are the reference.
 
 The layouts are built from the `skywater130` KLayout PCells of the PDK, the 16 V MOS from its Magic generator, the BJTs, the photodiode and the VPP capacitors from its fixed layouts. Where a PCell draws something that breaks a design rule, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why.
 
@@ -198,9 +198,9 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 - `sky130_nfet_01v8_*`, `sky130_nfet_01v8_lvt_*`, `sky130_nfet_03v3_nvt_*`, `sky130_nfet_05v0_nvt_*`, `sky130_nfet_g5v0d10v5_*` (PASS, each as `_tap`, `_ring` and `_ring_pcell`)
 - `sky130_pfet_01v8_*`, `sky130_pfet_01v8_lvt_*`, `sky130_pfet_01v8_hvt_*`, `sky130_pfet_g5v0d10v5_*` as `_tap` and `_ring` (PASS)
 - `sky130_pfet_01v8_ring_pcell`, `sky130_pfet_01v8_lvt_ring_pcell`, `sky130_pfet_01v8_hvt_ring_pcell`, `sky130_pfet_g5v0d10v5_ring_pcell` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sky130_nfet_g5v0d16v0` (KNOWN FAIL: KLayout LVS), `sky130_pfet_g5v0d16v0` (KNOWN FAIL: Magic DRC, KLayout LVS) - drawn with the Magic generator; the KLayout deck has no extraction for them
-- `sky130_nfet_01v8_tap_licon15` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - NPC of the PCell (`licon.15`)
-- `sky130_nfet_05v0_nvt_tap_hvdifftap16` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC) - bulk tie of the PCell, 0.45 um deep (`hvdifftap.16`)
+- `sky130_nfet_g5v0d16v0` (KNOWN FAIL: KLayout LVS), `sky130_pfet_g5v0d16v0` (KNOWN FAIL: Magic DRC, KLayout LVS): drawn with the Magic generator, the KLayout deck has no extraction for them
+- `sky130_nfet_01v8_tap_licon15` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): NPC of the PCell (`licon.15`)
+- `sky130_nfet_05v0_nvt_tap_hvdifftap16` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC): bulk tie of the PCell, 0.45 um deep (`hvdifftap.16`)
 
 **Deep Nwell**
 
@@ -210,7 +210,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 
 - `sky130_cap_mim_m3_1`, `sky130_cap_mim_m3_2` (KNOWN FAIL: KLayout LVS)
 - `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC; KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX) - Nwell of the PCell (`varac.5`)
+- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC; KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX): Nwell of the PCell (`varac.5`)
 - `sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5`, `sky130_cap_vpp_11p5x11p7_m1m2_noshield`, `sky130_cap_vpp_08p6x07p8_m1m2_shieldl1`, `sky130_cap_vpp_04p4x04p6_m1m2_shieldl1` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS)
 
 **Resistors**
@@ -226,7 +226,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 - `sky130_diode_pw2nd_05v5`, `_05v5_lvt`, `_05v5_nvt`, `_11v0` (KNOWN FAIL: KLayout LVS)
 - `sky130_diode_pd2nw_05v5`, `_11v0` (KNOWN FAIL: KLayout LVS)
 - `sky130_diode_pd2nw_05v5_lvt`, `sky130_diode_pd2nw_05v5_hvt` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS)
-- `sky130_diode_pd2nw_05v5_psd8` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC, KNOWN FAIL: KLayout LVS) - PSDM of the PCell over the cathode ring (`n/psd.8`)
+- `sky130_diode_pd2nw_05v5_psd8` (broken on purpose, EXPECTED FAIL: Magic DRC, KNOWN FALSE PASS: KLayout DRC, KNOWN FAIL: KLayout LVS): PSDM of the PCell over the cathode ring (`n/psd.8`)
 - `sky130_photodiode` (KNOWN FAIL: KLayout DRC, Magic DRC, Magic + Netgen LVS, Magic full-RC PEX, kpex PEX)
 
 **Bipolar transistors**
@@ -238,8 +238,8 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 
 **Combined test cells**
 
-- `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS) - 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (KNOWN FAIL: Magic full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS): 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
+- `sky130_short1` (KNOWN FAIL: Magic full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell
 

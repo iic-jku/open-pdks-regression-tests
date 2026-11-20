@@ -158,7 +158,7 @@ Magic reports `Minimum PPLUS area >= 0.35um^2 (PP.8a)` or `Minimum NPLUS area >=
 
 Magic reports `Diffusion contact width < 0.23um (CO.1 + 2 * CO.6)` at the corners of guard rings. Its GDS import builds the diffusion contact types from the contact cuts with `grow 145` and `shrink 140` (`nsc` at lines 2108-2116, `psc` alike), which merges cuts up to 0.29 um apart into one shape. Where the cuts of a ring column and a ring row sit offset at a corner, the merged shape has notches narrower than 0.23 um, and Magic reports them as contact width. The GF180MCU rule CO.2a asks for 0.25 um between contacts.
 
-`gf180_nfet_03v3_ring_cogap` is `gf180_nfet_03v3_ring` with the end contacts of both side columns moved to 0.29 um from the corner contacts of the top and bottom rows; Magic reports 15 markers. With the end contacts 0.29 um from the corners, every ring type tested fails Magic DRC (the inner and the outer ring of the deep Nwell cells, the rings of `gf180_nfet_03v3_ring` and `gf180_pfet_03v3_ring`); at 0.30 or 0.37 um, or without the end contacts, none does. KLayout DRC passes all of them.
+`gf180_nfet_03v3_ring_cogap` is `gf180_nfet_03v3_ring` with the end contacts of both side columns moved to 0.29 um from the corner contacts of the top and bottom rows. Magic reports 15 markers. With the end contacts 0.29 um from the corners, every ring type tested fails Magic DRC (the inner and the outer ring of the deep Nwell cells, the rings of `gf180_nfet_03v3_ring` and `gf180_pfet_03v3_ring`). At 0.30 or 0.37 um, or without the end contacts, none does. KLayout DRC passes all of them.
 
 ## Magic DRC reports DF.8 at every NPN
 
@@ -193,7 +193,7 @@ The single cell is the odd case: the PCell loaded on its own as the top cell get
 
 - `CO.4` and `P-diffusion and N-ohmic must be over N-well or deep N-well` at the P+ tap of `diode_nd2ps_03v3`: the COMP overlaps the contact by 0.07 um (CO.4: 0.07 um). The tap is a substrate tap in LVPWELL, no rule asks for an Nwell there.
 - `PP.8a`, `NP.8a`: the drawn implant of every reported tap has 0.60 to 0.76 um^2 (0.35 um^2), see the PP.8a/NP.8a section above.
-- `CO.1 + 2 * CO.6`: in `dnwell_nmos` at the ring corners, contacts 0.29 um apart (CO.2a: 0.25 um), see "Magic DRC merges contacts up to 0.29 um apart"; in `cap_nmos_03v3` at a single contact of 0.22 x 0.22 um (CO.1: 0.22 um).
+- `CO.1 + 2 * CO.6`: in `dnwell_nmos` at the ring corners, contacts 0.29 um apart (CO.2a: 0.25 um), see "Magic DRC merges contacts up to 0.29 um apart", and in `cap_nmos_03v3` at a single contact of 0.22 x 0.22 um (CO.1: 0.22 um).
 - `PRES/LRES/HRES.7` at `ppolyf_u_1k`: the contacts are 0.25 um from the salicide block. The design manual has `HRES.8` "Space from salicide block to contact on Poly2 resistor" 0.22 um, without Min or Max, and section 3.7 says "All dimensions in this document are considered minimum unless otherwise stated." Magic checks the contact for an exact position, for HRES, LRES and PRES alike: `res_cont_space_min` and `res_cont_space_max` (lines 1431-1455) want it within 0.22 to 0.44 um of the salicide block, and the marker covers the 0.03 um beyond. The `ppolyf_u` and `npolyf_u` PCells put their contacts at exactly 0.22 um, the `ppolyf_u_high_Rs` PCell at 0.25 um.
 
 Why Magic reports them only below the top cell is not known.
@@ -206,7 +206,7 @@ In these cells a P-well lies isolated inside a DNWELL: the LVPWELL of the NMOS i
 
 `gf180_npn_00p54x04p00` and `gf180_npn_10p00x10p00` get the same short, but there the full-RC netlist keeps resistor fragments between B and S (`X0 C B E VSUBS npn_00p54x04p00` and `R0 B S 1.97113`), so every port has an element and the port check has nothing to report. `scripts/check_pex_modes.py`, which compares the full-RC netlist with the C-coupled one, fails the step: `ports B, S are one net through resistors`.
 
-In `gf180_combined` and `gf180_combined_cmim_ontop` seven device terminals share an internal net, the node `w_616_616#` of the C-coupled netlist (the base of the NPN, a source/drain terminal of `nfet_03v3`, `nfet_05v0`, `nfet_06v0_nvt` and `pfet_05v0`, and one terminal of each of the two diodes). In the full-RC netlist of `magic-pex3` this net reaches VSS through resistors. Every port keeps an element, so only `scripts/check_pex_modes.py` reports it. Both cells contain `gf180_dnwell_nmos` and `gf180_npn_00p54x02p00`; whether the short runs through one of their isolated P-wells is not tested.
+In `gf180_combined` and `gf180_combined_cmim_ontop` seven device terminals share an internal net, the node `w_616_616#` of the C-coupled netlist (the base of the NPN, a source/drain terminal of `nfet_03v3`, `nfet_05v0`, `nfet_06v0_nvt` and `pfet_05v0`, and one terminal of each of the two diodes). In the full-RC netlist of `magic-pex3` this net reaches VSS through resistors. Every port keeps an element, so only `scripts/check_pex_modes.py` reports it. Both cells contain `gf180_dnwell_nmos` and `gf180_npn_00p54x02p00`. Whether the short runs through one of their isolated P-wells is not tested.
 
 ## gdscheck measures PP.6 and NP.6 along the whole COMP edge
 
@@ -229,7 +229,7 @@ MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-
 - KLayout: `topmin1_via.and(topmin1_metal.and(fusetop))` (`drc/rule_decks/mim_b.rb`, line 122), a Via3 inside the top plate (`FuseTop`).
 - Magic: `spacing via3 *mimcap 50 touching_illegal` (lines 3191-3192), a Via3 within 0.05 um of the capacitor.
 
-`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). Both DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times; the same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
+`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). Both DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times. The same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
 
 ## KLayout LVS does not compare the diode area
 

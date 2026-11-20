@@ -244,7 +244,7 @@ A cell can be broken on purpose, to check that a tool still catches the mistake.
 When a tool misses the error in a cell that is broken on purpose because of a bug, that step goes into `KNOWN_FALSE_PASSES` instead, and the bug gets a section in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 - A listed step that passes is reported as `KNOWN FALSE PASS (tool bug, ignored)` and does not fail the regression.
-- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it; until then, a step that catches it is reported as `EXPECTED FAIL`.
+- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it. Until then, a step that catches it is reported as `EXPECTED FAIL`.
 - A listed step that fails without a finding is reported as `BROKEN`, as above.
 
 A step can be covered by one of the three lists only. The regression stops before running anything when a step is listed twice, or when a PEX step is listed under `EXPECTED_FAILS` or `KNOWN_FALSE_PASSES`.
@@ -259,7 +259,7 @@ make clean
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image; `KNOWN_FAILS` in the `Makefile` is the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image, and `KNOWN_FAILS` in the `Makefile` is the reference.
 
 The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs from its fixed layouts. Where a PCell draws something that breaks a rule of the GF180MCU design manual, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why. Where a layout follows the rules and a tool still fails on it, the cell is left as drawn and the step is a `KNOWN_FAILS` entry. MOS cells come as `_tap` (the PCell's butted bulk tie plus a Metal1 strap, bulk on the source, pins D/S/G) and `_ring` (the device without bulk option inside a drawn guard ring, pins D/S/G/B).
 
@@ -268,30 +268,30 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_nfet_03v3_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_03v3_ring` (PASS)
 - `gf180_nfet_05v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_05v0_ring` (PASS)
 - `gf180_nfet_06v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_06v0_ring` (PASS)
-- `gf180_nfet_06v0_nvt_tap`, `gf180_nfet_06v0_nvt_ring` (PASS) - native 6 V NMOS
+- `gf180_nfet_06v0_nvt_tap`, `gf180_nfet_06v0_nvt_ring` (PASS): native 6 V NMOS
 - `gf180_pfet_03v3_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_03v3_ring` (PASS)
 - `gf180_pfet_05v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_05v0_ring` (PASS)
 - `gf180_pfet_06v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_06v0_ring` (PASS)
-- `gf180_nfet_03v3_tap_nostrap` (KNOWN FAIL: KLayout LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - butted bulk tie without the Metal1 strap
-- `gf180_nfet_03v3_tap_poly2pin` (KNOWN FAIL: Magic + Netgen LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - gate pin on Poly2_Label instead of Metal1
-- `gf180_nfet_03v3_mintap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - one tap as small as the rules allow instead of the guard ring
-- `gf180_nfet_03v3_ring_cogap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - guard ring contacts 0.29 um apart at the corners
-- `gf180_nfet_06v0_nvt_ring_nat` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - NAT over the guard ring (NAT.6)
+- `gf180_nfet_03v3_tap_nostrap` (KNOWN FAIL: KLayout LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): butted bulk tie without the Metal1 strap
+- `gf180_nfet_03v3_tap_poly2pin` (KNOWN FAIL: Magic + Netgen LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): gate pin on Poly2_Label instead of Metal1
+- `gf180_nfet_03v3_mintap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): one tap as small as the rules allow instead of the guard ring
+- `gf180_nfet_03v3_ring_cogap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): guard ring contacts 0.29 um apart at the corners
+- `gf180_nfet_06v0_nvt_ring_nat` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): NAT over the guard ring (NAT.6)
 
 **Deep Nwell**
 
-- `gf180_dnwell_nmos` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - NMOS in LVPWELL inside DNWELL, pins D/S/G/VDD/VSS
-- `gf180_dnwell_inv` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - PMOS and NMOS in one DNWELL
+- `gf180_dnwell_nmos` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): NMOS in LVPWELL inside DNWELL, pins D/S/G/VDD/VSS
+- `gf180_dnwell_inv` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): PMOS and NMOS in one DNWELL
 
 **Capacitors**
 
 - `gf180_cap_mim_2f0fF` (PASS)
-- `gf180_cap_mim_2f0fF_via3` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - bottom plate connected through Via3 (MIMTM.10)
+- `gf180_cap_mim_2f0fF_via3` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): bottom plate connected through Via3 (MIMTM.10)
 - `gf180_cap_nmos_03v3`, `gf180_cap_nmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_pmos_03v3`, `gf180_cap_pmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_nmos_03v3_b`, `gf180_cap_nmos_06v0_b` (PASS)
 - `gf180_cap_pmos_03v3_b`, `gf180_cap_pmos_06v0_b` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_cap_nmos_03v3_nofmt` (KNOWN FAIL: KLayout LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - without the `lvs_format` work-around
+- `gf180_cap_nmos_03v3_nofmt` (KNOWN FAIL: KLayout LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): without the `lvs_format` work-around
 
 **Resistors**
 
@@ -308,7 +308,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0` (schematic with the PCell parameters, smaller than the drawn diode: EXPECTED FAIL: Magic + Netgen LVS, KNOWN FALSE PASS: KLayout LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md))
 - `gf180_diode_nw2ps_03v3`, `gf180_diode_nw2ps_06v0` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_diode_pw2dw`, `gf180_diode_dw2ps` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, kpex full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - kept as a finding, the PCell and both decks disagree on the device
+- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, kpex full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): kept as a finding, the PCell and both decks disagree on the device
 
 **Bipolar transistors**
 
@@ -321,9 +321,9 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 
 **Combined test cells**
 
-- `gf180_combined` (KNOWN FAIL: Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - 15 of the cells above as instances (the two diodes with `la = 0.565`, see [FINDINGS.md](FINDINGS.md)) and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
-- `gf180_combined_cmim_ontop` (KNOWN FAIL: KLayout LVS, Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - the same with the MIM capacitor over all devices, after `sg13_combined_cmim_ontop`
-- `gf180_short1` (PASS) - 3.3 V and 6 V NMOS and PMOS with every terminal on VDD
+- `gf180_combined` (KNOWN FAIL: Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): 15 of the cells above as instances (the two diodes with `la = 0.565`, see [FINDINGS.md](FINDINGS.md)) and a 46 x 46 um MIM capacitor beside them, 16 devices on VDD, VSS and G, after `sg13_combined`
+- `gf180_combined_cmim_ontop` (KNOWN FAIL: KLayout LVS, Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): the same with the MIM capacitor over all devices, after `sg13_combined_cmim_ontop`
+- `gf180_short1` (PASS): 3.3 V and 6 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell
 

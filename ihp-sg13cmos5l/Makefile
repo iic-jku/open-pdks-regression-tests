@@ -1,5 +1,5 @@
 # ihp-sg13cmos5l regression design: PDK selection and known failures.
-# Every target lives in ../common.mk - run with "make <target>" from this directory.
+# Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits

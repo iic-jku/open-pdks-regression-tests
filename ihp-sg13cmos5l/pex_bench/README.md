@@ -7,11 +7,11 @@ This is the ihp-sg13g2 bench ported to ihp-sg13cmos5l. The geometry is unchanged
 
 Two results of this port are worth reading before trusting a number here:
 
-- **kpex's sidewall coefficients for this PDK are ihp-sg13g2's.** `klayout_pex_protobuf/ihp-sg13cmos5l_tech.pb.json` holds the ihp-sg13g2 `sidewalls` list with the `Metal5` and `TopMetal2` rows removed and `allm6` relabelled `TopMetal1`; none of the six remaining values is from `ihp-sg13cmos5l-extract.tech`. Metal1 is 43.268 aF / +0.003 um in the deck and 28.735 / -0.057 in kpex. Because the two offsets pull in opposite directions the error grows with spacing: -5.7 % at 0.2 um, -32.3 % at 3.2 um. Table H is the row that shows it.
+- **kpex's sidewall coefficients for this PDK are ihp-sg13g2's.** `klayout_pex_protobuf/ihp-sg13cmos5l_tech.pb.json` holds the ihp-sg13g2 `sidewalls` list with the `Metal5` and `TopMetal2` rows removed and `allm6` relabelled `TopMetal1`. None of the six remaining values is from `ihp-sg13cmos5l-extract.tech`. Metal1 is 43.268 aF / +0.003 um in the deck and 28.735 / -0.057 in kpex. Because the two offsets pull in opposite directions the error grows with spacing: -5.7 % at 0.2 um, -32.3 % at 3.2 um. Table H is the row that shows it.
 
   The sidewall block is the worst of it but not all of it. A full audit of that file against this PDK's deck finds **36 of 107 coefficients** carrying the ihp-sg13g2 value: the 6 sidewall entries, 26 `sideoverlaps` and 4 substrate perimeters. The area quantities are correct throughout. Root cause is `cxx/gen_tech_pb/pdk/ihp_sg13.cpp`, which builds both PDKs from one function: wherever an `is_g2()` branch exists because the layer set differs the cmos5l value was entered, and wherever the layer exists in both but the value differs, the sg13g2 value stands.
 
-  Do not conclude from a diff of the two tech files that the rest is fine - that was our first reading and it is wrong. A coefficient that is bad *because* it equals ihp-sg13g2's shows up as identical in such a diff. Only a comparison against this PDK's own deck finds it.
+  Do not conclude from a diff of the two tech files that the rest is fine. That was our first reading, and it is wrong. A coefficient that is bad *because* it equals ihp-sg13g2's shows up as identical in such a diff. Only a comparison against this PDK's own deck finds it.
 - **The table B / G deficit is lost, not moved to the substrate.** Magic gets the plate-to-plate term (100 um^2 x overlap coefficient) exactly right in all six pairs and under-delivers only the 40 um of edge fringe, by a fraction that falls monotonically with vertical separation: 94.1 % delivered for the adjacent thin-metal pairs, 90.7 % for m4-tm1, 83.2 % for m1-m3, 62.1 % for m1-tm1. `sidehalo` is 8 um while the lower plate extends 10 um past the upper one on every side, so the halo, not the plate edge, is what truncates the integration. The top-plate-to-substrate capacitance Magic emits alongside it does not absorb the deficit: it depends only on the upper layer (0.37505 fF for both `overlap_m2_m3` and `overlap_m1_m3`, 0.65826 fF for both `overlap_m4_tm1` and `overlap_m1_tm1`) while the deficits of those pairs differ by more than a factor of two.
 
 Everything runs inside the IIC-OSIC-TOOLS container from this directory. `make help` lists the targets.
@@ -28,7 +28,7 @@ The layouts are committed as well as generated. `make layouts-check` guards that
 
 ## The metal stack
 
-cmos5l has four thin metals and one thick top metal. The top metal is named `tm1` throughout the bench, as in ihp-sg13g2, because it is the same physical layer: GDS 126, 18 mOhm/square, and the same family of coefficients. The Magic deck calls it `metal5` / `allm5`; the bridge is `calma MET5 126 0` in `libs.tech/magic/ihp-sg13cmos5l-cifin.tech`. The thin `m5` of ihp-sg13g2 does not exist here, so the count 5 is deliberately skipped rather than reused.
+cmos5l has four thin metals and one thick top metal. The top metal is named `tm1` throughout the bench, as in ihp-sg13g2, because it is the same physical layer: GDS 126, 18 mOhm/square, and the same family of coefficients. The Magic deck calls it `metal5` / `allm5`. The bridge is `calma MET5 126 0` in `libs.tech/magic/ihp-sg13cmos5l-cifin.tech`. The thin `m5` of ihp-sg13g2 does not exist here, so the count 5 is deliberately skipped rather than reused.
 
 | Bench name | Magic deck | GDS | Rsheet [mOhm/sq] |
 |---|---|---|---|
@@ -49,12 +49,7 @@ Vias: `via1` m1-m2, `via2` m2-m3, `via3` m3-m4 at 9000 mOhm/cut each, `via4` m4-
 | kpex 2.5D | `kpex --2.5D` | a second implementation, reading the identical coefficients from the kpex tech protobuf |
 | FasterCap | `kpex --fastercap` | a boundary-element field solve on the kpex process stack |
 
-**Up to kpex 0.4.4 both kpex columns were empty in this PDK.** The kpex wheel shipped the
-`sg13cmos5l` LVS deck without the rule decks it `%include`s, so `create_lvsdb` failed before an
-engine was even chosen, and the bench declared `PEX_ENGINES := magic`. kpex 0.4.5 ships the
-complete deck. `PEX_ENGINES` lists `kpex25 fastercap` again, and `expected/results.json` holds
-the kpex 2.5D column, blessed with kpex 0.6.3. Like the Magic column it pins what the tool
-produces, so the sidewall values carry the ihp-sg13g2 coefficients described above.
+**Up to kpex 0.4.4 both kpex columns were empty in this PDK.** The kpex wheel shipped the `sg13cmos5l` LVS deck without the rule decks it `%include`s, so `create_lvsdb` failed before an engine was even chosen, and the bench declared `PEX_ENGINES := magic`. kpex 0.4.5 ships the complete deck. `PEX_ENGINES` lists `kpex25 fastercap` again, and `expected/results.json` holds the kpex 2.5D column, blessed with kpex 0.6.3. Like the Magic column it pins what the tool produces, so the sidewall values carry the ihp-sg13g2 coefficients described above.
 
 `make klayout-pex` runs the same kpex 2.5D engine through `sak-pex.sh -k`, so it gives the kpex 2.5D column of a single cell. The Magic engine of kpex (`kpex --magic`) is no further opinion: it drives Magic, and the coupling capacitors are bit-identical to `magic-pex`.
 
@@ -93,11 +88,7 @@ The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for
 
 Unlike the ihp-sg13g2 bench this directory ships no `expected/fastercap/` matrices yet. `make pex-bench FASTERCAP=1` runs the field solve, and `scripts/make_fastercap_expected.sh` can produce the matrices.
 
-Once it is, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
-the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices
-contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and
-`--tolerance` is written up once, in
-[../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
+Once it is, use `scripts/make_fastercap_expected.sh` in the repository root, which takes the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and `--tolerance` is written up once, in [../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
 
 ## Notes for anyone extending this
 

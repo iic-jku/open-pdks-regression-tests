@@ -9,7 +9,7 @@ This is the [ihp-sg13g2 bench](../../ihp-sg13g2/pex_bench/) ported to sky130A. T
 
 Six conductors. This is the only one of the four PDKs whose stack starts below Metal1: `li1`, the local interconnect, is a conductor in its own right, with a sheet resistance two orders of magnitude above the metals (12.8 Ohm/square against 0.125 for met1). The bench covers it like any other layer, so `res_li1` comes out at 1.27 kOhm where the metals are single-digit ohms.
 
-Names follow `libs.tech/klayout/tech/sky130A.map`, which calls the layers `li1` and `met1` to `met5`; the Magic deck calls the same layers `allli`/`locali` and `allm<n>`/`metal<n>`, so the bench's short names `li1` and `m1` to `m5` are unambiguous. This PDK stacks purposes in the datatype: 20 is the drawn shape, 16 the pin, 44 the via cut, 5 the label.
+Names follow `libs.tech/klayout/tech/sky130A.map`, which calls the layers `li1` and `met1` to `met5`. The Magic deck calls the same layers `allli`/`locali` and `allm<n>`/`metal<n>`, so the bench's short names `li1` and `m1` to `m5` are unambiguous. This PDK stacks purposes in the datatype: 20 is the drawn shape, 16 the pin, 44 the via cut, 5 the label.
 
 | Bench name | Magic deck | drawn | pin | Rsheet [mOhm/sq] |
 |---|---|---|---|---|
@@ -36,7 +36,7 @@ Note that `cifinput` grows the via layers before forming the contact: `VIA3` by 
 
 ## Table E and the via3 and via4 chains
 
-Up to Magic 8.3.691, full-RC extraction emitted no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting - swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing - so table E covered li1-m1, m1-m2 and m2-m3 only. The deck was not the cause: the same structure with a narrow, resistive arm came out right, 8.0635 Ohm for one `via3` (1 um wide, 49.5 um per arm; deck 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063) and 2.26195 Ohm for one `via4` (2 um wide; deck 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261). The defect was reported in [magic#568](https://github.com/RTimothyEdwards/magic/issues/568) and fixed in 8.3.692. Since then table E covers all five levels, `via4`'s 380 mOhm included, and every row matches the deck to 0.001 %.
+Up to Magic 8.3.691, full-RC extraction emitted no resistor at all for `vc_m3_m4_*` and `vc_m4_m5_*`, at any `extresist` setting (swept over `MINDELAY` 0 and 1 and `THRESHOLD` 0, 1, 10 and 100 mOhm, always nothing), so table E covered li1-m1, m1-m2 and m2-m3 only. The deck was not the cause: the same structure with a narrow, resistive arm came out right, 8.0635 Ohm for one `via3` (1 um wide, 49.5 um per arm; deck 2 x 49.5 x 47 mOhm + 3410 mOhm = 8.063) and 2.26195 Ohm for one `via4` (2 um wide; deck 24.75 x 47 + 24.75 x 29 + 380 mOhm = 2.261). The defect was reported in [magic#568](https://github.com/RTimothyEdwards/magic/issues/568) and fixed in 8.3.692. Since then table E covers all five levels, `via4`'s 380 mOhm included, and every row matches the deck to 0.001 %.
 
 Until then the mode 3 netlists of these ten chains also failed `scripts/check_pex_ports.py`, which `magic-pex` in `common.mk` runs after every extraction: without a resistor `l` and `u` shared one node, the netlist still declared both, and port `l` was connected to nothing. The ten steps were in `KNOWN_FAILS` in the Makefile up to that fix.
 
@@ -53,7 +53,7 @@ Until then the mode 3 netlists of these ten chains also failed `scripts/check_pe
 
 Where Magic and kpex 2.5D disagree, exactly one of them has a bug, and FasterCap arbitrates.
 
-This PDK keeps its extraction rules in the main tech file rather than a separate `<pdk>-extract.tech`. The extract section opens at line 5006 with `style ngspice variants (),(orig),(si),(hrhc),(lrhc),(hrlc),(lrlc)`; the nominal resistances are the `variants (),(orig),(si)` block at 5095 and the nominal capacitances the one at 5266. Every coefficient is repeated per corner, so a value taken from the wrong block is a plausible-looking wrong number. The hand-maintained tables in `scripts/analyse.py` and `scripts/compare_engines.py` are transcribed from those two blocks only.
+This PDK keeps its extraction rules in the main tech file rather than a separate `<pdk>-extract.tech`. The extract section opens at line 5006 with `style ngspice variants (),(orig),(si),(hrhc),(lrhc),(hrlc),(lrlc)`. The nominal resistances are the `variants (),(orig),(si)` block at 5095 and the nominal capacitances the one at 5266. Every coefficient is repeated per corner, so a value taken from the wrong block is a plausible-looking wrong number. The hand-maintained tables in `scripts/analyse.py` and `scripts/compare_engines.py` are transcribed from those two blocks only.
 
 Unlike ihp-sg13cmos5l and gf180mcuD, this PDK's `klayout_pex_protobuf/sky130A_tech.pb.json` is consistent with its deck: every `sidewalls` and `substrates` value matches, and the computed-layer names resolve to layers the parasitics tables know.
 
@@ -87,11 +87,7 @@ The geometry was carried over from ihp-sg13g2 unchanged and is not DRC clean for
 
 This directory ships no `expected/fastercap/` matrices, so the FasterCap column stays empty until a field solve is run locally with `FASTERCAP=1`.
 
-To produce a set, use `scripts/make_fastercap_expected.sh` in the repository root, which takes
-the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices
-contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and
-`--tolerance` is written up once, in
-[../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
+To produce a set, use `scripts/make_fastercap_expected.sh` in the repository root, which takes the PDK as an argument and writes a `PROVENANCE.md` beside the matrices. What those matrices contain, why there are a Raw and an Avg one, and how to choose `--delaunay_amax` and `--tolerance` is written up once, in [../../ihp-sg13g2/pex_bench/README.md](../../ihp-sg13g2/pex_bench/README.md#where-the-fastercap-numbers-come-from).
 
 ## Notes for anyone extending this
 

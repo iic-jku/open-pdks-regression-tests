@@ -165,9 +165,9 @@ make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3
 
 For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the `sak-pex.sh` `extresist` tuning parameters. They are ignored in `EXT_MODE=1`/`2`:
 
-- `THRESHOLD` - extresist threshold in mOhm (`-t`, default `10000` = 10 Ohm)
-- `MINRES` - extresist minimum resistance in mOhm (`-r`, default `1000` = 1 Ohm)
-- `MINDELAY` - extresist minimum delay in ps (`-y`, default `1`; `0` = gate by resistance)
+- `THRESHOLD`: extresist threshold in mOhm (`-t`, default `10000` = 10 Ohm)
+- `MINRES`: extresist minimum resistance in mOhm (`-r`, default `1000` = 1 Ohm)
+- `MINDELAY`: extresist minimum delay in ps (`-y`, default `1`, `0` = gate by resistance)
 
 ```sh
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
@@ -279,7 +279,7 @@ A cell can be broken on purpose, to check that a tool still catches the mistake:
 When a tool misses the error in a cell that is broken on purpose because of a bug, that step goes into `KNOWN_FALSE_PASSES` instead, and the bug gets a section in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 - A listed step that passes is reported as `KNOWN FALSE PASS (tool bug, ignored)` and does not fail the regression.
-- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it; until then, a step that catches it is reported as `EXPECTED FAIL`.
+- A listed step that fails with a finding is reported as `UNEXPECTED FAIL` and fails the regression: the tool catches the error now, move the entry to `EXPECTED_FAILS`. For a whole-cell entry this happens once every DRC and LVS step of the cell catches it. Until then, a step that catches it is reported as `EXPECTED FAIL`.
 - A listed step that fails without a finding is reported as `BROKEN`, as above.
 
 A step can be covered by one of the three lists only. The regression stops before running anything when a step is listed twice, or when a PEX step is listed under `EXPECTED_FAILS` or `KNOWN_FALSE_PASSES`.
@@ -294,19 +294,19 @@ make clean
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image; `KNOWN_FAILS` in the `Makefile` is the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`). Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image, and `KNOWN_FAILS` in the `Makefile` is the reference.
 
 **Low-voltage MOS transistors**
 
 - `sg13_lv_nmos_tap` (PASS)
-- `sg13_lv_nmos_tap_m1_a` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - Metal1 0.10 um wide (M1.a)
-- `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
-- `sg13_lv_nmos_tap_cnt_c` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain contact 0.04 um inside Activ (Cnt.c)
-- `sg13_lv_nmos_tap_cnt_c_ptap` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - substrate tap contacts 0.04 um inside Activ (Cnt.c)
-- `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate end cap 0.10 um (Gat.c)
-- `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - drain and source shorted
-- `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - gate not connected to its pin
-- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - schematic W 0.30 um, layout 0.15 um
+- `sg13_lv_nmos_tap_m1_a` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): Metal1 0.10 um wide (M1.a)
+- `sg13_lv_nmos_tap_m1_b` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): `sg13_lv_nmos_tap` with drain and source Metal1 0.12 um apart (M1.b)
+- `sg13_lv_nmos_tap_cnt_c` (broken on purpose, EXPECTED FAIL: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): drain contact 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_cnt_c_ptap` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): substrate tap contacts 0.04 um inside Activ (Cnt.c)
+- `sg13_lv_nmos_tap_gat_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): gate end cap 0.10 um (Gat.c)
+- `sg13_lv_nmos_tap_short_ds` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): drain and source shorted
+- `sg13_lv_nmos_tap_open_g` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): gate not connected to its pin
+- `sg13_lv_nmos_tap_w_mismatch` (broken on purpose, EXPECTED FAIL: KLayout LVS, Magic + Netgen LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): schematic W 0.30 um, layout 0.15 um
 - `sg13_lv_pmos_tap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_lv_nmos_ring_dev` (PASS)
 - `sg13_lv_nmos_ring_pcell` (PASS)
@@ -349,7 +349,7 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 
 - `sg13_dnwell_nmos` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_dnwell_inv` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_dnwell_inv_nmosi_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)) - `sg13_dnwell_inv` before its nmosi.c fix
+- `sg13_dnwell_inv_nmosi_c` (broken on purpose, EXPECTED FAIL: Magic DRC, gdscheck DRC, KLayout DRC passes at `DRC_LEVEL=macro`, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): `sg13_dnwell_inv` before its nmosi.c fix
 
 **Combined test cells**
 
@@ -357,4 +357,4 @@ Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/
 - `sg13_combined_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_combined_cmim_ontop` (KNOWN FAIL: Magic DRC, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `sg13_combined_cmim_ontop_wo_rfcmim` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sg13_short1` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)) - LV and HV NMOS and PMOS with shorted terminals
+- `sg13_short1` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): LV and HV NMOS and PMOS with shorted terminals
