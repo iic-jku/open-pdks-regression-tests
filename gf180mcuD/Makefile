@@ -62,7 +62,7 @@ EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc gf180_nfet_06v0_nvt_r
 	gf180_diode_nd2ps_03v3:magic-lvs gf180_diode_nd2ps_06v0:magic-lvs \
 	gf180_diode_pd2nw_03v3:magic-lvs gf180_diode_pd2nw_06v0:magic-lvs
 KNOWN_FALSE_PASSES ?= gf180_nfet_06v0_nvt_ring_nat:magic-drc \
-	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc \
+	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc gf180_cap_mim_2f0fF_via3:gdscheck-drc \
 	gf180_diode_nd2ps_03v3:klayout-lvs gf180_diode_nd2ps_06v0:klayout-lvs \
 	gf180_diode_pd2nw_03v3:klayout-lvs gf180_diode_pd2nw_06v0:klayout-lvs
 

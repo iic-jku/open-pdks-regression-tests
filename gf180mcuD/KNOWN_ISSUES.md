@@ -134,7 +134,7 @@ KLayout DRC passes the cell, Magic DRC does not. It reports `Both LV and MV devi
 
 `KNOWN_FAILS` entry: `gf180_sc_diode:klayout-pex3`
 
-The kpex 2.5D engine extracts `gf180_sc_diode` in the C-decoupled and C-coupled modes, with the two diodes of its LVS deck (see above). In full-RC mode kpex 0.10.0 stops before the extraction: `The tech info can't model these layers of the layout for the resistance extraction, so their connections would be missing from the resistance network: schottky_diode (241/0): the tech info has no layer derived from it`. Its gf180mcuD tech info derives no resistance layer from the Schottky marker. Magic extracts the cell in all three modes.
+The kpex 2.5D engine extracts `gf180_sc_diode` in the C-decoupled and C-coupled modes, with the two diodes of its LVS deck (see above). In full-RC mode kpex 0.10.0 stops before the extraction: `The tech info can't model these layers of the layout for the resistance extraction, so their connections would be missing from the resistance network: schottky_diode (241/0): the tech info has no layer derived from it`. Its `gf180mcuD` tech info derives no resistance layer from the Schottky marker. Magic extracts the cell in all three modes.
 
 ## KLayout LVS does not extract a bipolar transistor under a MIM capacitor
 
@@ -212,7 +212,7 @@ In `gf180_combined` and `gf180_combined_cmim_ontop` seven device terminals share
 
 `KNOWN_FAILS` entries: `gf180_dnwell_inv:gdscheck-drc`, `gf180_dnwell_nmos:gdscheck-drc`, `gf180_nfet_03v3_tap:gdscheck-drc`, `gf180_nfet_03v3_tap_nostrap:gdscheck-drc`, `gf180_nfet_03v3_tap_poly2pin:gdscheck-drc`, `gf180_nfet_05v0_tap:gdscheck-drc`, `gf180_nfet_06v0_tap:gdscheck-drc`, `gf180_pfet_03v3_tap:gdscheck-drc`, `gf180_pfet_05v0_tap:gdscheck-drc`, `gf180_pfet_06v0_tap:gdscheck-drc`
 
-PP.6 ("Overlap with PCOMP butted to NCOMP = 0.22") and NP.6 (the same for NCOMP butted to PCOMP) apply where a tap butts the diffusion of a transistor, as in every `*_tap` cell here and in the two deep Nwell cells. The KLayout deck (`rule_decks/pplus.rb`, `rule_decks/nplus.rb`) checks that the COMP extends 0.22 um beyond the NCOMP at the butting edge, with the projection metric, so only that edge counts, and it passes the cells at `DRC_LEVEL=regular` too. gdscheck 0.2.1 reports `enclosure 0.0100 µm < 0.22 µm of ncomp_at_pplus within comp_at_pplus` (`pcomp_at_nplus within comp_at_nplus` for NP.6) on the COMP edge next to the butting edge: it measures the enclosure along the edges the NCOMP shares with the COMP, where it is 0 by construction. Every butted tap fails it, the 0.71 um wide tap of `gf180_nfet_03v3_tap` included. Magic DRC has no finding on these edges.
+PP.6 ("Overlap with PCOMP butted to NCOMP = 0.22") and NP.6 (the same for NCOMP butted to PCOMP) apply where a tap butts the diffusion of a transistor, as in every `*_tap` cell here and in the two deep Nwell cells. The KLayout deck (`rule_decks/pplus.rb`, `rule_decks/nplus.rb`) checks that the COMP extends 0.22 um beyond the NCOMP at the butting edge, with the projection metric, so only that edge counts, and it passes the cells at `DRC_LEVEL=regular` too. gdscheck 0.2.1 checks the whole NCOMP that touches a PPLUS against the whole COMP (`ncomp_at_pplus` within `comp_at_pplus`, with `ncomp: comp and nplus`), so every NCOMP edge counts, not only the butting one. It reports one `enclosure 0.0100 µm < 0.22 µm of ncomp_at_pplus within comp_at_pplus` per cell (`pcomp_at_nplus within comp_at_nplus` for NP.6), at the drain contact next to the tap, where the diffusion is 0.01 um wider per side than under the gate. Every butted tap fails it, the 0.71 um wide tap of `gf180_nfet_03v3_tap` included. Magic DRC has no finding on these edges.
 
 ## Magic DRC does not check NAT.6
 
@@ -220,16 +220,17 @@ PP.6 ("Overlap with PCOMP butted to NCOMP = 0.22") and NP.6 (the same for NCOMP 
 
 NAT.6 is "Two or more COMPs if connected to different potential are not allowed under same NAT layer". Magic keeps no NAT layer of its own: its GDS import reads NAT only to tell native transistors and diodes from regular ones (`and NAT` and `and-not NAT` in the `layer` rules of the import style), so it cannot see which COMPs share one NAT shape. Its NAT rules are a spacing from native diffusion to a tap (line 2822, labelled `NAT.5 + NAT.6`) and the poly overhang of a native transistor (line 2852). `gf180_nfet_06v0_nvt_ring_nat` has NAT over its guard ring (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): KLayout reports `NAT.6` twice, Magic nothing.
 
-## Neither DRC checks MIMTM.10 outside the top plate
+## No DRC checks MIMTM.10 outside the top plate
 
-`KNOWN_FALSE_PASSES` entries: `gf180_cap_mim_2f0fF_via3:klayout-drc`, `gf180_cap_mim_2f0fF_via3:magic-drc`
+`KNOWN_FALSE_PASSES` entries: `gf180_cap_mim_2f0fF_via3:klayout-drc`, `gf180_cap_mim_2f0fF_via3:magic-drc`, `gf180_cap_mim_2f0fF_via3:gdscheck-drc`
 
-MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-1. (b) MIM bottom plate Metaln-1 can only be connected through the higher Via (Vian-1)." For MIM option B on Metal5 the bottom plate is Metal4, Vian-2 is Via3 and Vian-1 is Via4. Both tools check the rule only at the top plate:
+MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-1. (b) MIM bottom plate Metaln-1 can only be connected through the higher Via (Vian-1)." For MIM option B on Metal5 the bottom plate is Metal4, Vian-2 is Via3 and Vian-1 is Via4. All three tools check the rule only at the top plate:
 
 - KLayout: `topmin1_via.and(topmin1_metal.and(fusetop))` (`drc/rule_decks/mim_b.rb`, line 122), a Via3 inside the top plate (`FuseTop`).
 - Magic: `spacing via3 *mimcap 50 touching_illegal` (lines 3191-3192), a Via3 within 0.05 um of the capacitor.
+- gdscheck 0.2.1: `topmin1_via_on_mim_bottom: topmin1_via and topmin1_metal and fusetop` (deck `mim_b` of its built-in `gf180mcuD` rules), the same region as in KLayout.
 
-`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). Both DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times. The same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
+`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). All three DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times. The same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
 
 ## KLayout LVS does not compare the diode area
 

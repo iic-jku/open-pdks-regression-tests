@@ -2,7 +2,7 @@
 
 [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml)
 
-This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the gf180mcuD Open-PDK, with KLayout, Magic + Netgen, gdscheck and kpex. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The [regression-gf180mcuD.yml](../.github/workflows/regression-gf180mcuD.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
+This Makefile-driven directory runs standalone DRC, LVS, and PEX regression tests on individual cells of the `gf180mcuD` Open-PDK, with KLayout, Magic + Netgen, gdscheck and kpex. Every target lives in [../common.mk](../common.mk), shared with the other PDK directories. The [Makefile](Makefile) only selects the PDK and lists the known failures. The IIC-OSIC-TOOLS run it with every nightly build and before every release, as [test 47](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/47/test_drc_lvs_pex_gf180mcud.sh). The [regression-gf180mcuD.yml](../.github/workflows/regression-gf180mcuD.yml) workflow of this repository runs the regression and the PEX bench on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
 Things in this PDK that are easy to get wrong when drawing these devices are collected in [FINDINGS.md](FINDINGS.md), the causes of the known failures in [KNOWN_ISSUES.md](KNOWN_ISSUES.md), and the cells broken on purpose in [EXPECTED_FAILS.md](EXPECTED_FAILS.md).
 
@@ -17,7 +17,7 @@ make help
 
 ## PDK Selection
 
-Every target except `help` needs the gf180mcuD PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh gf180mcuD` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to gf180mcuD` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help` needs the `gf180mcuD` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh gf180mcuD` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to gf180mcuD` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
 
 ## Open the Design Files
 
@@ -150,7 +150,7 @@ make magic-verify CELL=gf180_nfet_03v3_tap
 
 ## PEX Bench
 
-[pex_bench/](pex_bench/) is a second, independent PEX test: metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand, extracted with Magic and the kpex engines and checked against `pex_bench/expected/results.json`. It is the ihp-sg13g2 bench ported to this PDK, see [pex_bench/README.md](pex_bench/README.md).
+[pex_bench/](pex_bench/) is a second, independent PEX test: metal-only dummy layouts whose parasitics follow from the PDK extraction deck by hand, extracted with Magic and the kpex engines and checked against `pex_bench/expected/results.json`. It is the `ihp-sg13g2` bench ported to this PDK, see [pex_bench/README.md](pex_bench/README.md).
 
 ```sh
 make pex-bench                      # Magic modes 1/2/3 and kpex 2.5D, compare, check against expected
@@ -286,7 +286,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 **Capacitors**
 
 - `gf180_cap_mim_2f0fF` (PASS)
-- `gf180_cap_mim_2f0fF_via3` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): bottom plate connected through Via3 (MIMTM.10)
+- `gf180_cap_mim_2f0fF_via3` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): bottom plate connected through Via3 (MIMTM.10)
 - `gf180_cap_nmos_03v3`, `gf180_cap_nmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_pmos_03v3`, `gf180_cap_pmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_nmos_03v3_b`, `gf180_cap_nmos_06v0_b` (PASS)
