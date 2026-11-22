@@ -28,7 +28,6 @@ GDSCHECK_STEP :=
 KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt:magic-lvs \
 	sky130_diode_pd2nw_05v5_lvt:magic-drc sky130_diode_pd2nw_05v5_hvt:magic-drc \
 	sky130_npn_11v0_W1p00L1p00:magic-lvs sky130_npn_11v0_W1p00L1p00:magic-drc \
-	sky130_npn_11v0_W1p00L1p00:klayout-pex1 sky130_npn_11v0_W1p00L1p00:klayout-pex2 sky130_npn_11v0_W1p00L1p00:klayout-pex3 \
 	sky130_photodiode:klayout-pex1 sky130_photodiode:klayout-pex2 \
 	sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5:magic-lvs sky130_cap_vpp_11p5x11p7_m1m2_noshield:magic-lvs \
 	sky130_cap_vpp_08p6x07p8_m1m2_shieldl1:magic-lvs sky130_cap_vpp_04p4x04p6_m1m2_shieldl1:magic-lvs \
@@ -39,9 +38,6 @@ KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt
 	sky130_pfet_01v8_hvt_ring_pcell:magic-drc sky130_pfet_01v8_hvt_ring_pcell:magic-lvs \
 	sky130_pfet_g5v0d10v5_ring_pcell:magic-drc sky130_pfet_g5v0d10v5_ring_pcell:magic-lvs \
 	sky130_cap_var_lvt:magic-lvs sky130_cap_var_hvt:magic-lvs sky130_cap_var_hvt_varac5:magic-lvs \
-	sky130_cap_var_lvt:klayout-pex1 sky130_cap_var_lvt:klayout-pex2 sky130_cap_var_lvt:klayout-pex3 \
-	sky130_cap_var_hvt:klayout-pex1 sky130_cap_var_hvt:klayout-pex2 sky130_cap_var_hvt:klayout-pex3 \
-	sky130_cap_var_hvt_varac5:klayout-pex1 sky130_cap_var_hvt_varac5:klayout-pex2 sky130_cap_var_hvt_varac5:klayout-pex3 \
 	sky130_res_high_po_0p35:magic-drc sky130_res_high_po_0p69:magic-drc \
 	sky130_res_xhigh_po_0p35:magic-drc sky130_res_xhigh_po_0p69:magic-drc sky130_combined:magic-drc \
 	sky130_pfet_g5v0d16v0:magic-drc \

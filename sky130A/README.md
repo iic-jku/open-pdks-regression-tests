@@ -209,8 +209,8 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Capacitors**
 
 - `sky130_cap_mim_m3_1`, `sky130_cap_mim_m3_2` (KNOWN FAIL: KLayout LVS)
-- `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, kpex PEX): Nwell of the PCell (`varac.5`)
+- `sky130_cap_var_lvt`, `sky130_cap_var_hvt` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
+- `sky130_cap_var_hvt_varac5` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, KNOWN FAIL: KLayout LVS, Magic + Netgen LVS): Nwell of the PCell (`varac.5`)
 - `sky130_cap_vpp_11p5x11p7_m1m2m3m4_shieldl1m5`, `sky130_cap_vpp_11p5x11p7_m1m2_noshield`, `sky130_cap_vpp_08p6x07p8_m1m2_shieldl1`, `sky130_cap_vpp_04p4x04p6_m1m2_shieldl1` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS)
 
 **Resistors**
@@ -232,7 +232,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Bipolar transistors**
 
 - `sky130_npn_05v5_W1p00L1p00`, `sky130_npn_05v5_W1p00L2p00` (PASS)
-- `sky130_npn_11v0_W1p00L1p00` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS, kpex PEX)
+- `sky130_npn_11v0_W1p00L1p00` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS)
 - `sky130_pnp_05v5_W0p68L0p68` (PASS)
 - `sky130_pnp_05v5_W3p40L3p40` (KNOWN FAIL: Magic full-RC PEX, `magic-pex3`)
 
