@@ -251,8 +251,8 @@ PARTIAL_RUN = $(if $(CELLS_LEFT_OUT)$(STEPS_LEFT_OUT),$(RUN_CELLS)$(comma) $(RUN
 # DRC violations or a mismatch, and with another code when it could not run (missing file, no
 # report, ...). make turns both into its own exit code 2, so every DRC and LVS target writes the
 # exit code of its sak script to <report dir>/<cell>.<step>.rc. A step that fails without that
-# file never reached the check, e.g. because the schematic could not be netlisted. gdscheck-drc
-# is a DRC step like the other two: sak-drc.sh -g exits with 1 on violations as well.
+# file never reached the check, e.g. because the schematic could not be netlisted.
+# gdscheck-drc is a DRC step like the other two: sak-drc.sh -g exits with 1 on violations as well.
 #
 # Override with: make regression KNOWN_FAILS="<entry> ..." EXPECTED_FAILS="..." KNOWN_FALSE_PASSES="..."
 KNOWN_FAILS ?=
@@ -285,6 +285,7 @@ help: ## Show this help message
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@if [ -z '$(GDSCHECK_STEP)' ]; then echo '  gdscheck has no rule decks for $(EXPECTED_PDK): gdscheck-drc stops with an error, and the regression leaves it out.'; fi
 	@echo ''
 	@echo 'This design is verified against PDK=$(EXPECTED_PDK); common.mk selects it with sak-pdk, active now: PDK=$(or $(PDK),<unset>).'
 	@if [ -n '$(PDK_ERROR)' ]; then echo '  [WARNING] $(PDK_ERROR)'; fi
@@ -442,8 +443,7 @@ klayout-pex: check-pdk ## Run Parasitic Extraction with the KPEX 2.5D engine of 
 	$(SAK_PEX) -d -k -m $(EXT_MODE) -n $(CELL)_pex -R $(KPEX_REDUCE) -g "$(PEX_SUB_NET)" -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
 	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
-	@# full-RC only: compare the connections with the C-coupled netlist of the same cell, which
-	@# regression extracts first (klayout-pex2 runs before klayout-pex3)
+	@# full-RC only: compare the connections with the C-coupled netlist of the same cell, which regression extracts first (klayout-pex2 runs before klayout-pex3)
 	@if [ "$(EXT_MODE)" = "3" ]; then \
 		python3 $(SCRIPTS_DIR)/check_pex_modes.py --layout $(LAY_DIR)/$(CELL).gds \
 			$(NET_PEX_DIR)/$(CELL)_klayout_pex_3.spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_2.spice; \
