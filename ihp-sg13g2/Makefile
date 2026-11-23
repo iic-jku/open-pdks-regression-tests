@@ -27,7 +27,7 @@ KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs \
 	sg13_combined:magic-lvs sg13_combined_cmim_ontop:magic-lvs \
 	sg13_combined:magic-drc sg13_combined_wo_rfcmim:magic-drc \
 	sg13_combined_cmim_ontop:magic-drc sg13_combined_cmim_ontop_wo_rfcmim:magic-drc \
-	sg13_hv_pmos_tap:magic-drc sg13_lv_pmos_tap:magic-drc sg13_short1:magic-drc \
+	sg13_hv_pmos_tap:magic-drc sg13_lv_pmos_tap:magic-drc \
 	sg13_dnwell_inv:magic-drc sg13_dnwell_nmos:magic-drc \
 	sg13_cmomi:gdscheck-drc
 EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc sg13_dnwell_inv_nmosi_c:gdscheck-drc \

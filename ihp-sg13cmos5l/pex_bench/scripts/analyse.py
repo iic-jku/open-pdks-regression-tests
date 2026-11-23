@@ -21,11 +21,11 @@ MULT = {"f": 1e-15, "p": 1e-12, "a": 1e-18, "n": 1e-9, "": 1.0}
 # The deck names the top layer allm5; it is stored here as tm1, the name the KLayout map and
 # the sg13g2 bench both use for that same GDS 126 thick metal.
 AREA = {"m1": 35.015, "m2": 18.180, "m3": 11.994, "m4": 8.948, "tm1": 6.727}
-PERI = {"m1": 39.488, "m2": 35.540, "m3": 30.657, "m4": 29.210, "tm1": 34.527}
+PERI = {"m1": 39.549, "m2": 34.747, "m3": 31.260, "m4": 29.037, "tm1": 38.975}
 # defaultoverlap / defaultsideoverlap (upper edge down to the lower plate)
-OVER = [(("m1", "m2"), 67.225, 49.422), (("m2", "m3"), 67.225, 49.293),
-        (("m3", "m4"), 67.225, 48.867), (("m4", "tm1"), 42.708, 55.229),
-        (("m1", "m3"), 23.122, 37.607), (("m1", "tm1"), 9.213, 37.397)]
+OVER = [(("m1", "m2"), 67.225, 49.513), (("m2", "m3"), 67.225, 49.498),
+        (("m3", "m4"), 67.225, 49.468), (("m4", "tm1"), 42.708, 65.719),
+        (("m1", "m3"), 23.122, 36.945), (("m1", "tm1"), 9.214, 42.565)]
 # mOhm/square, from the variants (),(lvs) block at line 68
 RSH = {"m1": 110, "m2": 88, "m3": 88, "m4": 88, "tm1": 18}
 # mOhm/cut: via1 to via3 are all 9000, via4 is the one that differs
@@ -35,7 +35,7 @@ RVIA = {("m1", "m2"): 9000, ("m2", "m3"): 9000, ("m3", "m4"): 9000, ("m4", "tm1"
 # in the sg13g2 bench, and as there the pad variant is the one compared. Spelled out rather
 # than derived from the layer name, which differs in every PDK.
 VIA_CELL = {("m1", "m2"): "vc", ("m2", "m3"): "vc", ("m3", "m4"): "vc", ("m4", "tm1"): "vp"}
-SIDEWALL_M1 = (43.268, 0.003)
+SIDEWALL_M1 = (27.218, 0.031)
 SPACINGS = ((0.2, "0p2"), (0.4, "0p4"), (0.8, "0p8"), (1.6, "1p6"), (3.2, "3p2"))
 
 ROWS = []   # (table, key, source, value) for --json
