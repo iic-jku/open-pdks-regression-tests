@@ -147,7 +147,7 @@ The same short hits `sky130_dnwell_nmos` and `sky130_dnwell_inv`, where it does 
 
 `KNOWN_FAILS` entry: `sky130_npn_11v0_W1p00L1p00:klayout-lvs`
 
-The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. It still does on KLayout 0.30.13.
+The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. It still does on KLayout 0.30.14.
 
 kpex fixed the same error in its own copy of the deck in 0.11.1 ([klayout-pex#588](https://github.com/iic-jku/klayout-pex/issues/588)), and `klayout-pex` extracts the transistor in all three modes since. The PDK's deck is not reported upstream.
 

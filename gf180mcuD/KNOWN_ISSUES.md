@@ -134,7 +134,7 @@ KLayout DRC passes the cell, Magic DRC does not. It reports `Both LV and MV devi
 
 `KNOWN_FAILS` entry: `gf180_sc_diode:klayout-pex3`
 
-The kpex 2.5D engine extracts `gf180_sc_diode` in the C-decoupled and C-coupled modes, with the two diodes of its LVS deck (see above). In full-RC mode kpex 0.10.0 stops before the extraction: `The tech info can't model these layers of the layout for the resistance extraction, so their connections would be missing from the resistance network: schottky_diode (241/0): the tech info has no layer derived from it`. Its `gf180mcuD` tech info derives no resistance layer from the Schottky marker. Magic extracts the cell in all three modes.
+The kpex 2.5D engine extracts `gf180_sc_diode` in the C-decoupled and C-coupled modes, with the two diodes of its LVS deck (see above). In full-RC mode kpex 0.10.0 stops before the extraction: `The tech info can't model these layers of the layout for the resistance extraction, so their connections would be missing from the resistance network: schottky_diode (241/0): the tech info has no layer derived from it`. Its `gf180mcuD` tech info derives no resistance layer from the Schottky marker. kpex 0.11.1 still stops. Magic extracts the cell in all three modes.
 
 Upstream: [klayout-pex#590](https://github.com/iic-jku/klayout-pex/issues/590).
 

@@ -21,14 +21,14 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
         <source media="(prefers-color-scheme: dark)" srcset="doc/fig/render/ihp-sg13g2_combined_black.png">
         <img src="doc/fig/render/ihp-sg13g2_combined_white.png" alt="Layout render of sg13_combined, the combined test cell of ihp-sg13g2">
       </picture>
-      <br><em>ihp-sg13g2: <code>sg13_combined</code></em>
+      <br><em><code>ihp-sg13g2</code>: <code>sg13_combined</code></em>
     </td>
     <td align="center" width="50%">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="doc/fig/render/ihp-sg13cmos5l_combined_black.png">
         <img src="doc/fig/render/ihp-sg13cmos5l_combined_white.png" alt="Layout render of sg13_combined, the combined test cell of ihp-sg13cmos5l">
       </picture>
-      <br><em>ihp-sg13cmos5l: <code>sg13_combined</code></em>
+      <br><em><code>ihp-sg13cmos5l</code>: <code>sg13_combined</code></em>
     </td>
   </tr>
   <tr>
@@ -37,14 +37,14 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
         <source media="(prefers-color-scheme: dark)" srcset="doc/fig/render/gf180mcuD_combined_black.png">
         <img src="doc/fig/render/gf180mcuD_combined_white.png" alt="Layout render of gf180_combined, the combined test cell of gf180mcuD">
       </picture>
-      <br><em>gf180mcuD: <code>gf180_combined</code></em>
+      <br><em><code>gf180mcuD</code>: <code>gf180_combined</code></em>
     </td>
     <td align="center" width="50%">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="doc/fig/render/sky130A_combined_black.png">
         <img src="doc/fig/render/sky130A_combined_white.png" alt="Layout render of sky130_combined, the combined test cell of sky130A">
       </picture>
-      <br><em>sky130A: <code>sky130_combined</code></em>
+      <br><em><code>sky130A</code>: <code>sky130_combined</code></em>
     </td>
   </tr>
 </table>
@@ -141,7 +141,7 @@ Each folder switches the shell to its own PDK with `sak-pdk`, so the PDK selecte
 | `magic-pex1`, `magic-pex2`, `magic-pex3` | Magic (`sak-pex.sh`) | C-decoupled, C-coupled, and full-RC extraction |
 | `klayout-pex1`, `klayout-pex2`, `klayout-pex3` | kpex 2.5D engine (`sak-pex.sh -k`) | C-decoupled, C-coupled, and full-RC extraction |
 
-After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. gdscheck 0.2.1 has no rule decks for `sky130A`, so that folder leaves `gdscheck-drc` out.
+After every extraction, [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails a netlist with a port that no element connects to. After a full-RC extraction, [`scripts/check_pex_modes.py`](scripts/check_pex_modes.py) compares the netlist with the C-coupled one of the same cell and fails it when a device terminal lost its port or two ports are joined through resistors. gdscheck 0.2.2 has no rule decks for `sky130A`, so that folder leaves `gdscheck-drc` out.
 
 
 ## Verdicts
