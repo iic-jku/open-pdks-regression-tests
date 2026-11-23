@@ -99,8 +99,8 @@ jobs:
       - name: Write job summary
         if: always()
         run: |
-          # The verdict lines of the two logs. Empty when a log is missing or a run died before its
-          # summary, which must not fail this step (the shell runs with -e and pipefail).
+          # The verdict lines of the two logs.
+          # Empty when a log is missing or a run died before its summary, which must not fail this step (the shell runs with -e and pipefail).
           regression=$(grep -h '^\[REGRESSION\] SUMMARY:' regression.log 2>/dev/null || true)
           bench=$(grep -h -E '^\[CHECK\] ([0-9]+ ok|INCOMPLETE|DECK|TOOL|.* is (not there|unreadable))' pex-bench.log 2>/dev/null || true)
           {
