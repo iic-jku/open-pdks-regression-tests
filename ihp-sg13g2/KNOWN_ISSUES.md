@@ -18,11 +18,11 @@ Upstream: [magic#552](https://github.com/RTimothyEdwards/magic/issues/552)
 
 Magic reports `Via4 cannot contact MiM cap bottom plate (MIM.i)` (`spacing mimcap via4/m5 810` in the Magic DRC rules). IHP removed MIM.i in revision 0.2 of the SG13G2 layout rules (2024-03-08, change history: "Chapter 6.11: Remove MIM.i"), and the KLayout deck has no such rule.
 
-## Magic DRC checks NBL.d and NBL.f without nets
+## Magic DRC checks NBL.d without nets
 
-`KNOWN_FAILS` entries: `sg13_combined:magic-drc`, `sg13_combined_wo_rfcmim:magic-drc`, `sg13_combined_cmim_ontop:magic-drc`, `sg13_combined_cmim_ontop_wo_rfcmim:magic-drc` (together with MIM.i above), `sg13_hv_pmos_tap:magic-drc`, `sg13_lv_pmos_tap:magic-drc`, `sg13_short1:magic-drc`
+`KNOWN_FAILS` entries: `sg13_combined:magic-drc`, `sg13_combined_wo_rfcmim:magic-drc`, `sg13_combined_cmim_ontop:magic-drc`, `sg13_combined_cmim_ontop_wo_rfcmim:magic-drc` (together with MIM.i above), `sg13_hv_pmos_tap:magic-drc`, `sg13_lv_pmos_tap:magic-drc`
 
-The IHP rules are "NBL.d: Min. PWell width between nBuLay and NWell (different net) = 2.20" and "NBL.f: Min. nBuLay space to unrelated P+Activ = 0.50". The `ntap1` PCell always draws nBuLay under its NWell, and guard rings can carry nBuLay too. Magic checks both rules by geometry only (`spacing dnwell allnwell 2200 surround_ok`, `spacing dnwell allpactive 500 surround_ok`), so it reports an NWell of the same net that overlaps the nBuLay only partly, and the P+ source and drain of a PMOS in that same NWell. KLayout checks both rules per net and is clean on these cells. Both tools do catch a real violation, tested in separate cells: an NWell of another net 2.0 um from the nBuLay, and a substrate tie 0.30 um from it.
+The IHP rule is "NBL.d: Min. PWell width between nBuLay and NWell (different net) = 2.20". The `ntap1` PCell always draws nBuLay under its NWell, and guard rings can carry nBuLay too. Magic checks the rule by geometry only (`spacing dnwell allnwell 2200 surround_ok`), so it reports an NWell of the same net that overlaps the nBuLay only partly. KLayout checks the rule per net and is clean on these cells. The same problem with "NBL.f: Min. nBuLay space to unrelated P+Activ = 0.50", where Magic reported the P+ source and drain of a PMOS in that NWell, is fixed since IHP-Open-PDK#1340 (`spacing dnwell allpactivetap 500 surround_ok`, P+ taps only), which made `sg13_short1` pass. Both tools do catch a real violation, tested in separate cells: an NWell of another net 2.0 um from the nBuLay, and a substrate tie 0.30 um from it.
 
 ## Magic DRC reports nmosi.b and nmosi.d on every `isolbox`
 
