@@ -13,7 +13,7 @@ authors:
   orcid: https://orcid.org/0000-0003-1519-076X
   affiliation: "Johannes Kepler University Linz"
 title: "GitHub Repository of the Open-PDKs Regression Tests for DRC / LVS / PEX"
-abstract: "DRC, LVS, and PEX regression tests for the open-source PDKs ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, and sky130A. Every device cell runs through KLayout DRC and LVS, Magic DRC, Magic and Netgen LVS, and Magic and kpex parasitic extraction inside the IIC-OSIC-TOOLS container. Per-PDK PEX benches compare the extracted parasitics of metal-only layouts against values computed by hand from the extraction decks."
+abstract: "DRC, LVS, and PEX regression tests for the open-source PDKs ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, and sky130A. Every device cell runs through KLayout DRC and LVS, Magic DRC, gdscheck DRC (on all but sky130A), Magic and Netgen LVS, and Magic and kpex parasitic extraction inside the IIC-OSIC-TOOLS container. Per-PDK PEX benches compare the extracted parasitics of metal-only layouts against values computed by hand from the extraction decks."
 url: https://github.com/iic-jku/open-pdks-regression-tests
 repository-code: https://github.com/iic-jku/open-pdks-regression-tests
 license: Apache-2.0
@@ -29,6 +29,7 @@ keywords:
   - Magic
   - Netgen
   - kpex
+  - gdscheck
   - ihp-sg13g2
   - ihp-sg13cmos5l
   - gf180mcuD
