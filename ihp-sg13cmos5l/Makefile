@@ -22,8 +22,7 @@ CELL ?= sg13_combined
 #   EXPECTED_FAILS      the cell is broken on purpose, the step has to fail (EXPECTED_FAILS.md)
 #   KNOWN_FALSE_PASSES  the cell is broken on purpose, but a tool bug lets the step pass
 #                       (KNOWN_ISSUES.md)
-KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs \
-	sg13_cmomi:gdscheck-drc
+KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs
 EXPECTED_FAILS ?= sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc sg13_lv_nmos_tap_m1_a:gdscheck-drc \
 	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc sg13_lv_nmos_tap_m1_b:gdscheck-drc \
 	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc sg13_lv_nmos_tap_cnt_c:gdscheck-drc \

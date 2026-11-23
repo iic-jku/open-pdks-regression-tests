@@ -33,7 +33,7 @@ make open OPEN_ARGS=--all     # also the generated netlists and reports
 
 ## Design Rule Check (DRC)
 
-Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`. There is no gdscheck flow here: gdscheck 0.2.1 has no rule decks for `sky130A`, so the [Makefile](Makefile) leaves the `gdscheck-drc` step out of the regression, and `make gdscheck-drc` stops with `gdscheck DRC for sky130A not yet supported`.
+Runs DRC on the GDS layout in `layout/`. Both flows use `sak-drc.sh`. KLayout writes its reports into `verification/drc/` (`<CELL>.klayout.drc.<deck>.xml`), Magic into the run folder `verification/drc/<CELL>.magic.drc/`. There is no gdscheck flow here: gdscheck 0.2.2 has no rule decks for `sky130A`, so the [Makefile](Makefile) leaves the `gdscheck-drc` step out of the regression, and `make gdscheck-drc` stops with `gdscheck DRC for sky130A not yet supported`.
 
 KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus separate pin/label, zero-area and density checks depending on `DRC_LEVEL` (`sak-drc.sh -l`). It is ignored by `magic-drc`, which always runs the full rule set of the PDK's Magic tech file:
 
@@ -135,7 +135,7 @@ The `regression` target runs the DRC / LVS / PEX toolchain over **every** cell i
 make regression
 ```
 
-It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `klayout-lvs`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex1` (C-decoupled), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC): the default of `../common.mk` without `gdscheck-drc`, which the [Makefile](Makefile) leaves out because gdscheck 0.2.1 has no rule decks for `sky130A`. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
+It runs the steps listed in `REGRESSION_STEPS` on each cell. Here they are `klayout-drc`, `klayout-lvs`, `magic-drc`, `magic-lvs`, `magic-pex1` (C-decoupled), `magic-pex2` (C-coupled), `magic-pex3` (full-RC), `klayout-pex1` (C-decoupled), `klayout-pex2` (C-coupled) and `klayout-pex3` (full-RC): the default of `../common.mk` without `gdscheck-drc`, which the [Makefile](Makefile) leaves out because gdscheck 0.2.2 has no rule decks for `sky130A`. `REGRESSION_STEPS` picks other steps, and `LAYOUT_CELLS` restricts the run to some cells:
 
 ```sh
 make regression LAYOUT_CELLS="sky130_nfet_01v8_tap sky130_res_generic_po" REGRESSION_STEPS="klayout-drc magic-drc magic-lvs"

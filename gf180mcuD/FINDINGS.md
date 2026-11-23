@@ -86,7 +86,7 @@ The PCell also widens `w_res` to the minimum width of the metal (0.28 um on Meta
 
 ## MIM capacitor wiring
 
-MIMTM.10 allows the bottom plate of a MIM capacitor to be connected only through the via above it, Via4 for option B on Metal5, and forbids any Via3 touching it. None of the three DRC engines checks a Via3 outside the top plate, so a Via3 under a tab of the bottom plate passes all three, see `gf180_cap_mim_2f0fF_via3` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+MIMTM.10 allows the bottom plate of a MIM capacitor to be connected only through the via above it, Via4 for option B on Metal5, and forbids any Via3 touching it. KLayout and Magic check no Via3 outside the top plate, so a Via3 under a tab of the bottom plate passes both (gdscheck catches it since 0.2.2), see `gf180_cap_mim_2f0fF_via3` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 A BJT under the top plate (`FuseTop`, 75/0) is not extracted by KLayout LVS, while KLayout DRC has no rule against it, see `gf180_combined_cmim_ontop` in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 

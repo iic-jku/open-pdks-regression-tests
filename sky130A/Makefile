@@ -16,7 +16,7 @@ EXPECTED_PDK := sky130A
 # Override with: make <target> CELL=<cellname>
 CELL ?= sky130_nfet_01v8_tap
 
-# gdscheck 0.2.1 has no rule decks for sky130A, so the regression leaves its step out.
+# gdscheck 0.2.2 has no rule decks for sky130A, so the regression leaves its step out.
 GDSCHECK_STEP :=
 
 # Steps of regression that do not simply pass. ../common.mk has the entry syntax and what

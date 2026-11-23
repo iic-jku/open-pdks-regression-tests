@@ -265,28 +265,28 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 
 **MOS transistors**
 
-- `gf180_nfet_03v3_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_03v3_ring` (PASS)
-- `gf180_nfet_05v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_05v0_ring` (PASS)
-- `gf180_nfet_06v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_nfet_06v0_ring` (PASS)
+- `gf180_nfet_03v3_tap`, `gf180_nfet_03v3_ring` (PASS)
+- `gf180_nfet_05v0_tap`, `gf180_nfet_05v0_ring` (PASS)
+- `gf180_nfet_06v0_tap`, `gf180_nfet_06v0_ring` (PASS)
 - `gf180_nfet_06v0_nvt_tap`, `gf180_nfet_06v0_nvt_ring` (PASS): native 6 V NMOS
-- `gf180_pfet_03v3_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_03v3_ring` (PASS)
-- `gf180_pfet_05v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_05v0_ring` (PASS)
-- `gf180_pfet_06v0_tap` (KNOWN FAIL: gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), `gf180_pfet_06v0_ring` (PASS)
-- `gf180_nfet_03v3_tap_nostrap` (KNOWN FAIL: KLayout LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): butted bulk tie without the Metal1 strap
-- `gf180_nfet_03v3_tap_poly2pin` (KNOWN FAIL: Magic + Netgen LVS, gdscheck DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): gate pin on Poly2_Label instead of Metal1
+- `gf180_pfet_03v3_tap`, `gf180_pfet_03v3_ring` (PASS)
+- `gf180_pfet_05v0_tap`, `gf180_pfet_05v0_ring` (PASS)
+- `gf180_pfet_06v0_tap`, `gf180_pfet_06v0_ring` (PASS)
+- `gf180_nfet_03v3_tap_nostrap` (KNOWN FAIL: KLayout LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): butted bulk tie without the Metal1 strap
+- `gf180_nfet_03v3_tap_poly2pin` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): gate pin on Poly2_Label instead of Metal1
 - `gf180_nfet_03v3_mintap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): one tap as small as the rules allow instead of the guard ring
 - `gf180_nfet_03v3_ring_cogap` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): guard ring contacts 0.29 um apart at the corners
 - `gf180_nfet_06v0_nvt_ring_nat` (broken on purpose, EXPECTED FAIL: KLayout DRC, gdscheck DRC, KNOWN FALSE PASS: Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): NAT over the guard ring (NAT.6)
 
 **Deep Nwell**
 
-- `gf180_dnwell_nmos` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): NMOS in LVPWELL inside DNWELL, pins D/S/G/VDD/VSS
-- `gf180_dnwell_inv` (KNOWN FAIL: Magic DRC, gdscheck DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): PMOS and NMOS in one DNWELL
+- `gf180_dnwell_nmos` (KNOWN FAIL: Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): NMOS in LVPWELL inside DNWELL, pins D/S/G/VDD/VSS
+- `gf180_dnwell_inv` (KNOWN FAIL: Magic DRC, Magic full-RC PEX, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): PMOS and NMOS in one DNWELL
 
 **Capacitors**
 
 - `gf180_cap_mim_2f0fF` (PASS)
-- `gf180_cap_mim_2f0fF_via3` (broken on purpose, KNOWN FALSE PASS: KLayout DRC, Magic DRC, gdscheck DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): bottom plate connected through Via3 (MIMTM.10)
+- `gf180_cap_mim_2f0fF_via3` (broken on purpose, EXPECTED FAIL: gdscheck DRC, KNOWN FALSE PASS: KLayout DRC, Magic DRC, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): bottom plate connected through Via3 (MIMTM.10)
 - `gf180_cap_nmos_03v3`, `gf180_cap_nmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_pmos_03v3`, `gf180_cap_pmos_06v0` (KNOWN FAIL: Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_cap_nmos_03v3_b`, `gf180_cap_nmos_06v0_b` (PASS)

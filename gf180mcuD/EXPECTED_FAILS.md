@@ -12,7 +12,9 @@ Unlike [KNOWN_ISSUES.md](KNOWN_ISSUES.md), which shrinks as bugs get fixed, this
 
 ## `gf180_cap_mim_2f0fF_via3`: MIM bottom plate connected through Via3
 
-No `EXPECTED_FAILS` entry: all three DRC steps miss the error and are `KNOWN_FALSE_PASSES`, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+`EXPECTED_FAILS` entry: `gf180_cap_mim_2f0fF_via3:gdscheck-drc`
+
+gdscheck reports `MIMTM.10` once, at the Via3. KLayout and Magic DRC miss it and are `KNOWN_FALSE_PASSES`, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 A 5 x 5 um `cap_mim` (MIM option B on Metal5) whose bottom plate, Metal4, runs out in a Metal4 tab 1.2 um wide past the left edge of the top plate. A Via3 1.5 um outside the top plate connects the tab down to a Metal3 pad with the pin C1. MIMTM.10 allows the bottom plate to be connected only through the via above it, Via4, and forbids any Via3 touching it. `gf180_combined` and `gf180_combined_cmim_ontop` connect their MIM bottom plate the legal way, from the same kind of tab through Via4 up to Metal5. The circuit is right, both LVS steps pass.
 

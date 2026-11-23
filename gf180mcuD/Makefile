@@ -53,16 +53,13 @@ KNOWN_FAILS ?= gf180_nfet_03v3_tap_nostrap:klayout-lvs gf180_cap_nmos_03v3_nofmt
 	gf180_npn_00p54x04p00:magic-pex3 \
 	gf180_npn_10p00x10p00:magic-pex3 \
 	gf180_combined:magic-pex3 \
-	gf180_combined_cmim_ontop:magic-pex3 gf180_sc_diode:klayout-pex3 \
-	gf180_dnwell_inv:gdscheck-drc gf180_dnwell_nmos:gdscheck-drc \
-	gf180_nfet_03v3_tap:gdscheck-drc gf180_nfet_03v3_tap_nostrap:gdscheck-drc gf180_nfet_03v3_tap_poly2pin:gdscheck-drc \
-	gf180_nfet_05v0_tap:gdscheck-drc gf180_nfet_06v0_tap:gdscheck-drc \
-	gf180_pfet_03v3_tap:gdscheck-drc gf180_pfet_05v0_tap:gdscheck-drc gf180_pfet_06v0_tap:gdscheck-drc
+	gf180_combined_cmim_ontop:magic-pex3 gf180_sc_diode:klayout-pex3
 EXPECTED_FAILS ?= gf180_nfet_06v0_nvt_ring_nat:klayout-drc gf180_nfet_06v0_nvt_ring_nat:gdscheck-drc \
+	gf180_cap_mim_2f0fF_via3:gdscheck-drc \
 	gf180_diode_nd2ps_03v3:magic-lvs gf180_diode_nd2ps_06v0:magic-lvs \
 	gf180_diode_pd2nw_03v3:magic-lvs gf180_diode_pd2nw_06v0:magic-lvs
 KNOWN_FALSE_PASSES ?= gf180_nfet_06v0_nvt_ring_nat:magic-drc \
-	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc gf180_cap_mim_2f0fF_via3:gdscheck-drc \
+	gf180_cap_mim_2f0fF_via3:klayout-drc gf180_cap_mim_2f0fF_via3:magic-drc \
 	gf180_diode_nd2ps_03v3:klayout-lvs gf180_diode_nd2ps_06v0:klayout-lvs \
 	gf180_diode_pd2nw_03v3:klayout-lvs gf180_diode_pd2nw_06v0:klayout-lvs
 

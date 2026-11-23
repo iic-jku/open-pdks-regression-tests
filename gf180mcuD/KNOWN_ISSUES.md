@@ -6,7 +6,7 @@ Observed on the IIC-OSIC-TOOLS nightly image of 2026-10-22 (digest `sha256:4d34e
 
 The LVS entries are for a `sak-lvs.sh` that fails Magic + Netgen LVS on property errors. With the `sak-lvs.sh` of the image above, `magic-lvs` of the four small diode cells in [EXPECTED_FAILS.md](EXPECTED_FAILS.md) is a `FALSE PASS`.
 
-KLayout DRC passes on every cell that is not broken on purpose. Every `magic-drc` entry is a cell it passes and Magic does not.
+KLayout DRC and gdscheck DRC pass on every cell that is not broken on purpose. Every `magic-drc` entry is a cell both pass and Magic does not.
 
 ## KLayout LVS fails on `gf180_nfet_03v3_tap_nostrap`
 
@@ -210,33 +210,24 @@ In these cells a P-well lies isolated inside a DNWELL: the LVPWELL of the NMOS i
 
 In `gf180_combined` and `gf180_combined_cmim_ontop` seven device terminals share an internal net, the node `w_616_616#` of the C-coupled netlist (the base of the NPN, a source/drain terminal of `nfet_03v3`, `nfet_05v0`, `nfet_06v0_nvt` and `pfet_05v0`, and one terminal of each of the two diodes). In the full-RC netlist of `magic-pex3` this net reaches VSS through resistors. Every port keeps an element, so only `scripts/check_pex_modes.py` reports it. Both cells contain `gf180_dnwell_nmos` and `gf180_npn_00p54x02p00`. Whether the short runs through one of their isolated P-wells is not tested.
 
-## gdscheck measures PP.6 and NP.6 along the whole COMP edge
-
-`KNOWN_FAILS` entries: `gf180_dnwell_inv:gdscheck-drc`, `gf180_dnwell_nmos:gdscheck-drc`, `gf180_nfet_03v3_tap:gdscheck-drc`, `gf180_nfet_03v3_tap_nostrap:gdscheck-drc`, `gf180_nfet_03v3_tap_poly2pin:gdscheck-drc`, `gf180_nfet_05v0_tap:gdscheck-drc`, `gf180_nfet_06v0_tap:gdscheck-drc`, `gf180_pfet_03v3_tap:gdscheck-drc`, `gf180_pfet_05v0_tap:gdscheck-drc`, `gf180_pfet_06v0_tap:gdscheck-drc`
-
-PP.6 ("Overlap with PCOMP butted to NCOMP = 0.22") and NP.6 (the same for NCOMP butted to PCOMP) apply where a tap butts the diffusion of a transistor, as in every `*_tap` cell here and in the two deep Nwell cells. The KLayout deck (`rule_decks/pplus.rb`, `rule_decks/nplus.rb`) checks that the COMP extends 0.22 um beyond the NCOMP at the butting edge, with the projection metric, so only that edge counts, and it passes the cells at `DRC_LEVEL=regular` too. gdscheck 0.2.1 checks the whole NCOMP that touches a PPLUS against the whole COMP (`ncomp_at_pplus` within `comp_at_pplus`, with `ncomp: comp and nplus`), so every NCOMP edge counts, not only the butting one. It reports one `enclosure 0.0100 µm < 0.22 µm of ncomp_at_pplus within comp_at_pplus` per cell (`pcomp_at_nplus within comp_at_nplus` for NP.6), at the source contact next to the tap, where the diffusion is 0.01 um wider per side than under the gate. Every butted tap fails it, the 0.71 um wide tap of `gf180_nfet_03v3_tap` included. Magic DRC has no finding on these edges.
-
-Upstream: [gdscheck#64](https://github.com/aesc-silicon/gdscheck/issues/64).
-
 ## Magic DRC does not check NAT.6
 
 `KNOWN_FALSE_PASSES` entry: `gf180_nfet_06v0_nvt_ring_nat:magic-drc`
 
 NAT.6 is "Two or more COMPs if connected to different potential are not allowed under same NAT layer". Magic keeps no NAT layer of its own: its GDS import reads NAT only to tell native transistors and diodes from regular ones (`and NAT` and `and-not NAT` in the `layer` rules of the import style), so it cannot see which COMPs share one NAT shape. Its NAT rules are a spacing from native diffusion to a tap (line 2822, labelled `NAT.5 + NAT.6`) and the poly overhang of a native transistor (line 2852). `gf180_nfet_06v0_nvt_ring_nat` has NAT over its guard ring (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)): KLayout reports `NAT.6` twice, Magic nothing.
 
-## No DRC checks MIMTM.10 outside the top plate
+## KLayout and Magic check MIMTM.10 only at the top plate
 
-`KNOWN_FALSE_PASSES` entries: `gf180_cap_mim_2f0fF_via3:klayout-drc`, `gf180_cap_mim_2f0fF_via3:magic-drc`, `gf180_cap_mim_2f0fF_via3:gdscheck-drc`
+`KNOWN_FALSE_PASSES` entries: `gf180_cap_mim_2f0fF_via3:klayout-drc`, `gf180_cap_mim_2f0fF_via3:magic-drc`
 
-MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-1. (b) MIM bottom plate Metaln-1 can only be connected through the higher Via (Vian-1)." For MIM option B on Metal5 the bottom plate is Metal4, Vian-2 is Via3 and Vian-1 is Via4. All three tools check the rule only at the top plate:
+MIMTM.10 reads "(a) There cannot be any Vian-2 touching MIM bottom plate Metaln-1. (b) MIM bottom plate Metaln-1 can only be connected through the higher Via (Vian-1)." For MIM option B on Metal5 the bottom plate is Metal4, Vian-2 is Via3 and Vian-1 is Via4. KLayout and Magic check the rule only at the top plate:
 
 - KLayout: `topmin1_via.and(topmin1_metal.and(fusetop))` (`drc/rule_decks/mim_b.rb`, line 122), a Via3 inside the top plate (`FuseTop`).
 - Magic: `spacing via3 *mimcap 50 touching_illegal` (lines 3191-3192), a Via3 within 0.05 um of the capacitor.
-- gdscheck 0.2.1: `topmin1_via_on_mim_bottom: topmin1_via and topmin1_metal and fusetop` (deck `mim_b` of its built-in `gf180mcuD` rules), the same region as in KLayout.
 
-`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). All three DRC steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times. The same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
+`gf180_cap_mim_2f0fF_via3` connects the bottom plate from a Metal4 tab through a Via3 1.5 um outside the top plate, down to a Metal3 pin (see [EXPECTED_FAILS.md](EXPECTED_FAILS.md)). Both steps pass it. The checks themselves work: with the Via3 under the top plate, KLayout reports `MIMTM.10` once and Magic `MIMTM.10` eight times. The same tab with a Via4 up to Metal5 passes every step (both tested in cells outside the regression).
 
-Upstream: [gdscheck#65](https://github.com/aesc-silicon/gdscheck/issues/65), with a tested fix for gdscheck.
+gdscheck checked the same region as KLayout up to 0.2.1 and reports `MIMTM.10` on the cell since 0.2.2 ([gdscheck#65](https://github.com/aesc-silicon/gdscheck/issues/65)).
 
 ## KLayout LVS does not compare the diode area
 
