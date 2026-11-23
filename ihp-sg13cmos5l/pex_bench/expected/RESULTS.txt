@@ -96,7 +96,7 @@ tm1 over m1         2.6240    1.9779    2.6242         -        -        -      
 
 ============================================================================================================
 H  Lateral sidewall coupling, Metal1, W = 0.5 um, L = 50 um                [fF]
-   deck formula: k*L/(s+off), k = 27.218 aF, off = 0.031 um. Magic emits it in full (8.3.693), kpex 2.5D half (0.4.3).
+   deck formula: k*L/(s+off), k = 27.218 aF, off = 0.031 um. Magic emits it in full (8.3.693), kpex 2.5D its own coefficient in full (0.9.0).
 spacing        deck     Magic kpex 2.5D FasterCap Magic/FC  2.5D/FC   amax    asym from
 ------------------------------------------------------------------------------------------------------------
 0.20         5.8913    5.8913    5.8913         -        -        -      -       - 
