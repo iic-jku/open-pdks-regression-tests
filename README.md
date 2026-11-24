@@ -6,6 +6,7 @@
 [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml)
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
 [![License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24500600.svg)](https://doi.org/10.5281/zenodo.24500600)
 
 (c) 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 
@@ -251,7 +252,8 @@ The four regression workflows share the job in [`regression-common.yml`](.github
   month = nov,
   year = {2026},
   title = {{GitHub Repository of DRC / LVS / PEX Regression Tests for Open-PDKs}},
-  url = {https://github.com/iic-jku/open-pdks-regression-tests}
+  url = {https://github.com/iic-jku/open-pdks-regression-tests},
+  doi = {10.5281/zenodo.24500600}
 }
 ```
 
