@@ -1,0 +1,149 @@
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# SPDX-License-Identifier: Apache-2.0
+# Description: Reusable job behind the four regression-<pdk>.yml workflows. Runs the DRC / LVS / PEX regression and the PEX bench of one PDK inside the IIC-OSIC-TOOLS container.
+
+name: Regression (common)
+
+on:
+  workflow_call:
+    inputs:
+      pdk:
+        description: PDK folder to test (ihp-sg13g2, ihp-sg13cmos5l, gf180mcuD, or sky130A)
+        required: true
+        type: string
+      image:
+        description: IIC-OSIC-TOOLS container image, the nightly when empty
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: ${{ inputs.pdk }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    container:
+      # Push and pull request runs pass no image.
+      # The same fallback is repeated for IMAGE below, because the container block cannot read env.
+      image: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
+      # The checkout belongs to the runner user, the tools write into it as root.
+      options: --user root
+    env:
+      PDK_ROOT: /foss/pdks
+      PDK_DIR: ${{ inputs.pdk }}
+      IMAGE: ${{ inputs.image || 'ghcr.io/iic-jku/iic-osic-tools:nightly' }}
+    defaults:
+      run:
+        # GitHub runs every step with "bash --noprofile --norc -eo pipefail".
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up IIC-OSIC-TOOLS environment
+        # GitHub Actions bypasses the container entrypoint, so the image's tool environment is never initialised: $PATH is the runner host's and KLAYOUT_PATH, PYTHONPATH, ... are unset.
+        # Source the image's setup script and persist the result for every later step.
+        # common.mk switches PDK to the folder's own PDK with sak-pdk.
+        run: |
+          set -a
+          source /etc/profile.d/iic-osic-tools-setup.sh
+          set +a
+          {
+            echo "PATH=$PATH"
+            echo "PYTHONPATH=$PYTHONPATH"
+            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+            echo "LIBRARY_PATH=$LIBRARY_PATH"
+            echo "CPATH=$CPATH"
+            echo "SAK=$SAK"
+            echo "KLAYOUT_HOME=$KLAYOUT_HOME"
+            echo "KLAYOUT_PATH=$KLAYOUT_PATH"
+            echo "PDK=$PDK"
+            echo "PDKPATH=$PDKPATH"
+            echo "PDK_ROOT=$PDK_ROOT"
+            echo "STD_CELL_LIBRARY=$STD_CELL_LIBRARY"
+            echo "SPICE_USERINIT_DIR=$SPICE_USERINIT_DIR"
+          } >> "$GITHUB_ENV"
+
+      - name: Show tool versions
+        # The KNOWN_FAILS of each PDK track these versions, so every run records them.
+        run: |
+          {
+            echo "### $PDK_DIR"
+            echo
+            echo "| Tool | Version |"
+            echo "| --- | --- |"
+            echo "| IIC-OSIC-TOOLS | \`$IMAGE\` (${IIC_OSIC_TOOLS_VERSION:-unknown}) |"
+            echo "| PDK | $(cat "$PDK_ROOT/$PDK_DIR/COMMIT" "$PDK_ROOT/$PDK_DIR/SOURCES" 2>/dev/null | head -1) |"
+            echo "| Magic | $(magic --version 2>/dev/null) |"
+            echo "| Netgen | $(netgen -batch quit 2>/dev/null | grep -o 'Netgen [0-9.]*' | head -1) |"
+            echo "| KLayout | $(klayout -v 2>/dev/null) |"
+            echo "| gdscheck | $(gdscheck --version 2>/dev/null) |"
+            echo "| kpex | $(kpex --version 2>/dev/null | tail -1) |"
+            echo "| Xschem | $(xschem --version 2>/dev/null | grep -m1 -o 'XSCHEM V[^ ]*') |"
+            echo
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Run DRC / LVS / PEX regression
+        id: regression
+        run: make -C "$PDK_DIR" regression 2>&1 | tee regression.log
+
+      - name: Run PEX bench
+        id: pex-bench
+        # Runs after a failed regression too, the two are independent.
+        # Not after a failed checkout or environment setup, which skip the regression.
+        if: ${{ !cancelled() && steps.regression.conclusion != 'skipped' }}
+        run: make -C "$PDK_DIR" pex-bench 2>&1 | tee pex-bench.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          # The verdict lines of the two logs.
+          # Empty when a log is missing or a run died before its summary, which must not fail this step (the shell runs with -e and pipefail).
+          regression=$(grep -h '^\[REGRESSION\] SUMMARY:' regression.log 2>/dev/null || true)
+          bench=$(grep -h -E '^\[CHECK\] ([0-9]+ ok|INCOMPLETE|DECK|TOOL|.* is (not there|unreadable))' pex-bench.log 2>/dev/null || true)
+          {
+            echo "#### Regression: ${{ steps.regression.outcome }}"
+            echo
+            echo '```'
+            echo "${regression:-No summary, see regression.log in the artifact.}"
+            echo '```'
+            echo
+            echo "#### PEX bench: ${{ steps.pex-bench.outcome }}"
+            echo
+            echo '```'
+            echo "${bench:-$(tail -n 5 pex-bench.log 2>/dev/null || echo "No log.")}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # The same lines as annotations, so the run page shows the verdicts without the log.
+          # Failing verdicts are errors, the rest notices.
+          annotate() { msg=${3//%/%25}; echo "::$1 title=$2::$msg"; }
+          while IFS= read -r line; do
+            case "$line" in
+              "") ;;
+              *"FAILED cells"*|*"UNEXPECTED"*) annotate error "Regression $PDK_DIR" "${line#*SUMMARY: }" ;;
+              *) annotate notice "Regression $PDK_DIR" "${line#*SUMMARY: }" ;;
+            esac
+          done <<< "$regression"
+          while IFS= read -r line; do
+            case "$line" in
+              "") ;;
+              "[CHECK] "[0-9]*" ok,"*) annotate notice "PEX bench $PDK_DIR" "${line#\[CHECK\] }" ;;
+              *) annotate error "PEX bench $PDK_DIR" "${line#\[CHECK\] }" ;;
+            esac
+          done <<< "$bench"
+
+      - name: Upload logs and reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-${{ inputs.pdk }}
+          path: |
+            regression.log
+            pex-bench.log
+            ${{ inputs.pdk }}/verification/
+            ${{ inputs.pdk }}/netlist/
+            ${{ inputs.pdk }}/pex_bench/runs/
+          if-no-files-found: ignore
+          retention-days: 30

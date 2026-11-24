@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Sweep extresist settings on res_m1 to find what makes Magic emit resistors.
 cd "$(dirname "$0")/.." || exit 1
 mkdir -p try

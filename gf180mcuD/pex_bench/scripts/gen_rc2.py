@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 import os, pya
 OUT = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "layout")
 

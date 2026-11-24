@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Mesh convergence for the kpex FasterCap engine.
 # FasterCap runs in auto mode (-a), which overrides -m and -d, so --mesh does nothing.
 # The knobs that bite are the KLayout-side triangulation (--delaunay_amax, --delaunay_b)

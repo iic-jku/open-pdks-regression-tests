@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Map the extresist threshold / mindelay gate on a 2-port wire and a 3-port tee.
 cd "$(dirname "$0")/.." || exit 1
 mkdir -p runs/try3

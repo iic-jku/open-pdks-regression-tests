@@ -22,13 +22,13 @@ Each cell is a copy of a cell of this directory with one of the repairs of [FIND
 
 No `EXPECTED_FAILS` entry: both DRC steps miss the error and are `KNOWN_FALSE_PASSES`, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
-`sky130_cap_var_hvt` with the Nwell of the `cap_var` PCell, which encloses the gate poly by 0.010 um at its ends; `varac.5` asks for 0.15 um (see [FINDINGS.md](FINDINGS.md), "Varactor"). The circuit is unchanged.
+`sky130_cap_var_hvt` with the Nwell of the `cap_var` PCell, which encloses the gate poly by 0.010 um at its ends. `varac.5` asks for 0.15 um (see [FINDINGS.md](FINDINGS.md), "Varactor"). The circuit is unchanged.
 
 ## `sky130_nfet_01v8_tap_licon15`: NPC too small around the poly contacts
 
 No `EXPECTED_FAILS` entry: both DRC steps miss the error and are `KNOWN_FALSE_PASSES`, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
-`sky130_nfet_01v8_tap` with the NPC of the `nfet` PCell, 0.06 um beside and 0.09 um above and below the two poly contacts; `licon.15` asks for 0.1 um (see [FINDINGS.md](FINDINGS.md), "NPC around the poly contacts"). The circuit is unchanged, LVS passes.
+`sky130_nfet_01v8_tap` with the NPC of the `nfet` PCell, 0.06 um beside and 0.09 um above and below the two poly contacts. `licon.15` asks for 0.1 um (see [FINDINGS.md](FINDINGS.md), "NPC around the poly contacts"). The circuit is unchanged, LVS passes.
 
 <!--
 Template for a new cell:

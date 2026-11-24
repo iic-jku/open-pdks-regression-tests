@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Run the kpex FasterCap engine over the bench, at the coarse default triangulation
 # and at a refined one, so the mesh sensitivity of every number is visible.
 # Note: FasterCap runs in auto mode (-a<tolerance>), which overrides -m and -d, so

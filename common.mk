@@ -6,9 +6,9 @@
 # "make -f <pdk-dir>/Makefile" does NOT work: the relative paths below would
 # then resolve against the current directory instead of the design directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 .DEFAULT_GOAL := help
@@ -22,6 +22,7 @@
 #   KNOWN_FAILS       Steps that fail because of a tool bug, see below.
 #   EXPECTED_FAILS    Steps that have to fail, the cell is broken on purpose (see below).
 #   KNOWN_FALSE_PASSES  Steps that pass a cell broken on purpose, because of a tool bug.
+#   GDSCHECK_STEP     Empty for a PDK gdscheck has no rule decks for (optional, see below).
 #   REGRESSION_STEPS  Steps the regression runs per cell (optional, default below).
 #   KLAYOUT_EXT_CIR   Name of the extracted netlist (optional, see below).
 #   MAGIC_EXT_SPC     Same for the Magic+Netgen flow (optional, see below).
@@ -101,20 +102,34 @@ MINRES ?= 1000
 # Override with: make <target> MINDELAY=<ps>
 MINDELAY ?= 1
 
-# kpex engine for klayout-pex: magic (drives Magic, default), 2.5D (kpex's analytical engine) or
-# fastercap (field solve, capacitance only). See ihp-sg13g2/pex_bench for how the three compare.
-# Override with: make klayout-pex KPEX_ENGINE=<magic|2.5D|fastercap>
-KPEX_ENGINE ?= magic
+# Port net that klayout-pex ties the substrate port of the kpex 2.5D netlist to (sak-pex.sh -g): sub! on the IHP PDKs, SUB on gf180mcuD, sky130_gnd on sky130A. Empty keeps the substrate port: the cells here name their bulk pin B, not VSS, and the port check accepts the extra port as long as elements connect to it.
+# Override with: make klayout-pex PEX_SUB_NET=<net>
+PEX_SUB_NET ?=
 
-# fastercap only: KLayout-side triangulation --delaunay_amax in um^2 (kpex default 50, coarse) and
-# the FasterCap auto tolerance -a. FasterCap's -m is overridden by -a, so kpex's --mesh does nothing.
-# Override with: make klayout-pex KPEX_ENGINE=fastercap KPEX_AMAX=<um2> KPEX_TOL=<frac>
-KPEX_AMAX ?= 50
-KPEX_TOL ?= 0.05
+# Reduction of the full-RC netlist of klayout-pex (sak-pex.sh -R, only used in EXT_MODE=3; default: ticer): none, floating (merges the floating islands and removes the capacitor-only nodes) or ticer (floating plus TICER node elimination).
+# Override with: make klayout-pex KPEX_REDUCE=<none|floating|ticer>
+KPEX_REDUCE ?= ticer
 
-# KLayout DRC level: precheck, macro, or regular (sak-drc.sh -l, only used by klayout-drc; default: macro)
+# KLayout/gdscheck DRC level: precheck, macro, or regular (sak-drc.sh -l, only used by klayout-drc and gdscheck-drc; default: macro)
 # Override with: make <target> DRC_LEVEL=<precheck|macro|regular>
 DRC_LEVEL ?= macro
+
+# gdscheck suite, replaces the one DRC_LEVEL selects (sak-drc.sh -s, only used by gdscheck-drc; default: empty = precheck runs precheck, macro core, regular main)
+# Override with: make <target> GDSCHECK_SUITE=<precheck|core|main|density|antenna|recommended>
+GDSCHECK_SUITE ?=
+
+# gdscheck rule decks instead of a suite, comma-separated (sak-drc.sh -D, only used by gdscheck-drc, not together with GDSCHECK_SUITE; default: empty = run the suite)
+# Override with: make <target> GDSCHECK_DECKS=<deck>[,<deck>...]
+GDSCHECK_DECKS ?=
+
+# Parallel DRC jobs, the KLayout processes and gdscheck threads (sak-drc.sh -j, only used by klayout-drc and gdscheck-drc; default: empty = 4 KLayout processes or fewer, gdscheck on every CPU)
+# Override with: make <target> DRC_JOBS=<n>
+DRC_JOBS ?=
+
+# sak-drc.sh options for the three variables above, left out when empty so that the script defaults apply
+_GDSCHECK_SUITE_OPT = $(if $(GDSCHECK_SUITE),-s "$(GDSCHECK_SUITE)")
+_GDSCHECK_DECKS_OPT = $(if $(GDSCHECK_DECKS),-D "$(GDSCHECK_DECKS)")
+_DRC_JOBS_OPT = $(if $(DRC_JOBS),-j $(DRC_JOBS))
 
 # sak-drc.sh to run, e.g. a newer one than the image ships (default: the one on PATH)
 # Override with: make <target> SAK_DRC=<path to sak-drc.sh>
@@ -123,6 +138,10 @@ SAK_DRC ?= sak-drc.sh
 # sak-lvs.sh to run, e.g. a newer one than the image ships (default: the one on PATH)
 # Override with: make <target> SAK_LVS=<path to sak-lvs.sh>
 SAK_LVS ?= sak-lvs.sh
+
+# sak-pex.sh to run, e.g. a newer one than the image ships (default: the one on PATH)
+# Override with: make <target> SAK_PEX=<path to sak-pex.sh>
+SAK_PEX ?= sak-pex.sh
 
 # Floating-point precision (significant digits) for Xschem's ev function
 # Override with: make <target> EV_PRECISION=<digits>
@@ -157,21 +176,24 @@ MAGIC_EXT_SPC ?= $(CELL).ext.spc
 ALL_CELLS := $(patsubst $(LAY_DIR)/%.gds,%,$(wildcard $(LAY_DIR)/*.gds))
 LAYOUT_CELLS := $(ALL_CELLS)
 
+# gdscheck has rule decks for ihp-sg13g2, ihp-sg13cmos5l and gf180mcuD, not for sky130A.
+# The sky130A Makefile sets this empty, so its regression leaves the step out.
+GDSCHECK_STEP ?= gdscheck-drc
+
 # Steps executed by regression for every cell, in this order.
 # Each name must have a matching branch in the case statement of the regression target.
 # Override with: make regression REGRESSION_STEPS="<step> <step> ..."
-# klayout-pex1 is left out: kpex has no C-decoupled mode, falls back to C-coupled and would
-# repeat klayout-pex2.
-DEFAULT_STEPS := klayout-drc klayout-lvs \
+DEFAULT_STEPS := $(strip klayout-drc klayout-lvs \
 			magic-drc magic-lvs \
+			$(GDSCHECK_STEP) \
 			magic-pex1 magic-pex2 magic-pex3 \
-			klayout-pex2 klayout-pex3
+			klayout-pex1 klayout-pex2 klayout-pex3)
 REGRESSION_STEPS ?= $(DEFAULT_STEPS)
 
 # Every step the regression target knows. The lists below may name any of them, also a step
 # that REGRESSION_STEPS leaves out.
 ALL_STEPS := klayout-drc klayout-lvs klayout-pex1 klayout-pex2 klayout-pex3 \
-			magic-drc magic-lvs magic-pex1 magic-pex2 magic-pex3
+			magic-drc magic-lvs magic-pex1 magic-pex2 magic-pex3 gdscheck-drc
 
 # Run only some of REGRESSION_STEPS. Each word is a step or a make pattern, % matches any text:
 #   make regression STEPS=%-lvs          klayout-lvs and magic-lvs
@@ -230,6 +252,7 @@ PARTIAL_RUN = $(if $(CELLS_LEFT_OUT)$(STEPS_LEFT_OUT),$(RUN_CELLS)$(comma) $(RUN
 # report, ...). make turns both into its own exit code 2, so every DRC and LVS target writes the
 # exit code of its sak script to <report dir>/<cell>.<step>.rc. A step that fails without that
 # file never reached the check, e.g. because the schematic could not be netlisted.
+# gdscheck-drc is a DRC step like the other two: sak-drc.sh -g exits with 1 on violations as well.
 #
 # Override with: make regression KNOWN_FAILS="<entry> ..." EXPECTED_FAILS="..." KNOWN_FALSE_PASSES="..."
 KNOWN_FAILS ?=
@@ -258,21 +281,25 @@ REGRESSION_SH = \
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [SAK_LVS=<path>] [OPEN_ARGS=<options>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_REDUCE=<none|floating|ticer>] [PEX_SUB_NET=<net>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [GDSCHECK_SUITE=<suite>|GDSCHECK_DECKS=<decks>] [DRC_JOBS=<n>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [SAK_LVS=<path>] [SAK_PEX=<path>] [OPEN_ARGS=<options>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@if [ -z '$(GDSCHECK_STEP)' ]; then echo '  gdscheck has no rule decks for $(EXPECTED_PDK): gdscheck-drc stops with an error, and the regression leaves it out.'; fi
 	@echo ''
 	@echo 'This design is verified against PDK=$(EXPECTED_PDK); common.mk selects it with sak-pdk, active now: PDK=$(or $(PDK),<unset>).'
 	@if [ -n '$(PDK_ERROR)' ]; then echo '  [WARNING] $(PDK_ERROR)'; fi
 	@if [ -n '$(PDK_ERROR_HINT)' ]; then echo '            $(PDK_ERROR_HINT)'; fi
 	@echo 'CELL defaults to $(CELL). Override to verify subcells.'
 	@echo 'EXT_MODE defaults to 1 (C-decoupled). 2=C-coupled, 3=full-RC.'
-	@echo 'KPEX_ENGINE defaults to magic for klayout-pex. 2.5D=kpex analytical engine, fastercap=field solve (KPEX_AMAX, KPEX_TOL).'
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
-	@echo 'DRC_LEVEL defaults to macro. Sets the KLayout DRC level for klayout-drc (precheck|macro|regular).'
-	@echo 'SAK_DRC defaults to sak-drc.sh on PATH. Point it at another sak-drc.sh to test that one, regression passes it on to every step.'
-	@echo 'SAK_LVS defaults to sak-lvs.sh on PATH. Point it at another sak-lvs.sh to test that one, regression passes it on to every step.'
+	@echo 'PEX_SUB_NET defaults to empty, which keeps the substrate port of the kpex 2.5D netlist of klayout-pex. A port net ties the substrate port to that net.'
+	@echo 'KPEX_REDUCE defaults to ticer. Sets the RC network reduction of klayout-pex in EXT_MODE=3 (none|floating|ticer).'
+	@echo 'DRC_LEVEL defaults to macro. Sets the DRC level for klayout-drc and gdscheck-drc (precheck|macro|regular).'
+	@echo 'GDSCHECK_SUITE replaces the gdscheck suite of DRC_LEVEL for gdscheck-drc (precheck|core|main|density|antenna|recommended).'
+	@echo 'GDSCHECK_DECKS runs gdscheck rule decks instead of a suite, comma-separated (e.g. activ,gatpoly).'
+	@echo 'DRC_JOBS caps the KLayout DRC processes and sets the gdscheck threads (default: 4 KLayout processes or fewer, gdscheck on every CPU).'
+	@echo 'SAK_DRC, SAK_LVS and SAK_PEX default to sak-drc.sh, sak-lvs.sh and sak-pex.sh on PATH. Point one at another copy to test that one, regression passes it on to every step.'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
@@ -303,18 +330,10 @@ open: check-pdk ## Open the design files of this folder in the sak-open.py file 
 # ================================================================================================
 
 # DRC Targets
-klayout-drc: check-pdk ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>])
+klayout-drc: check-pdk ## Run KLayout DRC of the CELL cell (usage: make klayout-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>] [DRC_JOBS=<n>])
 	@rm -f $(call step_rc,$(DRC_RPT_DIR),klayout-drc)
 	mkdir -p $(DRC_RPT_DIR)
-	@# Deliberately called without OMP_NUM_THREADS=1. The -j option of sak-drc.sh
-	@# (IIC-OSIC-TOOLS PR #388, expected in the 2026.11 image) caps the KLayout DRC processes
-	@# itself, SAK_DRC can point at that script before. Until that image, sak-drc.sh hands
-	@# "nproc --ignore 5" to the IHP wrapper as --mp, and run_drc.py then starts one KLayout
-	@# process per rule table (37 for ihp-sg13g2), each paying about 3 s of KLayout start-up for
-	@# about 1 s of checks. On cells this small that is much slower than one process, with the
-	@# same violations. The slow klayout-drc steps are accepted until then. OMP_NUM_THREADS=1 in
-	@# front of the call forces --mp=1 on older images.
-	$(SAK_DRC) -d -k -l $(DRC_LEVEL) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
+	$(SAK_DRC) -d -k -l $(DRC_LEVEL) $(_DRC_JOBS_OPT) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
 	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),klayout-drc); exit $$rc
 .PHONY: klayout-drc
 
@@ -328,6 +347,13 @@ magic-drc: check-pdk ## Run Magic DRC of the CELL cell (usage: make magic-drc [C
 	$(SAK_DRC) -d -m -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
 	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),magic-drc); exit $$rc
 .PHONY: magic-drc
+
+gdscheck-drc: check-pdk ## Run gdscheck DRC of the CELL cell (usage: make gdscheck-drc [CELL=<cellname>] [DRC_LEVEL=<precheck|macro|regular>] [GDSCHECK_SUITE=<suite>|GDSCHECK_DECKS=<decks>] [DRC_JOBS=<n>])
+	@rm -f $(call step_rc,$(DRC_RPT_DIR),gdscheck-drc)
+	mkdir -p $(DRC_RPT_DIR)
+	$(SAK_DRC) -d -g -l $(DRC_LEVEL) $(_GDSCHECK_SUITE_OPT) $(_GDSCHECK_DECKS_OPT) $(_DRC_JOBS_OPT) -w $(DRC_RPT_DIR) $(LAY_DIR)/$(CELL).gds; \
+	rc=$$?; echo $$rc > $(call step_rc,$(DRC_RPT_DIR),gdscheck-drc); exit $$rc
+.PHONY: gdscheck-drc
 # ================================================================================================
 
 # LVS Targets
@@ -410,47 +436,17 @@ magic-lvs: check-pdk ## Run Magic + Netgen LVS of the CELL cell (usage: make mag
 # ================================================================================================
 
 # PEX Targets
-# Output name: <CELL>_klayout_pex_<EXT_MODE>.spice for the Magic engine (unchanged), and
-# <CELL>_klayout_<engine>_pex_<EXT_MODE>.spice for the kpex engines. The fastercap run directory is
-# kept, since its capacitance matrices are the data the netlist was reduced from.
-klayout-pex: check-pdk ## Run Parasitic Extraction with KPEX of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_ENGINE=<magic|2.5D|fastercap>])
+klayout-pex: check-pdk ## Run Parasitic Extraction with the KPEX 2.5D engine of the CELL cell (usage: make klayout-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_REDUCE=<none|floating|ticer>] [PEX_SUB_NET=<net>])
 	mkdir -p $(NET_PEX_DIR)
-	@# kpex takes the PDK name as it is: {gf180mcuD, ihp-sg13g2, ihp-sg13cmos5l, sky130A}.
-	@# The underscored spelling this recipe used to build survives only as a legacy alias for
-	@# ihp_sg13g2; for every other PDK it produces an invalid choice and kpex refuses to start.
-	case $(EXT_MODE) in \
-		1) echo "WARNING: KPEX does not support C-decoupled (C) mode yet, using C-coupled (CC) mode instead."; KPEX_MODE=CC ;; \
-		2) KPEX_MODE=CC ;; \
-		3) KPEX_MODE=RC ;; \
-		*) echo "Invalid EXT_MODE: $(EXT_MODE). Use 1, 2, or 3."; exit 1;; \
-	esac; \
-	case $(KPEX_ENGINE) in \
-		magic)     ENGINE_OPTS="--magic --magic_mode $$KPEX_MODE"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice ;; \
-		2.5D)      ENGINE_OPTS="--2.5D --mode $$KPEX_MODE"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_2.5D_pex_$(EXT_MODE).spice ;; \
-		fastercap) [ "$(EXT_MODE)" = "3" ] && echo "WARNING: the FasterCap engine extracts capacitance only, EXT_MODE=3 gives no resistors."; \
-		           ENGINE_OPTS="--fastercap --delaunay_amax $(KPEX_AMAX) --delaunay_b 0.5 --tolerance $(KPEX_TOL)"; OUT=$(NET_PEX_DIR)/$(CELL)_klayout_fastercap_pex_$(EXT_MODE).spice ;; \
-		*) echo "Invalid KPEX_ENGINE: $(KPEX_ENGINE). Use magic, 2.5D, or fastercap."; exit 1;; \
-	esac; \
-	SCHEMATIC=""; [ -f $(XSCHEM_SCH_DIR)/$(CELL).sch ] && SCHEMATIC="--schematic $(XSCHEM_SCH_DIR)/$(CELL).sch"; \
-	kpex \
-	--pdk $$PDK \
-	--cell $(CELL) \
-	$$SCHEMATIC \
-	--gds $(LAY_DIR)/$(CELL).gds \
-	$$ENGINE_OPTS \
-	--out_dir $(NET_PEX_DIR) \
-	--out_spice $$OUT || { echo "[ERROR] kpex failed, see $(NET_PEX_DIR)/$(CELL)__$(CELL)/kpex.log"; exit 1; }; \
-	[ -f $$OUT ] || { echo "[ERROR] kpex wrote no netlist $$OUT, see $(NET_PEX_DIR)/$(CELL)__$(CELL)/kpex.log"; exit 1; }; \
-	sed -i 's/$(CELL)/$(CELL)_pex/g' $$OUT; \
-	if [ "$(KPEX_ENGINE)" = "fastercap" ]; then \
-		find $(NET_PEX_DIR)/$(CELL)__$(CELL) -type d \( -name FasterCap_Input_Files -o -name Geometries \) -prune -exec rm -rf {} + 2>/dev/null; \
-	else \
-		rm -rf $(NET_PEX_DIR)/$(CELL)__$(CELL); \
-	fi; \
-	rm -f $(CELL).nodes $(CELL).sim; \
-	python3 $(SCRIPTS_DIR)/check_pex_ports.py $$OUT && \
-	if [ "$(EXT_MODE)" = "3" ] && [ "$(KPEX_ENGINE)" != "fastercap" ]; then \
-		python3 $(SCRIPTS_DIR)/check_pex_modes.py --layout $(LAY_DIR)/$(CELL).gds $$OUT $${OUT%_3.spice}_2.spice; \
+	@# No schematic for kpex (sak-pex.sh -S): its device check fails the full-RC extraction of every cell whose layout and schematic differ, which is what the LVS steps report.
+	@# A PEX step checks the extraction, not the cell.
+	$(SAK_PEX) -d -k -m $(EXT_MODE) -n $(CELL)_pex -R $(KPEX_REDUCE) -g "$(PEX_SUB_NET)" -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds
+	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
+	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_klayout_pex_$(EXT_MODE).spice
+	@# full-RC only: compare the connections with the C-coupled netlist of the same cell, which regression extracts first (klayout-pex2 runs before klayout-pex3)
+	@if [ "$(EXT_MODE)" = "3" ]; then \
+		python3 $(SCRIPTS_DIR)/check_pex_modes.py --layout $(LAY_DIR)/$(CELL).gds \
+			$(NET_PEX_DIR)/$(CELL)_klayout_pex_3.spice $(NET_PEX_DIR)/$(CELL)_klayout_pex_2.spice; \
 	fi
 .PHONY: klayout-pex
 
@@ -459,7 +455,7 @@ magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (us
 	@# stdin from /dev/null: sak-pex.sh and sak-lvs.sh run Magic in the foreground, and a Magic that
 	@# crashes (sky130_pnp_05v5_W3p40L3p40, full-RC) leaves the terminal without echo. sak-drc.sh runs
 	@# Magic in the background, where stdin is /dev/null already.
-	sak-pex.sh -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds < /dev/null
+	$(SAK_PEX) -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds < /dev/null
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
 	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
@@ -555,6 +551,7 @@ regression: check-pdk ## Run DRC, LVS and PEX regression for every .gds in $(LAY
 				klayout-pex3) $(MAKE) klayout-pex CELL=$$cell EXT_MODE=3 ;; \
 				magic-drc)    $(MAKE) magic-drc CELL=$$cell ;; \
 				magic-lvs)    $(MAKE) magic-lvs CELL=$$cell ;; \
+				gdscheck-drc) $(MAKE) gdscheck-drc CELL=$$cell ;; \
 				magic-pex1)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=1 ;; \
 				magic-pex2)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=2 ;; \
 				magic-pex3)   $(MAKE) magic-pex CELL=$$cell EXT_MODE=3 ;; \

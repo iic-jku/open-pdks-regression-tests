@@ -1,6 +1,6 @@
 # Findings and work-arounds for the ihp-sg13g2 PDK
 
-Things in this PDK that are easy to get wrong and frustrating to troubleshoot. The ihp-sg13cmos5l counterpart is [../ihp-sg13cmos5l/FINDINGS.md](../ihp-sg13cmos5l/FINDINGS.md).
+Things in this PDK that are easy to get wrong and frustrating to troubleshoot. The `ihp-sg13cmos5l` counterpart is [../ihp-sg13cmos5l/FINDINGS.md](../ihp-sg13cmos5l/FINDINGS.md).
 
 ## Schottky diode
 

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # A real transistor with a long, unambiguous wire on its gate, to test whether
 # "ext2spice hierarchy on" drops the wire's substrate capacitance.
 # The wire is on Metal2 (unused inside the standard cell), reached by one Via1 on the input pin.

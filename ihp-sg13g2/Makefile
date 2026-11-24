@@ -1,9 +1,9 @@
 # ihp-sg13g2 regression design: PDK selection and known failures.
-# Every target lives in ../common.mk - run with "make <target>" from this directory.
+# Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
-# SPDX-FileCopyrightText: 2026 Julian Schwarz and Simon Dorrer
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 # Johannes Kepler University, Department for Integrated Circuits
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
@@ -29,12 +29,12 @@ KNOWN_FAILS ?= sg13_cmomi:magic-lvs sg13_cmomf:magic-lvs \
 	sg13_combined_cmim_ontop:magic-drc sg13_combined_cmim_ontop_wo_rfcmim:magic-drc \
 	sg13_hv_pmos_tap:magic-drc sg13_lv_pmos_tap:magic-drc \
 	sg13_dnwell_inv:magic-drc sg13_dnwell_nmos:magic-drc
-EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc \
-	sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc \
-	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc \
-	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc \
-	sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc \
-	sg13_lv_nmos_tap_gat_c:magic-drc \
+EXPECTED_FAILS ?= sg13_dnwell_inv_nmosi_c:magic-drc sg13_dnwell_inv_nmosi_c:gdscheck-drc \
+	sg13_lv_nmos_tap_m1_a:klayout-drc sg13_lv_nmos_tap_m1_a:magic-drc sg13_lv_nmos_tap_m1_a:gdscheck-drc \
+	sg13_lv_nmos_tap_m1_b:klayout-drc sg13_lv_nmos_tap_m1_b:magic-drc sg13_lv_nmos_tap_m1_b:gdscheck-drc \
+	sg13_lv_nmos_tap_cnt_c:klayout-drc sg13_lv_nmos_tap_cnt_c:magic-drc sg13_lv_nmos_tap_cnt_c:gdscheck-drc \
+	sg13_lv_nmos_tap_cnt_c_ptap:klayout-drc sg13_lv_nmos_tap_cnt_c_ptap:gdscheck-drc \
+	sg13_lv_nmos_tap_gat_c:magic-drc sg13_lv_nmos_tap_gat_c:gdscheck-drc \
 	sg13_lv_nmos_tap_short_ds:klayout-lvs sg13_lv_nmos_tap_short_ds:magic-lvs \
 	sg13_lv_nmos_tap_open_g:klayout-lvs sg13_lv_nmos_tap_open_g:magic-lvs \
 	sg13_lv_nmos_tap_w_mismatch:klayout-lvs sg13_lv_nmos_tap_w_mismatch:magic-lvs

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+
 """Tables F to I: three implementations of the sky130A parasitic model against a field solve.
 
   deck        the arithmetic of sky130A.tech, extract section, done by hand
@@ -13,9 +17,6 @@ against), so nets are never looked up by name: the pair is whichever two nets ar
 substrate (read_kpex.SUBSTRATE: VSUBS, or the deck's substrate net since kpex 0.6.1), and on
 capsub the plate is the larger of the two substrate couplings, the wire the smaller.
 With --json <file> every compared value is written for check_results.py.
-
-SPDX-FileCopyrightText: 2026 Simon Dorrer
-SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 """
 import glob
 import json
@@ -174,7 +175,7 @@ for (lo, up), ov, sov in OVER:
 print()
 print(sep)
 print("H  Lateral sidewall coupling, Metal1, W = 0.5 um, L = 50 um                [fF]")
-print("   deck formula: k*L/(s+off), k = %s aF, off = %s um. Magic emits it in full (8.3.693), kpex 2.5D half (0.4.3)." % (SW_K, SW_OFF))
+print("   deck formula: k*L/(s+off), k = %s aF, off = %s um. Magic emits it in full (8.3.693), kpex 2.5D its own coefficient in full (0.9.0)." % (SW_K, SW_OFF))
 print("%-9s %9s %9s %9s %9s %8s %8s %6s %7s %s" % (
     "spacing", "deck", "Magic", "kpex 2.5D", "FasterCap", "Magic/FC", "2.5D/FC", "amax", "asym", "from"))
 print("-" * 108)

@@ -1,23 +1,40 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Does the explicit "sidewall" keyword give the same answer as "defaultsidewall"?
-# Both are written with the same coefficient; Magic halves the parsed value on the
-# assumption that each edge pair is visited twice.
+# Magic 8.3.679 to 8.3.692 halved the parsed value on the assumption that each edge pair is visited twice.
 cd "$(dirname "$0")/.." || exit 1
 rm -rf techtest && mkdir -p techtest
 cp -r "$PDKPATH/libs.tech/magic" techtest/magic
 E=techtest/magic/ihp-sg13g2-extract.tech
 
+# line index, coefficient and offset of the metal1 sidewall in the nominal () variant, read from the deck so that a refit does not break the script
+set -- $(python3 - "$E" <<'PY'
+import re, sys
+lines = open(sys.argv[1], encoding="utf-8").read().split("\n")
+start = next(i for i, l in enumerate(lines) if re.fullmatch(r"variants \(\)\s*", l))
+for i in range(start, len(lines)):
+    m = re.fullmatch(r"\s*defaultsidewall\s+allm1\s+metal1\s+(\S+)\s+(\S+)\s*", lines[i])
+    if m:
+        print(i, m.group(1), m.group(2))
+        break
+PY
+)
+N=$1; K=$2; OFF=$3
+if [ -z "$OFF" ]; then echo "no metal1 sidewall line in the () variant of $E"; exit 1; fi
+K2=$(python3 -c "print(round(2 * $K, 6))")
+
 variant() {
 	tag=$1; line=$2
 	cp "$E" "$E.bak"
-	# replace only the metal1 sidewall entry in the nominal () variant
-	python3 - "$E" "$line" <<'PY'
+	python3 - "$E" "$N" "$line" <<'PY'
 import sys
-path, new = sys.argv[1], sys.argv[2]
-src = open(path).read()
-old = " defaultsidewall    allm1 metal1 28.735 -0.057"
-assert src.count(old) == 1, src.count(old)
-open(path, "w").write(src.replace(old, new))
+path, n, new = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+lines = open(path, encoding="utf-8").read().split("\n")
+lines[n] = new
+open(path, "w", encoding="utf-8").write("\n".join(lines))
 PY
 	d=techtest/$tag
 	rm -rf "$d"; mkdir -p "$d"
@@ -44,11 +61,11 @@ EOF
 	mv "$E.bak" "$E"
 }
 
-echo "L = 50 um, W = 0.5 um, separation 0.8 um.  Coupling cap C0:"
-variant default_28.735 " defaultsidewall    allm1 metal1 28.735 -0.057"
-variant default_57.470 " defaultsidewall    allm1 metal1 57.470 -0.057"
-variant explicit_28.735 " sidewall allm1 space allm1 space 28.735 -0.057"
-variant explicit_swapped " sidewall allm1 space space allm1 28.735 -0.057"
+echo "L = 50 um, W = 0.5 um, separation 0.8 um, deck: defaultsidewall allm1 metal1 $K $OFF.  Coupling cap C0:"
+variant default_x1 " defaultsidewall    allm1 metal1 $K $OFF"
+variant default_x2 " defaultsidewall    allm1 metal1 $K2 $OFF"
+variant explicit_x1 " sidewall allm1 space allm1 space $K $OFF"
+variant explicit_swapped " sidewall allm1 space space allm1 $K $OFF"
 echo
-echo "tech-file formula, unhalved:  28.735 * 50 / (0.8 - 0.057) = $(python3 -c 'print(28.735*50/0.743)') aF"
-echo "tech-file formula, halved  :  14.3675 * 50 / (0.8 - 0.05) = $(python3 -c 'print(14.3675*50/0.75)') aF"
+echo "tech-file formula, full (Magic 8.3.693 on):        $K * 50 / (0.8 + $OFF) = $(python3 -c "print($K * 50 / (0.8 + $OFF))") aF"
+echo "tech-file formula, halved (Magic 8.3.679 to 8.3.692, which also rounded the offset): $(python3 -c "print($K * 25 / (0.8 + $OFF))") aF"

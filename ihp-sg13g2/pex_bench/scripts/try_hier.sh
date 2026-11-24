@@ -1,6 +1,10 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # Extract hier_test with ext2spice hierarchy on and off. The Metal2 wire on net A is
-# 0.5 x 200 um, roughly 100*18.18 + 401*34.798 aF = 15.8 fF of substrate capacitance
+# 0.5 x 200 um, roughly 100*18.18 + 401*34.834 aF = 15.8 fF of substrate capacitance
 # that has to show up on A somewhere.
 cd "$(dirname "$0")/.." || exit 1
 klayout -b -r gen_hier.py 2>&1 | grep -v "^\[" | tail -2

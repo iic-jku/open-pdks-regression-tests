@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
+# Johannes Kepler University, Department for Integrated Circuits
+# SPDX-License-Identifier: Apache-2.0
+#
 # kpex drives Magic's full-RC extraction with a different recipe than sak-pex.sh:
 #   sak-pex:  ext2spice lvs; extresist threshold/mindelay/minres; extract do resistance; extract all
 #   kpex:     ext2sim; extresist tolerance 1; extresist all
