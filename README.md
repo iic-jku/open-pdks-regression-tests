@@ -1,4 +1,4 @@
-# Open-PDKs Regression Tests for DRC / LVS / PEX
+# DRC / LVS / PEX Regression Tests for Open-PDKs
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml)
@@ -250,7 +250,7 @@ The four regression workflows share the job in [`regression-common.yml`](.github
   author = {Schwarz, Julian and Dorrer, Simon and Pretl, Harald},
   month = nov,
   year = {2026},
-  title = {{GitHub Repository of the Open-PDKs Regression Tests for DRC / LVS / PEX}},
+  title = {{GitHub Repository of DRC / LVS / PEX Regression Tests for Open-PDKs}},
   url = {https://github.com/iic-jku/open-pdks-regression-tests}
 }
 ```
