@@ -1,4 +1,4 @@
-# Open-PDKs Regression Tests for DRC / LVS / PEX
+# DRC / LVS / PEX Regression Tests for Open-PDKs
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Regression ihp-sg13g2](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-ihp-sg13g2.yml)
@@ -6,6 +6,7 @@
 [![Regression gf180mcuD](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-gf180mcuD.yml)
 [![Regression sky130A](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/regression-sky130A.yml)
 [![License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml/badge.svg?branch=main)](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24500600.svg)](https://doi.org/10.5281/zenodo.24500600)
 
 (c) 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
 
@@ -250,8 +251,9 @@ The four regression workflows share the job in [`regression-common.yml`](.github
   author = {Schwarz, Julian and Dorrer, Simon and Pretl, Harald},
   month = nov,
   year = {2026},
-  title = {{GitHub Repository of the Open-PDKs Regression Tests for DRC / LVS / PEX}},
-  url = {https://github.com/iic-jku/open-pdks-regression-tests}
+  title = {{GitHub Repository of DRC / LVS / PEX Regression Tests for Open-PDKs}},
+  url = {https://github.com/iic-jku/open-pdks-regression-tests},
+  doi = {10.5281/zenodo.24500600}
 }
 ```
 
