@@ -102,14 +102,13 @@ Magic's GDS import ignores the drawn NPC (`ignore NPC`, line 2356), and Magic wr
 
 ## Full-RC PEX leaves device terminals unconnected
 
-`KNOWN_FAILS` entries: `sky130_short1:magic-pex3`, `sky130_photodiode:magic-pex3`
+`KNOWN_FAILS` entry: `sky130_photodiode:magic-pex3`
 
-Full-RC extraction with Magic (`magic-pex3`) loses the connection between a device terminal and its pin in two cells, while the C-coupled netlist (`magic-pex2`) has it:
+Full-RC extraction with Magic (`magic-pex3`) loses the connection between a device terminal and its pin, while the C-coupled netlist (`magic-pex2`) has it:
 
-- `sky130_short1`: the sources of both NMOS are nodes of their own, `X0 VDD VDD VDD.t10 VDD.t9 sky130_fd_pr__nfet_g5v0d10v5 ... as=0 ps=0` and `X1 VDD VDD VDD.t1 VDD.t0 sky130_fd_pr__nfet_01v8 ...`, and `VDD.t10` and `VDD.t1` appear in no other element. In the C-coupled netlist the sources are on `VDD`. The single `_tap` cells of the same transistors do not show it.
 - `sky130_photodiode`: the anode of the extracted diode is the node `w_n338_n339#` (`D0 w_n338_n339# C ...`), which no resistor connects to the pin A. The C-coupled netlist has `D0 A C`.
 
-Why is not known. A simulation of these netlists would leave the terminals floating. `scripts/check_pex_ports.py` passes them, since every port still reaches an element. `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails both steps. It finds no other cell here. The kpex 2.5D engine keeps the sources of `sky130_short1` on VDD, and stops on the photodiode before any extraction (see "kpex has no model mapping for the photodiode").
+Why is not known. A simulation of this netlist would leave the anode floating. `scripts/check_pex_ports.py` passes it, since every port still reaches an element. `scripts/check_pex_modes.py` compares the device terminals with the C-coupled netlist and fails the step. It finds no other cell here. The kpex 2.5D engine stops on the photodiode before any extraction (see "kpex has no model mapping for the photodiode").
 
 ## Magic + Netgen LVS: `VM` of the varactors is compared
 
