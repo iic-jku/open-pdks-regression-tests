@@ -239,7 +239,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Combined test cells**
 
 - `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS): 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (KNOWN FAIL: Magic full-RC PEX, which leaves the NMOS sources unconnected, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_short1` (PASS): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
 
 ### Devices without a cell
 

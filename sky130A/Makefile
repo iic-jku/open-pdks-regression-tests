@@ -41,7 +41,7 @@ KNOWN_FAILS ?= sky130_diode_pd2nw_05v5_lvt:magic-lvs sky130_diode_pd2nw_05v5_hvt
 	sky130_res_high_po_0p35:magic-drc sky130_res_high_po_0p69:magic-drc \
 	sky130_res_xhigh_po_0p35:magic-drc sky130_res_xhigh_po_0p69:magic-drc sky130_combined:magic-drc \
 	sky130_pfet_g5v0d16v0:magic-drc \
-	sky130_short1:magic-pex3 sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3 \
+	sky130_photodiode:magic-pex3 sky130_photodiode:klayout-pex3 \
 	sky130_combined:magic-lvs \
 	sky130_diode_pd2nw_05v5:klayout-lvs sky130_diode_pd2nw_05v5_lvt:klayout-lvs sky130_diode_pd2nw_05v5_hvt:klayout-lvs \
 	sky130_diode_pd2nw_05v5_psd8:klayout-lvs sky130_diode_pd2nw_11v0:klayout-lvs \
