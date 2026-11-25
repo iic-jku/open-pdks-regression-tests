@@ -251,12 +251,3 @@ This project is funded by the JKU/SAL [IWS Lab](https://research.jku.at/de/proje
 ## License
 
 Licensed under the **Apache License 2.0**, see [`LICENSE`](LICENSE).
-
-The repository is [REUSE](https://reuse.software) compliant: every file carries `SPDX-FileCopyrightText` and `SPDX-License-Identifier` tags, either inline (scripts, Makefiles, workflows) or through [`REUSE.toml`](REUSE.toml) for files that cannot hold a header (documentation, schematics, layouts, expected results, figures). The [License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml) workflow runs `reuse lint` on every push and pull request to `main`. Check it locally with:
-
-```bash
-pip install 'reuse[charset-normalizer]'
-reuse lint
-```
-
-The layouts instantiate the devices of their PDK, and the PEX benches contain an inverter copied from the standard-cell library of each PDK (`*_inv_1.gds`, also inside `hier_test.gds`). These keep the copyright of the IHP PDK Authors, the GlobalFoundries PDK Authors, and The SkyWater PDK Authors, and like this repository they are licensed under Apache 2.0.
