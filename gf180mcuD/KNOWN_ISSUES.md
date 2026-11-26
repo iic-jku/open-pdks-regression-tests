@@ -130,14 +130,6 @@ Upstream: the open draft [gf180mcu_fd_pv#37](https://github.com/fossi-foundation
 
 KLayout DRC passes the cell, Magic DRC does not. It reports `Both LV and MV devices cannot be in the same deep N-well (DN.11)` over the whole DNWELL, although the cell has one device and no Dualgate, and `Diffusion spacing < 0.28um (DF.3a)` in a band 0.10 um wide at x = 1.04 to 1.14 um. That band lies inside the anode COMP (x = 0.64 to 1.26 um), where the layout has no diffusion edge. Why Magic reports either is not known.
 
-## kpex has no resistance layer for the Schottky marker
-
-`KNOWN_FAILS` entry: `gf180_sc_diode:klayout-pex3`
-
-The kpex 2.5D engine extracts `gf180_sc_diode` in the C-decoupled and C-coupled modes, with the two diodes of its LVS deck (see above). In full-RC mode kpex 0.10.0 stops before the extraction: `The tech info can't model these layers of the layout for the resistance extraction, so their connections would be missing from the resistance network: schottky_diode (241/0): the tech info has no layer derived from it`. Its `gf180mcuD` tech info derives no resistance layer from the Schottky marker. kpex 0.11.1 still stops. Magic extracts the cell in all three modes.
-
-Upstream: [klayout-pex#590](https://github.com/iic-jku/klayout-pex/issues/590).
-
 ## KLayout LVS does not extract a bipolar transistor under a MIM capacitor
 
 `KNOWN_FAILS` entry: `gf180_combined_cmim_ontop:klayout-lvs`
