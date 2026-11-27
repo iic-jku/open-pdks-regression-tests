@@ -23,7 +23,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 | `<pdk>/KNOWN_ISSUES.md`, `<pdk>/EXPECTED_FAILS.md`, `<pdk>/FINDINGS.md` | Why each list entry is there, what is broken in each cell broken on purpose, PDK pitfalls |
 | `<pdk>/layout/`, `<pdk>/schematic/xschem/` | One GDS and one schematic per cell, with the same name, and the folder's `xschemrc` |
 | `<pdk>/pex_bench/` | PEX bench: `Makefile`, generators in `scripts/`, generated `layout/`, `expected/` results, and for `ihp-sg13g2` the `report/` |
-| `doc/fig/` | Figures of the root `README.md` (layout renders, funding logos) |
+| `doc/fig/` | Figures of the root `README.md` (layout renders, the hand-written SVG of the regression flow, funding logos) |
 | `.github/workflows/` | `regression-<pdk>.yml` per PDK on top of `regression-common.yml`, `license-check.yml` |
 
 ## Makefiles

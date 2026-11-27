@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="t d">
+  <title id="t">make regression: every step on every cell, one verdict per step</title>
+  <desc id="d">For every cell of a PDK folder, Xschem netlists the schematic to CDL and SPICE. The layout goes to the DRC steps (KLayout, Magic, gdscheck), to the LVS steps together with the netlist (KLayout against CDL, Magic and Netgen against SPICE), and to the PEX steps (Magic and the kpex 2.5D engine in modes 1, 2 and 3), whose netlists then pass the port and mode checks. Each step result becomes a verdict against the lists KNOWN_FAILS, EXPECTED_FAILS and KNOWN_FALSE_PASSES. PASSED, KNOWN FAIL, EXPECTED FAIL and KNOWN FALSE PASS are tolerated. FAILED, UNEXPECTED PASS, FALSE PASS, UNEXPECTED FAIL and BROKEN fail the regression.</desc>
+
+  <!-- Arrow tips sit on the box outline: refX 6 puts the tip 6 px past the line end, so a line stops 6 px short of the edge. A dot marks a junction. -->
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="1099" height="519" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, Liberation Sans, sans-serif">
+
+    <!-- title band -->
+    <text x="24" y="46" font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="22" font-weight="700" fill="#0f172a">make regression</text>
+    <text x="246" y="45" font-size="15" fill="#475569">every step on every cell of a PDK folder, one verdict per step</text>
+
+    <!-- inputs: one schematic and one layout per cell, the netlist is generated -->
+    <g fill="#f1f5f9" stroke="#475569" stroke-width="2">
+      <path d="M34,106 H150 L164,120 V148 Q164,158 154,158 H34 Q24,158 24,148 V116 Q24,106 34,106 Z"/>
+      <path d="M208,106 H340 L354,120 V148 Q354,158 344,158 H208 Q198,158 198,148 V116 Q198,106 208,106 Z"/>
+      <path d="M34,258 H150 L164,272 V300 Q164,310 154,310 H34 Q24,310 24,300 V268 Q24,258 34,258 Z"/>
+    </g>
+    <g fill="none" stroke="#475569" stroke-width="1.5">
+      <path d="M150,106 V120 H164"/>
+      <path d="M340,106 V120 H354"/>
+      <path d="M150,258 V272 H164"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="94" y="128" font-size="15" font-weight="700" fill="#0f172a">Schematic</text>
+      <text x="94" y="146" font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5" fill="#475569">xschem/&lt;cell&gt;.sch</text>
+      <text x="276" y="128" font-size="15" font-weight="700" fill="#0f172a">Xschem netlist</text>
+      <text x="276" y="146" font-size="12.5" fill="#475569">CDL &#183; SPICE</text>
+      <text x="94" y="280" font-size="15" font-weight="700" fill="#0f172a">Layout</text>
+      <text x="94" y="298" font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5" fill="#475569">layout/&lt;cell&gt;.gds</text>
+    </g>
+
+    <!-- step groups -->
+    <g fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5">
+      <rect x="406" y="80" width="452" height="116" rx="14"/>
+      <rect x="406" y="216" width="452" height="116" rx="14"/>
+      <rect x="406" y="352" width="452" height="144" rx="14"/>
+    </g>
+    <g font-size="13" font-weight="700" letter-spacing="1">
+      <text x="422" y="104" fill="#6d28d9">LVS</text>
+      <text x="422" y="240" fill="#0369a1">DRC</text>
+      <text x="422" y="376" fill="#0f766e">PEX</text>
+    </g>
+    <g font-size="12.5" fill="#64748b">
+      <text x="460" y="104">layout against schematic</text>
+      <text x="460" y="240">design rules</text>
+      <text x="460" y="376">modes 1, 2, 3: C-decoupled, C-coupled, full RC</text>
+      <text x="842" y="240" text-anchor="end" font-size="11.5" fill="#94a3b8">gdscheck has no sky130A deck</text>
+    </g>
+
+    <!-- LVS -->
+    <g fill="#f5f3ff" stroke="#7c3aed" stroke-width="2">
+      <rect x="422" y="118" width="204" height="60" rx="10"/>
+      <rect x="638" y="118" width="204" height="60" rx="10"/>
+    </g>
+    <g text-anchor="middle">
+      <g font-size="15" font-weight="700" fill="#4c1d95">
+        <text x="524" y="144">KLayout</text>
+        <text x="740" y="144">Magic + Netgen</text>
+      </g>
+      <g font-size="12" fill="#6d28d9">
+        <text x="524" y="163"><tspan font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5">klayout-lvs</tspan> against CDL</text>
+        <text x="740" y="163"><tspan font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5">magic-lvs</tspan> against SPICE</text>
+      </g>
+    </g>
+
+    <!-- DRC -->
+    <g fill="#f0f9ff" stroke="#0369a1" stroke-width="2">
+      <rect x="422" y="254" width="132" height="60" rx="10"/>
+      <rect x="566" y="254" width="132" height="60" rx="10"/>
+      <rect x="710" y="254" width="132" height="60" rx="10"/>
+    </g>
+    <g text-anchor="middle">
+      <g font-size="15" font-weight="700" fill="#0c4a6e">
+        <text x="488" y="280">KLayout</text>
+        <text x="632" y="280">Magic</text>
+        <text x="776" y="280">gdscheck</text>
+      </g>
+      <g font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5" fill="#0369a1">
+        <text x="488" y="299">klayout-drc</text>
+        <text x="632" y="299">magic-drc</text>
+        <text x="776" y="299">gdscheck-drc</text>
+      </g>
+    </g>
+
+    <!-- PEX: both extractors feed the port and mode checks -->
+    <g fill="#f0fdfa" stroke="#0f766e" stroke-width="2">
+      <rect x="422" y="390" width="132" height="60" rx="10"/>
+      <rect x="566" y="390" width="132" height="60" rx="10"/>
+    </g>
+    <rect x="710" y="390" width="132" height="60" rx="10" fill="#fefce8" stroke="#a16207" stroke-width="2"/>
+    <g text-anchor="middle">
+      <g font-size="15" font-weight="700">
+        <text x="488" y="416" fill="#134e4a">Magic</text>
+        <text x="632" y="416" fill="#134e4a">kpex 2.5D</text>
+        <text x="776" y="416" fill="#713f12">PEX checks</text>
+      </g>
+      <g font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5">
+        <text x="488" y="435" fill="#0f766e">magic-pex1/2/3</text>
+        <text x="632" y="435" fill="#0f766e">klayout-pex1/2/3</text>
+        <text x="776" y="435" fill="#854d0e">check_pex_*.py</text>
+      </g>
+    </g>
+
+    <!-- verdict -->
+    <rect x="900" y="80" width="176" height="416" rx="14" fill="#ffffff" stroke="#475569" stroke-width="2"/>
+    <g text-anchor="middle">
+      <text x="988" y="110" font-size="16" font-weight="700" fill="#0f172a">Verdict per step</text>
+      <text x="988" y="132" font-size="12" fill="#64748b">against the lists</text>
+      <g font-family="SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace" font-size="11.5" fill="#334155">
+        <text x="988" y="154">KNOWN_FAILS</text>
+        <text x="988" y="172">EXPECTED_FAILS</text>
+        <text x="988" y="190">KNOWN_FALSE_PASSES</text>
+      </g>
+    </g>
+    <line x1="916" y1="206" x2="1060" y2="206" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="988" y="228" text-anchor="middle" font-size="12" font-weight="600" fill="#15803d">tolerated</text>
+    <g fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2">
+      <rect x="914" y="238" width="148" height="20" rx="10"/>
+      <rect x="914" y="262" width="148" height="20" rx="10"/>
+      <rect x="914" y="286" width="148" height="20" rx="10"/>
+      <rect x="914" y="310" width="148" height="20" rx="10"/>
+    </g>
+    <g text-anchor="middle" font-size="11" font-weight="700" fill="#166534" letter-spacing="0.3">
+      <text x="988" y="252">PASSED</text>
+      <text x="988" y="276">KNOWN FAIL</text>
+      <text x="988" y="300">EXPECTED FAIL</text>
+      <text x="988" y="324">KNOWN FALSE PASS</text>
+    </g>
+    <text x="988" y="352" text-anchor="middle" font-size="12" font-weight="600" fill="#be123c">fails the regression</text>
+    <g fill="#fff1f2" stroke="#e11d48" stroke-width="1.2">
+      <rect x="914" y="362" width="148" height="20" rx="10"/>
+      <rect x="914" y="386" width="148" height="20" rx="10"/>
+      <rect x="914" y="410" width="148" height="20" rx="10"/>
+      <rect x="914" y="434" width="148" height="20" rx="10"/>
+      <rect x="914" y="458" width="148" height="20" rx="10"/>
+    </g>
+    <g text-anchor="middle" font-size="11" font-weight="700" fill="#9f1239" letter-spacing="0.3">
+      <text x="988" y="376">FAILED</text>
+      <text x="988" y="400">UNEXPECTED PASS</text>
+      <text x="988" y="424">FALSE PASS</text>
+      <text x="988" y="448">UNEXPECTED FAIL</text>
+      <text x="988" y="472">BROKEN</text>
+    </g>
+
+    <!-- edges -->
+    <g fill="none" stroke="#64748b" stroke-width="2">
+      <!-- schematic to netlist to LVS -->
+      <line x1="165" y1="132" x2="192" y2="132" marker-end="url(#a)"/>
+      <line x1="355" y1="132" x2="400" y2="132" marker-end="url(#a)"/>
+      <!-- layout to DRC, with the bus up to LVS and down to PEX -->
+      <line x1="165" y1="284" x2="400" y2="284" marker-end="url(#a)"/>
+      <path d="M378,284 V174 Q378,166 386,166 H400" marker-end="url(#a)"/>
+      <path d="M378,284 V412 Q378,420 386,420 H400" marker-end="url(#a)"/>
+      <!-- both extractions into the checks -->
+      <path d="M488,451 V472 Q488,480 496,480 H768 Q776,480 776,472 V457" marker-end="url(#a)"/>
+      <line x1="632" y1="451" x2="632" y2="480"/>
+      <!-- step results to the verdict -->
+      <line x1="859" y1="148" x2="893" y2="148" marker-end="url(#a)"/>
+      <line x1="859" y1="284" x2="893" y2="284" marker-end="url(#a)"/>
+      <line x1="859" y1="420" x2="893" y2="420" marker-end="url(#a)"/>
+    </g>
+    <g fill="#64748b">
+      <circle cx="378" cy="284" r="4.5"/>
+      <circle cx="632" cy="480" r="4.5"/>
+    </g>
+  </g>
+</svg>

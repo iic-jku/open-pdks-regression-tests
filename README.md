@@ -64,39 +64,9 @@ Next to the regression, each PDK has a PEX bench: metal-only dummy layouts whose
 
 The [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) run parts of this repository with every nightly build and before every release ([test 26](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/26/test_drc_lvs_pex_sg13g2.sh), [test 31](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/31/test_drc_lvs_pex_sg13cmos5l.sh), [test 35](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/35/test_pex_bench.sh), [test 47](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/47/test_drc_lvs_pex_gf180mcud.sh), [test 48](https://github.com/iic-jku/IIC-OSIC-TOOLS/blob/next_release/_tests/48/test_drc_lvs_pex_sky130a.sh)), and the [CI](#continuous-integration) of this repository runs all four PDKs on every change of `main` on the IIC-OSIC-TOOLS nightly image.
 
-```mermaid
-flowchart LR
-    GDS["layout/*.gds"]
-    SCH["schematic/xschem/*.sch"]
-    NET["Xschem netlist<br/>CDL and SPICE"]
-    KDRC["KLayout DRC"]
-    MDRC["Magic DRC"]
-    GDRC["gdscheck DRC"]
-    KLVS["KLayout LVS"]
-    MLVS["Magic + Netgen LVS"]
-    MPEX["Magic PEX<br/>modes 1, 2, 3"]
-    KPEX["kpex 2.5D PEX<br/>modes 1, 2, 3"]
-    CHK["Port and mode checks"]
-    V{"Verdict per step against<br/>KNOWN_FAILS, EXPECTED_FAILS,<br/>KNOWN_FALSE_PASSES"}
-    SCH --> NET
-    GDS --> KDRC
-    GDS --> MDRC
-    GDS --> GDRC
-    GDS --> KLVS
-    GDS --> MLVS
-    NET --> KLVS
-    NET --> MLVS
-    GDS --> MPEX
-    GDS --> KPEX
-    MPEX --> CHK
-    KPEX --> CHK
-    KDRC --> V
-    MDRC --> V
-    GDRC --> V
-    KLVS --> V
-    MLVS --> V
-    CHK --> V
-```
+<p align="center">
+  <img src="doc/fig/regression_flow.svg" alt="The steps of make regression for one cell: the layout goes to KLayout, Magic and gdscheck DRC, to KLayout and Magic + Netgen LVS together with the Xschem netlist of the schematic, and to Magic and kpex 2.5D PEX followed by the port and mode checks. Each step result becomes a verdict against KNOWN_FAILS, EXPECTED_FAILS and KNOWN_FALSE_PASSES, which is either tolerated or fails the regression.">
+</p>
 
 
 ## PDKs
@@ -281,12 +251,3 @@ This project is funded by the JKU/SAL [IWS Lab](https://research.jku.at/de/proje
 ## License
 
 Licensed under the **Apache License 2.0**, see [`LICENSE`](LICENSE).
-
-The repository is [REUSE](https://reuse.software) compliant: every file carries `SPDX-FileCopyrightText` and `SPDX-License-Identifier` tags, either inline (scripts, Makefiles, workflows) or through [`REUSE.toml`](REUSE.toml) for files that cannot hold a header (documentation, schematics, layouts, expected results, figures). The [License Check](https://github.com/iic-jku/open-pdks-regression-tests/actions/workflows/license-check.yml) workflow runs `reuse lint` on every push and pull request to `main`. Check it locally with:
-
-```bash
-pip install 'reuse[charset-normalizer]'
-reuse lint
-```
-
-The layouts instantiate the devices of their PDK, and the PEX benches contain an inverter copied from the standard-cell library of each PDK (`*_inv_1.gds`, also inside `hier_test.gds`). These keep the copyright of the IHP PDK Authors, the GlobalFoundries PDK Authors, and The SkyWater PDK Authors, and like this repository they are licensed under Apache 2.0.
