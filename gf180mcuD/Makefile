@@ -1,4 +1,4 @@
-# gf180mcuD regression design: PDK selection and known failures.
+# gf180mcuD regression design: PDK guard and known failures.
 # Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
@@ -10,7 +10,7 @@ MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # PDK this design is verified against. common.mk switches the environment to it
 # via sak-pdk, so make in here can never verify against another PDK.
-EXPECTED_PDK := gf180mcuD
+REQUIRED_PDK := gf180mcuD
 
 # Cell name for the single-cell targets (default: top-level cell)
 # Override with: make <target> CELL=<cellname>
@@ -72,3 +72,8 @@ FASTERCAP ?= 0
 pex-bench: ## Run the PEX bench, Magic and kpex 2.5D against expected values (usage: make pex-bench [FASTERCAP=1])
 	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench FASTERCAP=$(FASTERCAP)
 .PHONY: pex-bench
+
+clean-all: ## Delete all generated files of this folder and of the PEX bench in pex_bench/
+	$(MAKE) clean
+	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-clean
+.PHONY: clean-all

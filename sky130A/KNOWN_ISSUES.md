@@ -148,7 +148,7 @@ The same short hits `sky130_dnwell_nmos` and `sky130_dnwell_inv`, where it does 
 
 The extraction of `sky130_fd_pr__npn_11v0_W1p00L1p00` (line 2115 of `sky130.lvs`) aborts on KLayout 0.30.12 with `'extract_devices': There are multiple conversion constructors available to convert object of type PolygonWithProperties to type Region for argument #1 ('other') in Region::&`. No netlist and no `.lvsdb` are written, and `sak-lvs.sh` exits with 5. It still does on KLayout 0.30.14.
 
-kpex fixed the same error in its own copy of the deck in 0.11.1 ([klayout-pex#588](https://github.com/iic-jku/klayout-pex/issues/588)), and `klayout-pex` extracts the transistor in all three modes since. The PDK's deck is not reported upstream.
+kpex fixed the same error in its own copy of the deck in 0.11.1 ([kpex#588](https://github.com/iic-jku/kpex/issues/588)), and `klayout-pex` extracts the transistor in all three modes since. The PDK's deck is not reported upstream.
 
 ## kpex has no model mapping for the photodiode
 
@@ -156,7 +156,7 @@ kpex fixed the same error in its own copy of the deck in 0.11.1 ([klayout-pex#58
 
 The LVS step of kpex 0.10.0 extracts the diode (`D$1 A C sky130_fd_pr__photodiode A=0.1681 P=1.64`), and kpex then stops in every mode: `The device model mappings of the tech info are missing or invalid for these LVS device classes: sky130_fd_pr__photodiode (1 devices): no mapping`. Its `sky130A` tech info maps no model to that device class. Magic extracts the cell in the C-decoupled and C-coupled modes, and its full-RC netlist loses the anode (see "Full-RC PEX leaves device terminals unconnected").
 
-kpex 0.11.1 still stops. It keeps such a device with the option `--unmapped-devices keep` since that version ([klayout-pex#589](https://github.com/iic-jku/klayout-pex/issues/589)), but `sak-pex.sh -k` does not pass it. [klayout-pex#254](https://github.com/iic-jku/klayout-pex/issues/254) lists the photodiode as still without a model, since the PDK has none.
+kpex 0.11.1 still stops. It keeps such a device with the option `--unmapped-devices keep` since that version ([kpex#589](https://github.com/iic-jku/kpex/issues/589)), but `sak-pex.sh -k` does not pass it. [kpex#254](https://github.com/iic-jku/kpex/issues/254) lists the photodiode as still without a model, since the PDK has none.
 
 ## KLayout LVS has no 16 V MOS
 

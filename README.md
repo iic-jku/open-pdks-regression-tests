@@ -15,6 +15,9 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
 > [!IMPORTANT]
 > This repository requires the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container with tag `2026.11` or later.
 
+> [!NOTE]
+> The lists of known failures follow the nightly image `ghcr.io/iic-jku/iic-osic-tools:nightly`, which the [CI](#continuous-integration) tests. On the tag `2026.11` (Magic 8.3.706, kpex 0.11.1) two steps that a newer tool fixed are therefore reported as FAILED: `sky130_short1:magic-pex3` (fixed in Magic 8.3.707) and `gf180_sc_diode:klayout-pex3` (fixed in kpex 0.12.0).
+
 <table>
   <tr>
     <td align="center" width="50%">
@@ -95,7 +98,7 @@ make -C ihp-sg13g2 magic-lvs CELL=sg13_lv_nmos_tap     # one step on one cell
 make -C ihp-sg13g2 pex-bench                           # the PEX bench, against the expected values
 ```
 
-Each folder switches the shell to its own PDK with `sak-pdk`, so the PDK selected in the container does not matter. Run make from inside the folder or with `-C <pdk>`. `make -f <pdk>/Makefile` does not work, because the relative paths would then resolve against the current directory. Generated netlists and reports land in `<pdk>/netlist/` and `<pdk>/verification/`, and `make -C <pdk> clean` removes them.
+Each folder switches make to its own PDK with `sak-pdk-script.sh` (the PDK guard of `common.mk`), so the PDK selected in the container does not matter. Run make from inside the folder or with `-C <pdk>`. `make -f <pdk>/Makefile` does not work, because the relative paths would then resolve against the current directory. Generated netlists and reports land in `<pdk>/netlist/` and `<pdk>/verification/`, and `make -C <pdk> clean` removes them.
 
 
 ## Regression Steps
@@ -156,7 +159,7 @@ Issues filed while building these tests:
 | Project | Issues |
 | --- | --- |
 | [Magic](https://github.com/RTimothyEdwards/magic) | [#532](https://github.com/RTimothyEdwards/magic/issues/532) full-RC crash on an `ihp-sg13g2` layout, [#552](https://github.com/RTimothyEdwards/magic/issues/552) LVS and PEX of the IHP MOM capacitors, [#557](https://github.com/RTimothyEdwards/magic/issues/557) five parasitic extraction defects on `ihp-sg13g2`, with the PEX bench as the reproducer |
-| [klayout-pex](https://github.com/iic-jku/klayout-pex) | [#156](https://github.com/iic-jku/klayout-pex/issues/156) and [#197](https://github.com/iic-jku/klayout-pex/issues/197) capacitance test patterns for `gf180mcuD` and `ihp-sg13g2`, [#198](https://github.com/iic-jku/klayout-pex/issues/198) `--mesh` ignored and duplicated resistors in RC mode, [#587](https://github.com/iic-jku/klayout-pex/issues/587) a `sky130A` varactor in a child cell, [#588](https://github.com/iic-jku/klayout-pex/issues/588) the `sky130A` 11 V NPN on KLayout 0.30, [#589](https://github.com/iic-jku/klayout-pex/issues/589) cells with a device that has no model, [#590](https://github.com/iic-jku/klayout-pex/issues/590) the `gf180mcuD` Schottky diode in RC mode |
+| [kpex](https://github.com/iic-jku/kpex) | [#156](https://github.com/iic-jku/kpex/issues/156) and [#197](https://github.com/iic-jku/kpex/issues/197) capacitance test patterns for `gf180mcuD` and `ihp-sg13g2`, [#198](https://github.com/iic-jku/kpex/issues/198) `--mesh` ignored and duplicated resistors in RC mode, [#587](https://github.com/iic-jku/kpex/issues/587) a `sky130A` varactor in a child cell, [#588](https://github.com/iic-jku/kpex/issues/588) the `sky130A` 11 V NPN on KLayout 0.30, [#589](https://github.com/iic-jku/kpex/issues/589) cells with a device that has no model, [#590](https://github.com/iic-jku/kpex/issues/590) the `gf180mcuD` Schottky diode in RC mode |
 | [gdscheck](https://github.com/aesc-silicon/gdscheck) | [#63](https://github.com/aesc-silicon/gdscheck/issues/63) `V1.b1` to `V4.b1` on the IHP MOM capacitor, [#64](https://github.com/aesc-silicon/gdscheck/issues/64) `PP.6` and `NP.6` on the butted taps of `gf180mcuD`, [#65](https://github.com/aesc-silicon/gdscheck/issues/65) `MIMTM.10` missed outside the MIM top plate |
 | [Xschem](https://github.com/StefanSchippers/xschem) | [#465](https://github.com/StefanSchippers/xschem/issues/465) rounding precision of device properties in LVS netlists |
 
@@ -183,7 +186,7 @@ The four regression workflows share the job in [`regression-common.yml`](.github
 ├── common.mk                  # every target, included by the Makefile of each PDK folder
 ├── scripts/                   # PEX port and mode checks, FasterCap reference helper
 ├── ihp-sg13g2/                # one folder per PDK, all four with the same structure
-│   ├── Makefile               # PDK selection, KNOWN_FAILS, EXPECTED_FAILS, KNOWN_FALSE_PASSES
+│   ├── Makefile               # REQUIRED_PDK, KNOWN_FAILS, EXPECTED_FAILS, KNOWN_FALSE_PASSES
 │   ├── README.md              # targets, regression rules, status of every cell
 │   ├── KNOWN_ISSUES.md        # why each KNOWN_FAILS and KNOWN_FALSE_PASSES entry is there
 │   ├── EXPECTED_FAILS.md      # what is broken in each cell broken on purpose

@@ -15,13 +15,13 @@ make
 make help
 ```
 
-## PDK Selection
+## PDK Guard
 
-Every target except `help` needs the `gf180mcuD` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh gf180mcuD` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to gf180mcuD` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help`, `clean` and `clean-all` needs the `gf180mcuD` PDK, which the [Makefile](Makefile) names in `REQUIRED_PDK`. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. The chip templates abort in that case. This repository holds four PDK folders, so [../common.mk](../common.mk) switches the PDK itself instead. When make parses the [Makefile](Makefile) and `$PDK` differs from `REQUIRED_PDK`, it runs `sak-pdk-script.sh gf180mcuD`, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to gf180mcuD` reports once per run. The switch reaches the recipes of make only, the shell keeps its PDK. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every target that starts a tool, which names the PDKs it found.
 
 ## Open the Design Files
 
-Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK selected above:
+Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK of the guard above:
 
 ```sh
 make open
@@ -41,7 +41,7 @@ KLayout DRC runs the PDK's `gf180mcu.drc` deck directly, with the metal stack pr
 | Density | – | – | ✓ |
 | Antenna | – | – | ✓ |
 
-The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets how many threads one run uses, by default 4 (or the CPU count if lower) for KLayout, which runs the deck as one process, and every CPU the container may use for gdscheck. On cells this small, more threads change nothing.
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets the threads of one run. KLayout runs as one process with that many threads, by default 4 or the CPU count if lower, and gdscheck as one process on every CPU the container may use. On cells this small, more threads change nothing.
 
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
@@ -96,7 +96,7 @@ make klayout-lvs
 make klayout-lvs CELL=gf180_nfet_03v3_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the gf180mcu Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode `-m`, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the gf180mcu Open-PDK:
 
 ```sh
 make magic-lvs
@@ -123,7 +123,7 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: both targets set
 
 After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare. The extracted values themselves are checked by the PEX bench.
 
-**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`) and `PEX_SUB_NET` (the net the substrate port `SUB` is tied to, empty by default to keep the port) work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there the target passes no schematic to kpex. For this PDK the 2.5D engine cannot extract the top metal, see [pex_bench/README.md](pex_bench/README.md):
+**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`) and `PEX_SUB_NET` (the net the substrate port `SUB` is tied to, empty by default to keep the port) work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there the target passes no schematic to kpex. Up to kpex 0.5.1 the 2.5D engine could not extract the top metal of this PDK, see [pex_bench/README.md](pex_bench/README.md):
 
 ```sh
 make klayout-pex
@@ -131,7 +131,7 @@ make klayout-pex CELL=gf180_nfet_03v3_tap
 make klayout-pex CELL=gf180_nfet_03v3_tap EXT_MODE=3
 ```
 
-**Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC). For full-RC extraction (`EXT_MODE=3`) the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` apply as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md):
+**Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC). The capacitance threshold `CTHRESH` and, for full-RC extraction (`EXT_MODE=3`), the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` apply as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md):
 
 ```sh
 make magic-pex
@@ -251,15 +251,16 @@ A step can be covered by one of the three lists only. The regression stops befor
 
 ## Clean
 
-`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`, which has its own `make -C pex_bench pex-bench-clean`:
+`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`. `make clean-all` runs `clean` here and then `pex-bench-clean` in `pex_bench/`, which deletes the bench outputs (`pex_bench/netlist/pex/` and `pex_bench/runs/`):
 
 ```sh
-make clean
+make clean        # this folder only
+make clean-all    # this folder and pex_bench/
 ```
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image, and `KNOWN_FAILS` in the `Makefile` is the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the IIC-OSIC-TOOLS nightly image, and `KNOWN_FAILS` in the `Makefile` is the reference.
 
 The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs from its fixed layouts. Where a PCell draws something that breaks a rule of the GF180MCU design manual, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why. Where a layout follows the rules and a tool still fails on it, the cell is left as drawn and the step is a `KNOWN_FAILS` entry. MOS cells come as `_tap` (the PCell's butted bulk tie plus a Metal1 strap, bulk on the source, pins D/S/G) and `_ring` (the device without bulk option inside a drawn guard ring, pins D/S/G/B).
 
@@ -308,7 +309,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0` (schematic with the PCell parameters, smaller than the drawn diode: EXPECTED FAIL: Magic + Netgen LVS, KNOWN FALSE PASS: KLayout LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md))
 - `gf180_diode_nw2ps_03v3`, `gf180_diode_nw2ps_06v0` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_diode_pw2dw`, `gf180_diode_dw2ps` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): kept as a finding, the PCell and both decks disagree on the device
+- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): kept as a finding, the PCell and both decks disagree on the device. On the `2026.11` tag `klayout-pex3` fails as well, fixed in kpex 0.12.0
 
 **Bipolar transistors**
 

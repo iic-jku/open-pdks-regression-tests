@@ -19,7 +19,7 @@ from collections import Counter
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from check_pex_ports import Union, nodes_of, subcircuits  # noqa: E402  same netlist reader
 
-# elements that carry the circuit; r is the resistance network, c/l/v/i/k are not devices
+# elements that carry the circuit (r is the resistance network, c/l/v/i/k are not devices)
 DEVICE = ("x", "m", "q", "d", "j")
 
 

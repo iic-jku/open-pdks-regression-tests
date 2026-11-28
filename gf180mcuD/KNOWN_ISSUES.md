@@ -14,7 +14,7 @@ KLayout DRC and gdscheck DRC pass on every cell that is not broken on purpose. E
 
 The `Bulk Tie` option of the `gf180mcu` `nfet` PCell butts the P+ tie against the source. COMP is silicided, so source and bulk are one net, and the schematic says so (bulk tied to the source, pins D, S and G). The cell leaves out the Metal1 strap between the source contact and the tie contact that `gf180_nfet_03v3_tap` has, so the butted junction is the only connection.
 
-Magic + Netgen LVS joins the two and passes: its tech file connects butted N+ and P+ diffusion since [open_pdks#492](https://github.com/RTimothyEdwards/open_pdks/issues/492). The KLayout deck does not: it derives `nsd` and `ptap` as separate layers and connects each of them only to `contact` (`rule_decks/general_connections.lvs`), never to each other. The extracted transistor then has its bulk on `SUB` instead of on the source, and the netlists do not match.
+Magic + Netgen LVS joins the two and passes: its tech file connects butted N+ and P+ diffusion since [open_pdks#492](https://github.com/fossi-foundation/open-pdks/issues/492). The KLayout deck does not: it derives `nsd` and `ptap` as separate layers and connects each of them only to `contact` (`rule_decks/general_connections.lvs`), never to each other. The extracted transistor then has its bulk on `SUB` instead of on the source, and the netlists do not match.
 
 The cell exists to show this. Once the deck connects butted diffusions, the step passes and the entry has to go.
 
@@ -111,7 +111,7 @@ After the GDS import that terminal has zero area and perimeter: the `.ext` recor
 
 `gf180_pnp_10p00x00p42` passes only because it is the first line. KLayout LVS passes on all four.
 
-Upstream: [open_pdks#543](https://github.com/RTimothyEdwards/open_pdks/issues/543), fixed by [open_pdks#559](https://github.com/RTimothyEdwards/open_pdks/pull/559) and [open_pdks#561](https://github.com/RTimothyEdwards/open_pdks/pull/561) on 2026-10-20: the device lines now select by the emitter area `a1`. The PDK of this image (open_pdks `1689ac3`, 2026-08-27) is older.
+Upstream: [open_pdks#543](https://github.com/fossi-foundation/open-pdks/issues/543), fixed by [open_pdks#559](https://github.com/fossi-foundation/open-pdks/pull/559) and [open_pdks#561](https://github.com/fossi-foundation/open-pdks/pull/561) on 2026-10-20: the device lines now select by the emitter area `a1`. The PDK of this image (open_pdks `1689ac3`, 2026-08-27) is older.
 
 ## KLayout LVS, Magic + Netgen LVS and Magic DRC fail on `gf180_sc_diode`
 
@@ -166,7 +166,7 @@ The NPN cells are the fixed layouts of the PDK. Magic reports `P-well must surro
 
 The PNP cells are the fixed layouts of the PDK. Magic reports `P-diffusion and N-ohmic must be over N-well or deep N-well` five times in each (`cifmaxwidth missing_nwell 0`, lines 2799-2800). In all four the P+ emitter and the N+ base ring lie entirely inside the NWELL. KLayout DRC passes them.
 
-Upstream: [open_pdks#560](https://github.com/RTimothyEdwards/open_pdks/issues/560), fixed by [open_pdks#559](https://github.com/RTimothyEdwards/open_pdks/pull/559) on 2026-10-20, which takes the PNP out of the check (`templayer missing_nwell ...` / `and-not dnwell,nwell,pnp`). The PDK of this image is older.
+Upstream: [open_pdks#560](https://github.com/fossi-foundation/open-pdks/issues/560), fixed by [open_pdks#559](https://github.com/fossi-foundation/open-pdks/pull/559) on 2026-10-20, which takes the PNP out of the check (`templayer missing_nwell ...` / `and-not dnwell,nwell,pnp`). The PDK of this image is older.
 
 ## Magic DRC reports errors in some PCells only below the top cell
 

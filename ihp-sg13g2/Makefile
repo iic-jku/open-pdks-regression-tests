@@ -1,4 +1,4 @@
-# ihp-sg13g2 regression design: PDK selection and known failures.
+# ihp-sg13g2 regression design: PDK guard and known failures.
 # Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
@@ -10,7 +10,7 @@ MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # PDK this design is verified against. common.mk switches the environment to it
 # via sak-pdk, so make in here can never verify against another PDK.
-EXPECTED_PDK := ihp-sg13g2
+REQUIRED_PDK := ihp-sg13g2
 
 # Cell name for the single-cell targets (default: top-level cell)
 # Override with: make <target> CELL=<cellname>
@@ -53,3 +53,8 @@ pex-bench: ## Run the PEX bench, Magic and kpex 2.5D against expected values (us
 pex-bench-defects: ## Reproduce the six PEX defects of pex_bench/report on their smallest cases (usage: make pex-bench-defects)
 	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-defects
 .PHONY: pex-bench-defects
+
+clean-all: ## Delete all generated files of this folder and of the PEX bench in pex_bench/
+	$(MAKE) clean
+	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-clean
+.PHONY: clean-all

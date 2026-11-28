@@ -18,13 +18,13 @@ make
 make help
 ```
 
-## PDK Selection
+## PDK Guard
 
-Every target except `help` needs the `sky130A` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh sky130A` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to sky130A` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help`, `clean` and `clean-all` needs the `sky130A` PDK, which the [Makefile](Makefile) names in `REQUIRED_PDK`. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. The chip templates abort in that case. This repository holds four PDK folders, so [../common.mk](../common.mk) switches the PDK itself instead. When make parses the [Makefile](Makefile) and `$PDK` differs from `REQUIRED_PDK`, it runs `sak-pdk-script.sh sky130A`, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to sky130A` reports once per run. The switch reaches the recipes of make only, the shell keeps its PDK. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every target that starts a tool, which names the PDKs it found.
 
 ## Open the Design Files
 
-Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK selected above:
+Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK of the guard above:
 
 ```sh
 make open
@@ -45,7 +45,7 @@ KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus
 | Zero-area | – | ✓ | ✓ |
 | Density (`met_min_ca_density.lydrc`) | – | – | ✓ |
 
-The `DRC_JOBS` parameter (`sak-drc.sh -j`) caps how many of these decks run at once, by default 4 (or the CPU count if lower). On cells this small, more jobs change nothing.
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) caps how many KLayout processes run at once. `sky130A` runs every rule deck as its own process, 2 to 5 by level, and by default all of them start together, so a lower value only trades run time for RAM.
 
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
@@ -87,7 +87,7 @@ Exports the schematic netlist from Xschem, then runs LVS. Compares the GDS layou
 make klayout-lvs CELL=sky130_nfet_01v8_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the `sky130A` Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode `-m`, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the `sky130A` Open-PDK:
 
 ```sh
 make magic-lvs
@@ -102,7 +102,7 @@ The `EXT_MODE` parameter selects the extraction mode: `1` = C-decoupled (default
 
 After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
 
-**KLayout PEX** uses `sak-pex.sh -k`, the 2.5D engine of `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`), `PEX_SUB_NET` (the net the substrate port `sky130_gnd` is tied to, empty by default to keep the port) and the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there `klayout-pex` passes no schematic to kpex.
+**KLayout PEX** uses `sak-pex.sh -k`, the 2.5D engine of `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`), `PEX_SUB_NET` (the net the substrate port `sky130_gnd` is tied to, empty by default to keep the port), the capacitance threshold `CTHRESH` of `magic-pex` and its `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there `klayout-pex` passes no schematic to kpex.
 
 ```sh
 make magic-pex CELL=sky130_nfet_01v8_tap EXT_MODE=3
@@ -179,15 +179,16 @@ A step can be covered by one of the three lists only. [../common.mk](../common.m
 
 ## Clean
 
-`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`, which has its own `make -C pex_bench pex-bench-clean`:
+`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`. `make clean-all` runs `clean` here and then `pex-bench-clean` in `pex_bench/`, which deletes the bench outputs (`pex_bench/netlist/pex/` and `pex_bench/runs/`):
 
 ```sh
-make clean
+make clean        # this folder only
+make clean-all    # this folder and pex_bench/
 ```
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the current IIC-OSIC-TOOLS image, and the lists in the `Makefile` are the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the IIC-OSIC-TOOLS nightly image, and the lists in the `Makefile` are the reference.
 
 The layouts are built from the `skywater130` KLayout PCells of the PDK, the 16 V MOS from its Magic generator, the BJTs, the photodiode and the VPP capacitors from its fixed layouts. Where a PCell draws something that breaks a design rule, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why.
 
@@ -239,7 +240,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Combined test cells**
 
 - `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS): 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (PASS): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_short1` (PASS): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD. On the `2026.11` tag `magic-pex3` still fails, fixed in Magic 8.3.707
 
 ### Devices without a cell
 

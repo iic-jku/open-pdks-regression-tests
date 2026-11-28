@@ -134,7 +134,7 @@ if ! command -v FasterCap > /dev/null; then
 	echo "[WARNING] FasterCap is not on PATH; kpex may still find it, but check the logs." >&2
 fi
 # REPO is derived from where this script sits, which assumes it sits inside the checkout.
-# Copying the file somewhere on its own is the usual way to end up here; --repo fixes that.
+# Copying the file somewhere on its own is the usual way to end up here, --repo fixes that.
 if [ ! -f "$REPO/common.mk" ]; then
 	{
 		echo "[ERROR] $REPO has no common.mk, so it is not the regression-test checkout."
@@ -281,7 +281,7 @@ if [ -n "$CALIBRATE" ]; then
 						KPEX_CELLS="$CALIBRATE" KPEX_AMAX="$amax" KPEX_TOL="$tol" KPEX_THREADS="$THREADS" \
 						> "$BENCH/netlist/calibrate_${CALIBRATE}_a${amax}_t${tol}.log" 2>&1; then
 					secs=$(( $(date +%s) - t0 ))
-					# read_kpex.summary() returns (names, coupling, residual, asymmetry); the signal is
+					# read_kpex.summary() returns (names, coupling, residual, asymmetry). The signal is
 					# the coupling that does not involve the substrate (read_kpex.SUBSTRATE).
 					read=$(python3 -c "import sys;sys.path.insert(0,'$BENCH/scripts');from read_kpex import SUBSTRATE,summary as S;r=S('$d');c=[v for k,v in r[1].items() if not SUBSTRATE.intersection(k)] if r else [];print('%.4f %.2f'%((max(c)*1e15 if c else 0.0),(r[3] if r else 0.0)))" 2>/dev/null)
 					val=${read%% *}
@@ -338,8 +338,8 @@ for PDK in $PDKS; do
 
 	# A bench states in PEX_ENGINES what its tooling can actually run. Solving a PDK that
 	# cannot run kpex at all would produce one failed solve per cell and per amax and nothing
-	# else, so ask first instead of finding out sixteen times. An older bench answers empty;
-	# assume it can, and let the solve itself say otherwise.
+	# else, so ask first instead of finding out sixteen times. An older bench answers empty,
+	# so assume it can, and let the solve itself say otherwise.
 	engines=$(mkvar "$BENCH" PEX_ENGINES)
 	if [ -n "$engines" ]; then
 		case " $engines " in
@@ -394,7 +394,7 @@ for PDK in $PDKS; do
 				continue
 			fi
 
-			# One cell per job. The slot wait keeps at most $JOBS kpex processes alive; with
+			# One cell per job. The slot wait keeps at most $JOBS kpex processes alive. With
 			# --jobs 1 the parent waits immediately, so the run is sequential as before.
 			while [ "$(jobs -rp | wc -l)" -ge "$JOBS" ]; do wait -n 2>/dev/null || break; done
 			(
@@ -419,9 +419,9 @@ for PDK in $PDKS; do
 				# child fails, so the file can hold two lines. The time is always the last.
 				secs=$(tail -1 "$out/secs" 2>/dev/null)
 				echo "$secs" > "$out/secs"
-				# Keep the matrices, the netlist and the wall time; the meshes, geometries and
+				# Keep the matrices, the netlist and the wall time. The meshes, geometries and
 				# LVS intermediates are inputs, are large, and any rerun regenerates them.
-				# kpex writes the matrices into a <cell>__<cell>/ subdirectory; the committed
+				# kpex writes the matrices into a <cell>__<cell>/ subdirectory. The committed
 				# sg13g2 set has them flattened, and read_kpex.py expects them flat, so find
 				# them wherever kpex put them rather than assuming a depth.
 				find "$src" -name '*Result_Matrix_*.csv' -exec cp {} "$out"/ \; 2>/dev/null

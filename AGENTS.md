@@ -9,7 +9,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 ## Environment
 
 - Run every target inside the IIC-OSIC-TOOLS container (https://github.com/iic-jku/IIC-OSIC-TOOLS), tag `2026.11` or later (`README.md`). CI uses `ghcr.io/iic-jku/iic-osic-tools:nightly`, and the lists in the Makefiles follow that image.
-- Each PDK folder switches the shell to its own PDK (`EXPECTED_PDK`) with `sak-pdk-script.sh` when make parses its `Makefile`, so the PDK of the container does not matter. `PDK_ROOT` must be set.
+- The PDK guard of `common.mk` switches the environment of make to the PDK of the folder (`REQUIRED_PDK`) with `sak-pdk-script.sh` when make parses its `Makefile`, so the PDK of the container does not matter. The chip templates abort instead, and the shell itself keeps its PDK. `PDK_ROOT` must be set.
 - Run make inside the folder or with `make -C <pdk> <target>`. `make -f <pdk>/Makefile` resolves the relative paths against the current directory and does not work.
 
 ## Repository layout
@@ -18,7 +18,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 | --- | --- |
 | `common.mk` | Every target (DRC, LVS, PEX, regression, clean), included by the `Makefile` of each PDK folder and of each `pex_bench/` |
 | `scripts/` | `check_pex_ports.py` (run after every extraction) and `check_pex_modes.py` (after every full-RC extraction), `make_fastercap_expected.sh` (FasterCap references of the benches) |
-| `<pdk>/Makefile` | `EXPECTED_PDK`, the default `CELL`, the lists `KNOWN_FAILS`, `EXPECTED_FAILS`, `KNOWN_FALSE_PASSES`, and the `pex-bench` targets that forward to `pex_bench/` |
+| `<pdk>/Makefile` | `REQUIRED_PDK`, the default `CELL`, the lists `KNOWN_FAILS`, `EXPECTED_FAILS`, `KNOWN_FALSE_PASSES`, and the `pex-bench` and `clean-all` targets that forward to `pex_bench/` |
 | `<pdk>/README.md` | Every target, the regression rules, and the status of every cell ("Supported Cells") |
 | `<pdk>/KNOWN_ISSUES.md`, `<pdk>/EXPECTED_FAILS.md`, `<pdk>/FINDINGS.md` | Why each list entry is there, what is broken in each cell broken on purpose, PDK pitfalls |
 | `<pdk>/layout/`, `<pdk>/schematic/xschem/` | One GDS and one schematic per cell, with the same name, and the folder's `xschemrc` |
@@ -28,9 +28,9 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 
 ## Makefiles
 
-- `common.mk` holds every target. A PDK `Makefile` only sets variables and includes it. Change a flow in `common.mk`, never copy a target into a PDK folder.
+- `common.mk` holds every target. A PDK `Makefile` only sets variables, includes it, and forwards `pex-bench` and `clean-all` to `pex_bench/`. Change a flow in `common.mk`, never copy a target into a PDK folder.
 - `.DEFAULT_GOAL := help`, and `make help` lists every target from its `## ` comment. Give every new target a `## ` comment.
-- Variables are set with `?=` and overridden on the command line, for example `CELL=<cell>`, `EXT_MODE=<1|2|3>`, `DRC_LEVEL=<precheck|macro|regular>`, `DRC_JOBS=<n>`, `GDSCHECK_SUITE=<suite>`, `KPEX_REDUCE=<none|floating|ticer>`, `PEX_SUB_NET=<net>`, `STEPS=<pattern>`, `LAYOUT_CELLS="<cell> ..."`. `SAK_DRC`, `SAK_LVS` and `SAK_PEX` point every target of `common.mk` at another copy of a sak script, for example the one of an open IIC-OSIC-TOOLS pull request.
+- Variables are set with `?=` and overridden on the command line, for example `CELL=<cell>`, `EXT_MODE=<1|2|3>`, `CTHRESH=<fF>`, `DRC_LEVEL=<precheck|macro|regular>`, `DRC_JOBS=<n>`, `GDSCHECK_SUITE=<suite>`, `KPEX_REDUCE=<none|floating|ticer>`, `PEX_SUB_NET=<net>`, `STEPS=<pattern>`, `LAYOUT_CELLS="<cell> ..."`. `SAK_DRC`, `SAK_LVS` and `SAK_PEX` point every target of `common.mk` at another copy of a sak script, for example the one of an open IIC-OSIC-TOOLS pull request.
 - The DRC engines are KLayout (`klayout-drc`, the sign-off deck), Magic (`magic-drc`) and gdscheck (`gdscheck-drc`). gdscheck has rule decks for `ihp-sg13g2`, `ihp-sg13cmos5l` and `gf180mcuD` only, so `sky130A/Makefile` sets `GDSCHECK_STEP` empty and its regression leaves the step out.
 - `klayout-pex` runs the kpex 2.5D engine through `sak-pex.sh -k` and passes no schematic (`-S`): kpex's device check would fail the full-RC step of every cell broken on purpose, and PEX steps may not be in `EXPECTED_FAILS`.
 - `make regression` discovers the cells from `layout/*.gds`. A new cell needs a GDS and a schematic of the same name, nothing else.
@@ -57,7 +57,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 
 ## Traps
 
-- Generated output (`<pdk>/netlist/`, `<pdk>/verification/`, `pex_bench/netlist/`, `pex_bench/runs/`) is git-ignored. `make clean` and `make -C <pdk>/pex_bench pex-bench-clean` delete it.
+- Generated output (`<pdk>/netlist/`, `<pdk>/verification/`, `pex_bench/netlist/`, `pex_bench/runs/`) is git-ignored. `make clean` deletes the first two, `make -C <pdk>/pex_bench pex-bench-clean` the bench outputs, and `make clean-all` both.
 - The root `README.md` states the number of cells and bench layouts per PDK. Update it when adding or removing a cell.
 - The PDK folders are also run by IIC-OSIC-TOOLS tests 26 (`ihp-sg13g2`), 31 (`ihp-sg13cmos5l`), 47 (`gf180mcuD`) and 48 (`sky130A`), and all bench folders by test 35. Renaming a target or a folder breaks those tests.
 
