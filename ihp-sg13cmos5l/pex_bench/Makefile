@@ -158,7 +158,7 @@ pex-bench-2.5d: check-pdk ## Extract the comparison cells with the kpex 2.5D eng
 	[ -z "$$known" ] || echo "[KPEX 2.5D] known fails:$$known"; \
 	[ -z "$$xpass" ] || { echo "[KPEX 2.5D] UNEXPECTED PASS:$$xpass - listed in KPEX_KNOWN_FAILS but passed, remove the entry"; exit 1; }; \
 	[ -z "$$fails" ] || { echo "[KPEX 2.5D] failed:$$fails"; exit 1; }
-	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input; the
+	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input. The
 	@# directory it picks differs per PDK runset, so clean both places it has been seen in.
 	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 .PHONY: pex-bench-2.5d
@@ -177,7 +177,7 @@ pex-bench-fastercap: check-pdk ## Field-solve the comparison cells with kpex Fas
 		find $$d -type d \( -name FasterCap_Input_Files -o -name Geometries -o -name .kpex_cache \) -prune -exec rm -rf {} + 2>/dev/null; \
 		python3 $(SCRIPTS)/read_kpex.py $$d | sed 's/^/[FASTERCAP] /'; \
 	done
-	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input; the
+	@# kpex's KLayout LVS step drops an empty <cell>_extracted.cir next to its input. The
 	@# directory it picks differs per PDK runset, so clean both places it has been seen in.
 	@rm -f $(LAY_DIR)/*_extracted.cir $(MAKEFILE_DIR)/../*_extracted.cir 2>/dev/null || true
 .PHONY: pex-bench-fastercap

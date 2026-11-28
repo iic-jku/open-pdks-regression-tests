@@ -218,14 +218,14 @@ RUN_STEPS = $(if $(STEPS_LEFT_OUT),$(words $(REGRESSION_STEPS)) of $(words $(DEF
 PARTIAL_RUN = $(if $(CELLS_LEFT_OUT)$(STEPS_LEFT_OUT),$(RUN_CELLS)$(comma) $(RUN_STEPS))
 
 # Steps that are not supposed to simply pass. A tool bug is "known" and expected to be fixed one
-# day; a cell that is broken on purpose is "expected" to fail for good.
+# day, a cell that is broken on purpose is "expected" to fail for good.
 #
 #     the right verdict is PASS     					the right verdict is FAIL
 #     tool gets it right  (no entry)                    EXPECTED_FAILS
 #     tool gets it wrong  KNOWN_FAILS                   KNOWN_FALSE_PASSES
 #
 # Entry syntax, the same in all three lists:
-#   <cell>:<step>   that step only; list one entry per step
+#   <cell>:<step>   that step only, one entry per step
 #   <cell>          the whole cell, same as <cell>:*. In KNOWN_FAILS every step of the cell. In
 #                   EXPECTED_FAILS and KNOWN_FALSE_PASSES every DRC and LVS step: a PEX step
 #                   checks the extraction, not the cell. It fails when it writes no netlist,
