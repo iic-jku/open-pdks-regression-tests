@@ -42,3 +42,8 @@ FASTERCAP ?= 0
 pex-bench: ## Run the PEX bench, Magic and kpex 2.5D against expected values (usage: make pex-bench [FASTERCAP=1])
 	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench FASTERCAP=$(FASTERCAP)
 .PHONY: pex-bench
+
+clean-all: ## Delete all generated files of this folder and of the PEX bench in pex_bench/
+	$(MAKE) clean
+	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-clean
+.PHONY: clean-all

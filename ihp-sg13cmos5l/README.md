@@ -292,10 +292,11 @@ A step can be covered by one of the three lists only. The regression stops befor
 
 ## Clean
 
-`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`, which has its own `make -C pex_bench pex-bench-clean`:
+`make clean` deletes everything the targets generate: `netlist/` (schematic, layout and PEX netlists), `verification/drc/` and `verification/lvs/` (the DRC and LVS reports and the `.rc` exit code files of the regression) and `schematic/xschem/simulations/` (netlists written by the Xschem GUI). The cells in `layout/` and `schematic/xschem/` stay untouched, and so does `pex_bench/`. `make clean-all` runs `clean` here and then `pex-bench-clean` in `pex_bench/`, which deletes the bench outputs (`pex_bench/netlist/pex/` and `pex_bench/runs/`):
 
 ```sh
-make clean
+make clean        # this folder only
+make clean-all    # this folder and pex_bench/
 ```
 
 ## Supported Cells / Files

@@ -53,3 +53,8 @@ pex-bench: ## Run the PEX bench, Magic and kpex 2.5D against expected values (us
 pex-bench-defects: ## Reproduce the six PEX defects of pex_bench/report on their smallest cases (usage: make pex-bench-defects)
 	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-defects
 .PHONY: pex-bench-defects
+
+clean-all: ## Delete all generated files of this folder and of the PEX bench in pex_bench/
+	$(MAKE) clean
+	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench-clean
+.PHONY: clean-all
