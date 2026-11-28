@@ -36,9 +36,9 @@ KNOWN_FALSE_PASSES ?= sg13_lv_nmos_tap_cnt_c_ptap:magic-drc
 include $(MAKEFILE_DIR)/../common.mk
 
 # PEX bench: dummy metal layouts with hand-computable parasitics, extracted with Magic and the
-# engines listed in pex_bench/Makefile (PEX_ENGINES) and checked against expected values.
+# kpex engines and checked against expected values. Everything else lives in pex_bench/Makefile.
 FASTERCAP ?= 0
 
-pex-bench: ## Run the PEX bench with the engines in pex_bench PEX_ENGINES against expected values (usage: make pex-bench)
+pex-bench: ## Run the PEX bench, Magic and kpex 2.5D against expected values (usage: make pex-bench [FASTERCAP=1])
 	$(MAKE) -C $(MAKEFILE_DIR)/pex_bench pex-bench FASTERCAP=$(FASTERCAP)
 .PHONY: pex-bench

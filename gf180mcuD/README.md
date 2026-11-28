@@ -41,7 +41,7 @@ KLayout DRC runs the PDK's `gf180mcu.drc` deck directly, with the metal stack pr
 | Density | – | – | ✓ |
 | Antenna | – | – | ✓ |
 
-The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets how many threads one run uses, by default 4 (or the CPU count if lower) for KLayout, which runs the deck as one process, and every CPU the container may use for gdscheck. On cells this small, more threads change nothing.
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets the threads of one run. KLayout runs as one process with that many threads, by default 4 or the CPU count if lower, and gdscheck as one process on every CPU the container may use. On cells this small, more threads change nothing.
 
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
@@ -96,7 +96,7 @@ make klayout-lvs
 make klayout-lvs CELL=gf180_nfet_03v3_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the gf180mcu Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode `-m`, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the gf180mcu Open-PDK:
 
 ```sh
 make magic-lvs
@@ -123,7 +123,7 @@ The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: both targets set
 
 After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. A netlist with a dangling port fails the target, since anything wired to that pin in a simulation would float. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare. The extracted values themselves are checked by the PEX bench.
 
-**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`) and `PEX_SUB_NET` (the net the substrate port `SUB` is tied to, empty by default to keep the port) work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there the target passes no schematic to kpex. For this PDK the 2.5D engine cannot extract the top metal, see [pex_bench/README.md](pex_bench/README.md):
+**KLayout PEX** uses `sak-pex.sh -k`, which extracts with the 2.5D engine of `kpex`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`) and `PEX_SUB_NET` (the net the substrate port `SUB` is tied to, empty by default to keep the port) work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there the target passes no schematic to kpex. Up to kpex 0.5.1 the 2.5D engine could not extract the top metal of this PDK, see [pex_bench/README.md](pex_bench/README.md):
 
 ```sh
 make klayout-pex
@@ -131,7 +131,7 @@ make klayout-pex CELL=gf180_nfet_03v3_tap
 make klayout-pex CELL=gf180_nfet_03v3_tap EXT_MODE=3
 ```
 
-**Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC). For full-RC extraction (`EXT_MODE=3`) the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` apply as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md):
+**Magic PEX** uses `sak-pex.sh`, which extracts the parasitics with Magic (C-decoupled, C-coupled, or full-RC). The capacitance threshold `CTHRESH` and, for full-RC extraction (`EXT_MODE=3`), the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` apply as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md):
 
 ```sh
 make magic-pex

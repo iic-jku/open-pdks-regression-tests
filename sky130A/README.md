@@ -45,7 +45,7 @@ KLayout DRC runs the PDK's `sky130A_mr.drc` deck in a FEOL and a BEOL pass, plus
 | Zero-area | – | ✓ | ✓ |
 | Density (`met_min_ca_density.lydrc`) | – | – | ✓ |
 
-The `DRC_JOBS` parameter (`sak-drc.sh -j`) caps how many of these decks run at once, by default 4 (or the CPU count if lower). On cells this small, more jobs change nothing.
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) caps how many KLayout processes run at once. `sky130A` runs every rule deck as its own process, 2 to 5 by level, and by default all of them start together, so a lower value only trades run time for RAM.
 
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
@@ -87,7 +87,7 @@ Exports the schematic netlist from Xschem, then runs LVS. Compares the GDS layou
 make klayout-lvs CELL=sky130_nfet_01v8_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the `sky130A` Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode `-m`, the default), which extracts the flattened layout with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the `sky130A` Open-PDK:
 
 ```sh
 make magic-lvs
@@ -102,7 +102,7 @@ The `EXT_MODE` parameter selects the extraction mode: `1` = C-decoupled (default
 
 After every extraction, `scripts/check_pex_ports.py` checks that each port of the netlist is connected to at least one element, and that a port which full-RC extraction splits into resistance fragments reaches one of them. After a full-RC extraction (`EXT_MODE=3`), `scripts/check_pex_modes.py` compares the netlist with the C-coupled netlist of the same cell (`EXT_MODE=2`, which `make regression` extracts first): every device terminal has to reach the same ports, and no two ports that are separate nets in the C-coupled netlist may be joined through resistors. A port of several shorted pins, which kpex names `D|S` in its C-decoupled and C-coupled netlists and keeps as the pins D and S in the full-RC one, counts as both pins. It catches a short between pins, or a device terminal cut off from its pin, that the port check passes because other elements keep the pin connected. Without a C-coupled netlist, or with one older than the layout, it says so and does not compare.
 
-**KLayout PEX** uses `sak-pex.sh -k`, the 2.5D engine of `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`), `PEX_SUB_NET` (the net the substrate port `sky130_gnd` is tied to, empty by default to keep the port) and the `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there `klayout-pex` passes no schematic to kpex.
+**KLayout PEX** uses `sak-pex.sh -k`, the 2.5D engine of `kpex`, **Magic PEX** uses `sak-pex.sh`. `KPEX_REDUCE` (the full-RC reduction, default `ticer`), `PEX_SUB_NET` (the net the substrate port `sky130_gnd` is tied to, empty by default to keep the port), the capacitance threshold `CTHRESH` of `magic-pex` and its `extresist` parameters `THRESHOLD`, `MINRES` and `MINDELAY` work as described in [../ihp-sg13g2/README.md](../ihp-sg13g2/README.md), and as there `klayout-pex` passes no schematic to kpex.
 
 ```sh
 make magic-pex CELL=sky130_nfet_01v8_tap EXT_MODE=3

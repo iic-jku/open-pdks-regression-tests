@@ -90,6 +90,10 @@ endif
 # Override with: make <target> EXT_MODE=<1|2|3>
 EXT_MODE ?= 1
 
+# capacitance threshold of magic-pex in fF, smaller capacitors are left out of the netlist (sak-pex.sh -c, used in every EXT_MODE, default: 0.01 = 10 aF)
+# Override with: make <target> CTHRESH=<fF>
+CTHRESH ?= 0.01
+
 # full-RC extresist threshold in mOhm (sak-pex.sh -t, only used in EXT_MODE=3; default: 10000 = 10 Ohm)
 # Override with: make <target> THRESHOLD=<mOhm>
 THRESHOLD ?= 10000
@@ -101,14 +105,6 @@ MINRES ?= 1000
 # full-RC extresist mindelay in ps (sak-pex.sh -y, only used in EXT_MODE=3; default: 1; 0 = gate by resistance)
 # Override with: make <target> MINDELAY=<ps>
 MINDELAY ?= 1
-
-# Port net that klayout-pex ties the substrate port of the kpex 2.5D netlist to (sak-pex.sh -g): sub! on the IHP PDKs, SUB on gf180mcuD, sky130_gnd on sky130A. Empty keeps the substrate port: the cells here name their bulk pin B, not VSS, and the port check accepts the extra port as long as elements connect to it.
-# Override with: make klayout-pex PEX_SUB_NET=<net>
-PEX_SUB_NET ?=
-
-# Reduction of the full-RC netlist of klayout-pex (sak-pex.sh -R, only used in EXT_MODE=3; default: ticer): none, floating (merges the floating islands and removes the capacitor-only nodes) or ticer (floating plus TICER node elimination).
-# Override with: make klayout-pex KPEX_REDUCE=<none|floating|ticer>
-KPEX_REDUCE ?= ticer
 
 # KLayout/gdscheck DRC level: precheck, macro, or regular (sak-drc.sh -l, only used by klayout-drc and gdscheck-drc; default: macro)
 # Override with: make <target> DRC_LEVEL=<precheck|macro|regular>
@@ -122,7 +118,7 @@ GDSCHECK_SUITE ?=
 # Override with: make <target> GDSCHECK_DECKS=<deck>[,<deck>...]
 GDSCHECK_DECKS ?=
 
-# Parallel DRC jobs, the KLayout processes and gdscheck threads (sak-drc.sh -j, only used by klayout-drc and gdscheck-drc; default: empty = 4 KLayout processes or fewer, gdscheck on every CPU)
+# Parallel DRC jobs, the KLayout processes and gdscheck threads (sak-drc.sh -j, only used by klayout-drc and gdscheck-drc; default: empty = 4 KLayout processes or fewer, on sky130A one per rule deck, gdscheck on every CPU)
 # Override with: make <target> DRC_JOBS=<n>
 DRC_JOBS ?=
 
@@ -130,6 +126,14 @@ DRC_JOBS ?=
 _GDSCHECK_SUITE_OPT = $(if $(GDSCHECK_SUITE),-s "$(GDSCHECK_SUITE)")
 _GDSCHECK_DECKS_OPT = $(if $(GDSCHECK_DECKS),-D "$(GDSCHECK_DECKS)")
 _DRC_JOBS_OPT = $(if $(DRC_JOBS),-j $(DRC_JOBS))
+
+# Port net that klayout-pex ties the substrate port of the kpex 2.5D netlist to (sak-pex.sh -g): sub! on the IHP PDKs, SUB on gf180mcuD, sky130_gnd on sky130A. Empty keeps the substrate port: the cells here name their bulk pin B, not VSS, and the port check accepts the extra port as long as elements connect to it.
+# Override with: make klayout-pex PEX_SUB_NET=<net>
+PEX_SUB_NET ?=
+
+# Reduction of the full-RC netlist of klayout-pex (sak-pex.sh -R, only used in EXT_MODE=3; default: ticer): none, floating (merges the floating islands and removes the capacitor-only nodes) or ticer (floating plus TICER node elimination).
+# Override with: make klayout-pex KPEX_REDUCE=<none|floating|ticer>
+KPEX_REDUCE ?= ticer
 
 # sak-drc.sh to run, e.g. a newer one than the image ships (default: the one on PATH)
 # Override with: make <target> SAK_DRC=<path to sak-drc.sh>
@@ -281,7 +285,7 @@ REGRESSION_SH = \
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [KPEX_REDUCE=<none|floating|ticer>] [PEX_SUB_NET=<net>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [GDSCHECK_SUITE=<suite>|GDSCHECK_DECKS=<decks>] [DRC_JOBS=<n>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [SAK_LVS=<path>] [SAK_PEX=<path>] [OPEN_ARGS=<options>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [CTHRESH=<fF>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [GDSCHECK_SUITE=<suite>|GDSCHECK_DECKS=<decks>] [DRC_JOBS=<n>] [KPEX_REDUCE=<none|floating|ticer>] [PEX_SUB_NET=<net>] [EV_PRECISION=<digits>] [SAK_DRC=<path>] [SAK_LVS=<path>] [SAK_PEX=<path>] [OPEN_ARGS=<options>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -h -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -292,15 +296,16 @@ help: ## Show this help message
 	@if [ -n '$(PDK_ERROR_HINT)' ]; then echo '            $(PDK_ERROR_HINT)'; fi
 	@echo 'CELL defaults to $(CELL). Override to verify subcells.'
 	@echo 'EXT_MODE defaults to 1 (C-decoupled). 2=C-coupled, 3=full-RC.'
+	@echo 'CTHRESH is the capacitance threshold of magic-pex in fF in every EXT_MODE, smaller capacitors are left out of the netlist (default 0.01 = 10 aF).'
 	@echo 'THRESHOLD/MINRES/MINDELAY are full-RC (EXT_MODE=3) extresist settings for magic-pex (defaults 10000 mOhm / 1000 mOhm / 1 ps).'
-	@echo 'PEX_SUB_NET defaults to empty, which keeps the substrate port of the kpex 2.5D netlist of klayout-pex. A port net ties the substrate port to that net.'
-	@echo 'KPEX_REDUCE defaults to ticer. Sets the RC network reduction of klayout-pex in EXT_MODE=3 (none|floating|ticer).'
 	@echo 'DRC_LEVEL defaults to macro. Sets the DRC level for klayout-drc and gdscheck-drc (precheck|macro|regular).'
 	@echo 'GDSCHECK_SUITE replaces the gdscheck suite of DRC_LEVEL for gdscheck-drc (precheck|core|main|density|antenna|recommended).'
 	@echo 'GDSCHECK_DECKS runs gdscheck rule decks instead of a suite, comma-separated (e.g. activ,gatpoly).'
-	@echo 'DRC_JOBS caps the KLayout DRC processes and sets the gdscheck threads (default: 4 KLayout processes or fewer, gdscheck on every CPU).'
-	@echo 'SAK_DRC, SAK_LVS and SAK_PEX default to sak-drc.sh, sak-lvs.sh and sak-pex.sh on PATH. Point one at another copy to test that one, regression passes it on to every step.'
+	@echo 'DRC_JOBS caps the KLayout DRC processes and sets the gdscheck threads (default: 4 KLayout processes or fewer, on sky130A one per rule deck, gdscheck on every CPU).'
+	@echo 'PEX_SUB_NET defaults to empty, which keeps the substrate port of the kpex 2.5D netlist of klayout-pex. A port net ties the substrate port to that net.'
+	@echo 'KPEX_REDUCE defaults to ticer. Sets the RC network reduction of klayout-pex in EXT_MODE=3 (none|floating|ticer).'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
+	@echo 'SAK_DRC, SAK_LVS and SAK_PEX default to sak-drc.sh, sak-lvs.sh and sak-pex.sh on PATH. Point one at another copy to test that one, regression passes it on to every step.'
 	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REGRESSION_STEPS lists the steps regression runs per cell (currently: $(REGRESSION_STEPS)).'
 	@echo 'STEPS runs only the matching REGRESSION_STEPS, % matches any text (e.g. STEPS=%-lvs for both LVS steps).'
@@ -450,12 +455,12 @@ klayout-pex: check-pdk ## Run Parasitic Extraction with the KPEX 2.5D engine of 
 	fi
 .PHONY: klayout-pex
 
-magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (usage: make magic-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>])
+magic-pex: check-pdk ## Run Parasitic Extraction with Magic of the CELL cell (usage: make magic-pex [CELL=<cellname>] [EXT_MODE=<1|2|3>] [CTHRESH=<fF>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>])
 	mkdir -p $(NET_PEX_DIR)
 	@# stdin from /dev/null: sak-pex.sh and sak-lvs.sh run Magic in the foreground, and a Magic that
 	@# crashes (sky130_pnp_05v5_W3p40L3p40, full-RC) leaves the terminal without echo. sak-drc.sh runs
 	@# Magic in the background, where stdin is /dev/null already.
-	$(SAK_PEX) -d -m $(EXT_MODE) -n $(CELL)_pex -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds < /dev/null
+	$(SAK_PEX) -d -m $(EXT_MODE) -n $(CELL)_pex -c $(CTHRESH) -t $(THRESHOLD) -r $(MINRES) -y $(MINDELAY) -w $(NET_PEX_DIR) $(LAY_DIR)/$(CELL).gds < /dev/null
 	mv $(NET_PEX_DIR)/$(CELL).pex.spice $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice
 	rm -f $(NET_PEX_DIR)/pex_$(CELL).tcl
 	python3 $(SCRIPTS_DIR)/check_pex_ports.py $(NET_PEX_DIR)/$(CELL)_magic_pex_$(EXT_MODE).spice

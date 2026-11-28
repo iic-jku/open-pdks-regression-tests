@@ -49,7 +49,7 @@ For the IHP Open-PDK, `sak-drc.sh` passes `--precheck_drc --no_density --no_offg
 | Density (full-chip fill) | – | – | ✓ |
 | Antenna | – | – | ✓ |
 
-The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets how many jobs one run uses at most, by default 4 (or the CPU count if lower) for KLayout and every CPU the container may use for gdscheck. At `regular`, KLayout runs the four rule sets as parallel processes and writes the reports of the extra rules, the density and the antenna checks into the subfolders `maximal/`, `density/` and `antenna/` of the run folder. On cells this small, more jobs change nothing.
+The `DRC_JOBS` parameter (`sak-drc.sh -j`) sets how many jobs one run uses at most. The default is 4, or the CPU count if lower, for KLayout and every CPU the container may use for gdscheck, which runs as one process with that many threads. Up to 4 jobs, `precheck` and `macro` run as one KLayout process with that many threads, and `regular` runs its four rule sets (main, extra rules, density and antenna) as parallel processes and writes the reports of the last three into the subfolders `maximal/`, `density/` and `antenna/` of the run folder. Above 4, `run_drc.py` splits the rule deck into its tables, one process each, and merges their reports into one. That only pays off for large layouts. On cells this small, more jobs change nothing.
 
 **KLayout DRC** runs a KLayout DRC at the selected `DRC_LEVEL`:
 
@@ -112,7 +112,7 @@ make klayout-lvs
 make klayout-lvs CELL=sg13_lv_nmos_tap
 ```
 
-**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the IHP Open-PDK:
+**Magic + Netgen LVS** uses `sak-lvs.sh` (Magic + Netgen mode `-m`, the default), which extracts the layout netlist with Magic and compares it against the schematic netlist with Netgen, using the Netgen setup from the IHP Open-PDK:
 
 ```sh
 make magic-lvs
@@ -163,11 +163,17 @@ make magic-pex CELL=sg13_lv_nmos_tap
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3
 ```
 
-For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the `sak-pex.sh` `extresist` tuning parameters. They are ignored in `EXT_MODE=1`/`2`:
+In every `EXT_MODE`, `magic-pex` leaves each parasitic capacitor below `CTHRESH` (`sak-pex.sh -c`, in fF, default `0.01` = 10 aF) out of the netlist. `CTHRESH=0.001` keeps every capacitor Magic can resolve, since it writes smaller ones as `0`, and a larger value gives a smaller netlist, for example `make magic-pex CTHRESH=0.1`.
 
-- `THRESHOLD`: extresist threshold in mOhm (`-t`, default `10000` = 10 Ohm)
-- `MINRES`: extresist minimum resistance in mOhm (`-r`, default `1000` = 1 Ohm)
-- `MINDELAY`: extresist minimum delay in ps (`-y`, default `1`, `0` = gate by resistance)
+For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the three `extresist` tuning parameters of `sak-pex.sh`. They are ignored in `EXT_MODE=1`/`2`.
+
+A full-RC extraction of a large layout would produce a resistor network far too large to simulate, and most of it would be wires so short that their resistance does not matter. The three parameters are the filters Magic applies to keep only the part of the network that is worth having. They run in this order:
+
+1. **`THRESHOLD`** (`-t`, in mOhm, default `10000` = 10 Ohm) decides **which nets are extracted at all**. Before doing any real work, Magic makes a quick end-to-end resistance guess for every net. The guess is deliberately pessimistic: it is an absolute worst case. Nets that stay below `THRESHOLD` even in that worst case cannot matter, so they are treated as ideal wires and skipped. This is the cheap first pass that removes the many short, low-resistance nets.
+2. **`MINDELAY`** (`-y`, in ps, default `1`) decides **which of the extracted nets are kept**. Because the guess above overestimates, Magic re-checks each net once it has been properly extracted and discards its resistor network again if the RC delay it adds stays below `MINDELAY`. Setting `MINDELAY=0` switches the delay criterion off and applies `THRESHOLD` a second time instead, now against the accurately extracted resistance rather than the initial guess.
+3. **`MINRES`** (`-r`, in mOhm, default `1000` = 1 Ohm) decides **how detailed the kept networks are**. Inside a net, neighbouring resistors below `MINRES` are merged as far as possible, which shrinks the network without changing its overall resistance much.
+
+In short: `THRESHOLD` and `MINDELAY` control *how many* nets carry parasitic resistance, while `MINRES` controls *how finely* each of them is modelled. Raising all three gives a smaller netlist that simulates faster with less detail. Lowering them gives a more accurate but considerably larger one.
 
 ```sh
 make magic-pex CELL=sg13_lv_nmos_tap EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
