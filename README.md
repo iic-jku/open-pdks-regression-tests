@@ -95,7 +95,7 @@ make -C ihp-sg13g2 magic-lvs CELL=sg13_lv_nmos_tap     # one step on one cell
 make -C ihp-sg13g2 pex-bench                           # the PEX bench, against the expected values
 ```
 
-Each folder switches the shell to its own PDK with `sak-pdk`, so the PDK selected in the container does not matter. Run make from inside the folder or with `-C <pdk>`. `make -f <pdk>/Makefile` does not work, because the relative paths would then resolve against the current directory. Generated netlists and reports land in `<pdk>/netlist/` and `<pdk>/verification/`, and `make -C <pdk> clean` removes them.
+Each folder switches make to its own PDK with `sak-pdk-script.sh` (the PDK guard of `common.mk`), so the PDK selected in the container does not matter. Run make from inside the folder or with `-C <pdk>`. `make -f <pdk>/Makefile` does not work, because the relative paths would then resolve against the current directory. Generated netlists and reports land in `<pdk>/netlist/` and `<pdk>/verification/`, and `make -C <pdk> clean` removes them.
 
 
 ## Regression Steps
@@ -183,7 +183,7 @@ The four regression workflows share the job in [`regression-common.yml`](.github
 ├── common.mk                  # every target, included by the Makefile of each PDK folder
 ├── scripts/                   # PEX port and mode checks, FasterCap reference helper
 ├── ihp-sg13g2/                # one folder per PDK, all four with the same structure
-│   ├── Makefile               # PDK selection, KNOWN_FAILS, EXPECTED_FAILS, KNOWN_FALSE_PASSES
+│   ├── Makefile               # REQUIRED_PDK, KNOWN_FAILS, EXPECTED_FAILS, KNOWN_FALSE_PASSES
 │   ├── README.md              # targets, regression rules, status of every cell
 │   ├── KNOWN_ISSUES.md        # why each KNOWN_FAILS and KNOWN_FALSE_PASSES entry is there
 │   ├── EXPECTED_FAILS.md      # what is broken in each cell broken on purpose

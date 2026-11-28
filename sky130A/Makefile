@@ -1,4 +1,4 @@
-# sky130A regression design: PDK selection and known failures.
+# sky130A regression design: PDK guard and known failures.
 # Every target lives in ../common.mk, run with "make <target>" from this directory.
 #
 # SPDX-FileCopyrightText: 2026 Julian Schwarz, Simon Dorrer, and Harald Pretl
@@ -10,7 +10,7 @@ MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # PDK this design is verified against. common.mk switches the environment to it
 # via sak-pdk, so make in here can never verify against another PDK.
-EXPECTED_PDK := sky130A
+REQUIRED_PDK := sky130A
 
 # Cell name for the single-cell targets (default: top-level cell)
 # Override with: make <target> CELL=<cellname>

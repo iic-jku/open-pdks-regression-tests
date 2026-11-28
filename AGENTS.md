@@ -9,7 +9,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 ## Environment
 
 - Run every target inside the IIC-OSIC-TOOLS container (https://github.com/iic-jku/IIC-OSIC-TOOLS), tag `2026.11` or later (`README.md`). CI uses `ghcr.io/iic-jku/iic-osic-tools:nightly`, and the lists in the Makefiles follow that image.
-- Each PDK folder switches the shell to its own PDK (`EXPECTED_PDK`) with `sak-pdk-script.sh` when make parses its `Makefile`, so the PDK of the container does not matter. `PDK_ROOT` must be set.
+- The PDK guard of `common.mk` switches the environment of make to the PDK of the folder (`REQUIRED_PDK`) with `sak-pdk-script.sh` when make parses its `Makefile`, so the PDK of the container does not matter. The chip templates abort instead, and the shell itself keeps its PDK. `PDK_ROOT` must be set.
 - Run make inside the folder or with `make -C <pdk> <target>`. `make -f <pdk>/Makefile` resolves the relative paths against the current directory and does not work.
 
 ## Repository layout
@@ -18,7 +18,7 @@ The tests check the tools and the PDK decks, not a design. The cells under `<pdk
 | --- | --- |
 | `common.mk` | Every target (DRC, LVS, PEX, regression, clean), included by the `Makefile` of each PDK folder and of each `pex_bench/` |
 | `scripts/` | `check_pex_ports.py` (run after every extraction) and `check_pex_modes.py` (after every full-RC extraction), `make_fastercap_expected.sh` (FasterCap references of the benches) |
-| `<pdk>/Makefile` | `EXPECTED_PDK`, the default `CELL`, the lists `KNOWN_FAILS`, `EXPECTED_FAILS`, `KNOWN_FALSE_PASSES`, and the `pex-bench` targets that forward to `pex_bench/` |
+| `<pdk>/Makefile` | `REQUIRED_PDK`, the default `CELL`, the lists `KNOWN_FAILS`, `EXPECTED_FAILS`, `KNOWN_FALSE_PASSES`, and the `pex-bench` and `clean-all` targets that forward to `pex_bench/` |
 | `<pdk>/README.md` | Every target, the regression rules, and the status of every cell ("Supported Cells") |
 | `<pdk>/KNOWN_ISSUES.md`, `<pdk>/EXPECTED_FAILS.md`, `<pdk>/FINDINGS.md` | Why each list entry is there, what is broken in each cell broken on purpose, PDK pitfalls |
 | `<pdk>/layout/`, `<pdk>/schematic/xschem/` | One GDS and one schematic per cell, with the same name, and the folder's `xschemrc` |

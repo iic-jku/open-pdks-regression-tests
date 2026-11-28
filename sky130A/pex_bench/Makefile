@@ -10,7 +10,7 @@
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
 
-EXPECTED_PDK := sky130A
+REQUIRED_PDK := sky130A
 
 # Default cell for the single-cell targets
 CELL ?= sidewall_m1_s0p2

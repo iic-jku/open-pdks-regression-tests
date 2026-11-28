@@ -13,13 +13,13 @@ make
 make help
 ```
 
-## PDK Selection
+## PDK Guard
 
-Every target except `help` needs the `ihp-sg13cmos5l` PDK. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. So [../common.mk](../common.mk) does not trust the PDK of the shell. When make parses the [Makefile](Makefile), it runs `sak-pdk-script.sh ihp-sg13cmos5l` itself, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to ihp-sg13cmos5l` reports once per run. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every other target, which names the PDKs it found.
+Every target except `help`, `clean` and `clean-all` needs the `ihp-sg13cmos5l` PDK, which the [Makefile](Makefile) names in `REQUIRED_PDK`. A wrong `$PDK` silently mixes technologies: DRC and LVS run against the wrong rule decks, Magic reads the wrong `magicrc`, and the results look valid. The chip templates abort in that case. This repository holds four PDK folders, so [../common.mk](../common.mk) switches the PDK itself instead. When make parses the [Makefile](Makefile) and `$PDK` differs from `REQUIRED_PDK`, it runs `sak-pdk-script.sh ihp-sg13cmos5l`, imports the variables that call prints (`PDK`, `PDKPATH`, `STD_CELL_LIBRARY`, `KLAYOUT_PATH`, ...) and exports them to every recipe, which the line `[PDK] switched to ihp-sg13cmos5l` reports once per run. The switch reaches the recipes of make only, the shell keeps its PDK. `PDK_ROOT` has to be set, as it is in the IIC-OSIC-TOOLS container. A PDK that `sak-pdk` does not offer is a warning in `make help` and an error in every target that starts a tool, which names the PDKs it found.
 
 ## Open the Design Files
 
-Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK selected above:
+Opens a file browser for this folder with `sak-open.py` from the IIC-OSIC-TOOLS, one button per design file, grouped by directory. It needs the desktop of the container, and the tools it starts inherit the PDK of the guard above:
 
 ```sh
 make open
