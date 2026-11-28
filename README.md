@@ -15,6 +15,9 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
 > [!IMPORTANT]
 > This repository requires the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container with tag `2026.11` or later.
 
+> [!NOTE]
+> The lists of known failures follow the nightly image `ghcr.io/iic-jku/iic-osic-tools:nightly`, which the [CI](#continuous-integration) tests. On the tag `2026.11` (Magic 8.3.706, kpex 0.11.1) two steps that a newer tool fixed are therefore reported as FAILED: `sky130_short1:magic-pex3` (fixed in Magic 8.3.707) and `gf180_sc_diode:klayout-pex3` (fixed in kpex 0.12.0).
+
 <table>
   <tr>
     <td align="center" width="50%">

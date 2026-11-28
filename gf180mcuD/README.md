@@ -260,7 +260,7 @@ make clean-all    # this folder and pex_bench/
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the current IIC-OSIC-TOOLS image, and `KNOWN_FAILS` in the `Makefile` is the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. Pass a name via `CELL=<cellname>` to run a single target on one cell, or a list via `LAYOUT_CELLS="<cell> <cell> ..."` to restrict `make regression` to those cells. The status is the one on the IIC-OSIC-TOOLS nightly image, and `KNOWN_FAILS` in the `Makefile` is the reference.
 
 The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs from its fixed layouts. Where a PCell draws something that breaks a rule of the GF180MCU design manual, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why. Where a layout follows the rules and a tool still fails on it, the cell is left as drawn and the step is a `KNOWN_FAILS` entry. MOS cells come as `_tap` (the PCell's butted bulk tie plus a Metal1 strap, bulk on the source, pins D/S/G) and `_ring` (the device without bulk option inside a drawn guard ring, pins D/S/G/B).
 
@@ -309,7 +309,7 @@ The layouts are built from the `gf180mcu` KLayout PCells of the PDK, the BJTs fr
 - `gf180_diode_nd2ps_03v3`, `gf180_diode_nd2ps_06v0`, `gf180_diode_pd2nw_03v3`, `gf180_diode_pd2nw_06v0` (schematic with the PCell parameters, smaller than the drawn diode: EXPECTED FAIL: Magic + Netgen LVS, KNOWN FALSE PASS: KLayout LVS, see [EXPECTED_FAILS.md](EXPECTED_FAILS.md))
 - `gf180_diode_nw2ps_03v3`, `gf180_diode_nw2ps_06v0` (KNOWN FAIL: Magic + Netgen LVS, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
 - `gf180_diode_pw2dw`, `gf180_diode_dw2ps` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md))
-- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): kept as a finding, the PCell and both decks disagree on the device
+- `gf180_sc_diode` (KNOWN FAIL: KLayout LVS, Magic + Netgen LVS, Magic DRC, see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)): kept as a finding, the PCell and both decks disagree on the device. On the `2026.11` tag `klayout-pex3` fails as well, fixed in kpex 0.12.0
 
 **Bipolar transistors**
 

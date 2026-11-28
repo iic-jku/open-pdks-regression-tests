@@ -188,7 +188,7 @@ make clean-all    # this folder and pex_bench/
 
 ## Supported Cells / Files
 
-Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the current IIC-OSIC-TOOLS image, and the lists in the `Makefile` are the reference.
+Each cell has a matching layout (`layout/<cell>.gds`) and schematic (`schematic/xschem/<cell>.sch`), both with the same name as the layout top cell. The status is the one on the IIC-OSIC-TOOLS nightly image, and the lists in the `Makefile` are the reference.
 
 The layouts are built from the `skywater130` KLayout PCells of the PDK, the 16 V MOS from its Magic generator, the BJTs, the photodiode and the VPP capacitors from its fixed layouts. Where a PCell draws something that breaks a design rule, the cell repairs it and [FINDINGS.md](FINDINGS.md) says what and why.
 
@@ -240,7 +240,7 @@ MOS cells come as `_tap` (the PCell's butted bulk tie strapped to the source, pi
 **Combined test cells**
 
 - `sky130_combined` (KNOWN FAIL: Magic DRC, KLayout LVS, Magic + Netgen LVS): 16 of the cells above side by side, flattened, on VDD, VSS and G, after `sg13_combined`
-- `sky130_short1` (PASS): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD
+- `sky130_short1` (PASS): 1.8 V and 5 V NMOS and PMOS with every terminal on VDD. On the `2026.11` tag `magic-pex3` still fails, fixed in Magic 8.3.707
 
 ### Devices without a cell
 
